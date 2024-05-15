@@ -1,4 +1,5 @@
 {
+    "devCommands": "uvicorn app:app",
     "builds": [
       {
         "src": "app.py",
