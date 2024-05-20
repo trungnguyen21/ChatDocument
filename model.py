@@ -13,7 +13,7 @@ from langchain_core.chat_history import BaseChatMessageHistory
 
 import os, config
 
-# os.environ["COHERE_API_KEY"] = config.cohere_api_key
+os.environ["COHERE_API_KEY"] = config.cohere_api_key
 file = "data/sample.pdf"
 
 # local host redis db
