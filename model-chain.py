@@ -1,5 +1,4 @@
 from langchain_experimental.text_splitter import SemanticChunker
-from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain.retrievers import EnsembleRetriever
 from langchain_community.retrievers import BM25Retriever
 
@@ -20,7 +19,7 @@ import os, config
 os.environ["COHERE_API_KEY"] = config.cohere_api_key
 os.environ["GOOGLE_API_KEY"] = config.GOOGLE_GEMINI_API_KEY
 
-file = "data/files/big_sample.pdf"
+file = "data/files/sample.pdf"
 
 REDIS_URL = config.REDIS_URL
 
@@ -89,16 +88,19 @@ def vectorDocuments(file_path):
     # Step 2:
     # else:
     print("Vector file does not exist. Proceed to Step 2 to create new vector file.")
+    method = "Normal"
 
     loader = LLMSherpaFileLoader(
         file_path = file_path,
         new_indent_parser = True,
         apply_ocr = True,
-        strategy = 'sections'
+        strategy = 'text'
     )
-
-    documents = loader.load()
+    docs = loader.load()
     print("Step 2.1. Successfully loaded the document.")
+
+    text_splitter = SemanticChunker(embeddings)
+    documents = text_splitter.split_documents(docs)
 
     faiss_vectorstore = FAISS.from_documents(documents, embeddings)
     faiss_retriever = faiss_vectorstore.as_retriever(search_kwargs={"k": 2})
@@ -112,7 +114,7 @@ def vectorDocuments(file_path):
     print("Step 3. Successfully created a retriever")
 
     return ensemble_retriever
-
+    
 
 def get_session_history(session_id: str) -> BaseChatMessageHistory:
     """
@@ -173,10 +175,5 @@ def user_interface(file):
             return
         print("DocumentAssist: " + answeringQuestion(user_input, session_id, rag_chain))
 
-
 if __name__ == "__main__":
     user_interface(file)
-    
-    
-
-        
