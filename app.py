@@ -16,9 +16,7 @@ if not os.path.exists("data/files"):
 if not os.path.exists("data/vectorstore"):
     os.mkdir("data/vectorstore")
 
-cur_path = os.path.dirname(__file__)
-data_path = os.path.join(cur_path, "data/files")
-# data_path = data/files/
+data_path = "data/files"
 file_names = os.listdir(data_path)
 
 file_map_path = "data/file_map.json"
@@ -77,7 +75,7 @@ rag_chain = None
 async def initialize_model(file_id: str):
     """
     Initialize the model
-    W.i.P
+    W.I.P
     """
     global retriever, rag_chain
 
@@ -99,7 +97,7 @@ async def initialize_model(file_id: str):
 async def get_response(file_id: str, body: RequestBody):
     """
     Get response
-    W.i.P
+    W.I.P
     """
     global retriever, rag_chain
 

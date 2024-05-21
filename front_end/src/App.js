@@ -16,7 +16,7 @@ function App() {
 
         <div className="col-4">
           <div className="right-content bg-2">
-            <h3 className="text-center mt-5 pdf-logo"> File Upload</h3>
+            <h3 className="text-center mt-5"> File Upload</h3>
           </div>
         </div>
       </div>
