@@ -7,3 +7,4 @@ faiss-cpu==1.8.0
 redis
 llmsherpa==0.1.4
 aiofiles
+pip install --quiet langchain_experimental

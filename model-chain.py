@@ -1,4 +1,5 @@
-# from langchain_cohere import ChatCohere
+from langchain_experimental.text_splitter import SemanticChunker
+
 from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_cohere.embeddings import CohereEmbeddings
 from langchain_community.document_loaders.llmsherpa import LLMSherpaFileLoader
@@ -14,6 +15,7 @@ from langchain_core.chat_history import BaseChatMessageHistory
 
 import os, config
 
+os.environ["COHERE_API_KEY"] = config.cohere_api_key
 os.environ["GOOGLE_API_KEY"] = config.GOOGLE_GEMINI_API_KEY
 file = "data/files/sample.pdf"
 
@@ -52,83 +54,89 @@ prompt = ChatPromptTemplate.from_messages(
 
 vector_path = os.path.dirname(__file__) + "/data/vectorstore/"
 
-# Indexing document, returns VectorStoreRetriever
+
+
 def vectorDocuments(file_path):
+    """
+    Indexing document, returns VectorStoreRetriever
+    """
     vectorstore_file = f"{file_path.split("/")[-1]}_vectorstore" # sample.pdf_vectorstore
     cur_path = vector_path + vectorstore_file
 
     # Check if the vectorstore for this document exist
     print("Operating filepath: ", vector_path)
     print("Checking vectorstore file at: ", cur_path)
-    if os.path.exists(cur_path):
-        print(f"Step 2. File '{vectorstore_file}' already exists. Using indexed file.")
-        vector = FAISS.load_local(folder_path=cur_path, 
-                                  embeddings=embeddings, 
-                                  index_name=vectorstore_file,
-                                  allow_dangerous_deserialization=True)
-        retriever = vector.as_retriever()
+
+    # if os.path.exists(cur_path):
+    #     print(f"Step 2. File '{vectorstore_file}' already exists. Using indexed file.")
+    #     vector = FAISS.load_local(folder_path=cur_path, 
+    #                               embeddings=embeddings, 
+    #                               index_name=vectorstore_file,
+    #                               allow_dangerous_deserialization=True)
+    #     retriever = vector.as_retriever()
     
     # Load the document
     # Only allows PDFs, handle in client side
-    else: 
-        loader = LLMSherpaFileLoader(
-            file_path=file_path,
-            new_indent_parser=True,
-            apply_ocr=True,
-            strategy = 'chunks'
-        )
-        docs = loader.load()
-        print("Step 1. Successfully loaded the document.")
+    # else: 
+    loader = LLMSherpaFileLoader(
+        file_path=file_path,
+        new_indent_parser=True,
+        apply_ocr=True,
+        strategy = 'chunks'
+    )
+    docs = loader.load()
+    print("Step 1. Successfully loaded the document.")
 
-        # Ingest the document into vectorstore
-        text_splitter = RecursiveCharacterTextSplitter()
-        documents = text_splitter.split_documents(docs)
-        vector = FAISS.from_documents(documents, embeddings)
+    # Ingest the document into vectorstore
+    text_splitter = SemanticChunker(embeddings)
+    documents = text_splitter.split_documents(docs)
+    vector = FAISS.from_documents(documents, embeddings)
 
-        vector.save_local(folder_path=cur_path, index_name=f"{vectorstore_file}")
-        print("Step 1.5. Saved the vectorstore file at:", cur_path)
+    # vector.save_local(folder_path=cur_path, index_name=f"{vectorstore_file}")
+    print("Step 1.5. Saved the vectorstore file at:", cur_path)
 
-        # Creating a retrieval chain to retrieve data from the document, 
-        # feed it to the LLM model and ask the original question
-        retriever = vector.as_retriever()
+    # Creating a retrieval chain to retrieve data from the document, 
+    # feed it to the LLM model and ask the original question
+    retriever = vector.as_retriever()
 
-        print("Step 2. Successfully created a retriever")
-        
+    print("Step 2. Successfully created a retriever")
     return retriever
 
-# Get the chat history of the session
+
+
 def get_session_history(session_id: str) -> BaseChatMessageHistory:
+    """
+    Get the chat history of the session
+    """
     return RedisChatMessageHistory(session_id, REDIS_URL)
 
-# Create an agent to interact with the user
-def init_chain_with_history(file_path):
-    # Creating an Agent where LLM will decide what steps to take
-    try:
-        retriever = vectorDocuments(file_path)
-    except Exception as e:
-        print("Error creating the retriever: ", e)
-        raise Exception("Error creating the retriever")
 
+
+def init_chain_with_history(retriever):
+    """
+    Create history chain
+    String -> Chain
+    """
     history_aware_retriever = create_history_aware_retriever(llm, retriever, contextualize_q_prompt)
     question_answer_chain = create_stuff_documents_chain(llm, prompt)
     rag_chain = create_retrieval_chain(history_aware_retriever, question_answer_chain)
     print("Step 3. Created agent success")
-    return rag_chain
-
-# Answer the question
-def answeringQuestion(question, session_id, file_path):
-    # Invoking the agent with the question, also keep track of the chat history automatically
-    try:
-        rag_chain = init_chain_with_history(file_path)
-    except Exception as e:
-        return f"Step 3. Unable to create agent: {e}"
-
     rag_chain_with_history = RunnableWithMessageHistory(
         rag_chain,
-        get_session_history=get_session_history,
-        input_messages_key="input",
-        history_messages_key="chat_history",
+        get_session_history = get_session_history,
+        input_messages_key = "input",
+        history_messages_key = "chat_history",
     )
+    
+    return rag_chain_with_history
+
+
+
+def answeringQuestion(question, session_id, rag_chain_with_history):
+    """
+    Answer the given question, session_id and file_path
+    String String chain -> String
+    """
     output = rag_chain_with_history.invoke(
         {
         'input': question,
@@ -138,17 +146,24 @@ def answeringQuestion(question, session_id, file_path):
     print("Step 4. Successfully generated an output")
     return str(output["answer"])
 
-# For testing purposes
+
+
+## Testing
 def user_interface(file):
     print("Initializing the chatbot...")
 
     session_id = input("Please enter your session id: ")
+    try:
+        retriever = vectorDocuments(file)
+        rag_chain = init_chain_with_history(retriever)
+    except Exception as e:
+        return f"Step 3. Unable to create agent: {e}"
+    
     while True:
         user_input = input("Please ask your question: ")
         if user_input == "exit":
             return
-        print("DocumentAssist: " + answeringQuestion(user_input, session_id, file))
-
+        print("DocumentAssist: " + answeringQuestion(user_input, session_id, rag_chain))
 
 if __name__ == "__main__":
     user_interface(file)
