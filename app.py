@@ -52,6 +52,9 @@ def get_files():
 
 @app.post("/uploadfile/")
 async def create_upload_file(file: UploadFile):
+    """
+    File upload
+    """
     # Generate a unique ID for the file
     unique_id = str(uuid.uuid4())
     file_path = os.path.join(data_path, unique_id + "_" + file.filename)
@@ -72,6 +75,10 @@ retriever = None
 rag_chain = None
 @app.post("/initialize_model")
 async def initialize_model(file_id: str):
+    """
+    Initialize the model
+    W.i.P
+    """
     global retriever, rag_chain
 
     # Retrieve the file path using the provided file_id
@@ -90,6 +97,10 @@ async def initialize_model(file_id: str):
 
 @app.post("/get_response/{file_id}")
 async def get_response(file_id: str, body: RequestBody):
+    """
+    Get response
+    W.i.P
+    """
     global retriever, rag_chain
 
     # If retriever and rag_chain are not initialized, initialize them
