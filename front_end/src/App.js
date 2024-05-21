@@ -1,4 +1,5 @@
 import './App.css';
+import 'react-bootstrap'
 
 function App() {
   return (
