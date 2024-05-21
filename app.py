@@ -4,7 +4,7 @@ from typing import Dict
 
 import aiofiles, uuid, json
 import os
-import model
+import model_chain
 
 app = FastAPI()
 
@@ -42,7 +42,8 @@ class RequestBody(BaseModel):
 
 @app.get("/")
 async def root():
-    return {"message": "Hello World"}
+    return {"message": "Starting"}
+
 
 @app.get("/get_files")
 def get_files():
@@ -66,8 +67,35 @@ async def create_upload_file(file: UploadFile):
 
     return {"Result": "OK", "file_id": unique_id}
 
+
+retriever = None
+rag_chain = None
+@app.post("/initialize_model")
+async def initialize_model(file_id: str):
+    global retriever, rag_chain
+
+    # Retrieve the file path using the provided file_id
+    print(file_id)
+    file_path = file_map.get(file_id)
+    print(file_map)
+    print("Looking at file path: " + str(file_path))
+    if not file_path or not os.path.exists(file_path):
+        raise HTTPException(status_code=404, detail="File not found or invalid file_id")
+
+    print("Initializing retriever and rag_chain...")
+    retriever = model_chain.vectorDocuments(file_path)
+    rag_chain = model_chain.init_chain_with_history(retriever)
+    return {"message": "Retriever and rag_chain initialized successfully."}
+
+
 @app.post("/get_response/{file_id}")
 async def get_response(file_id: str, body: RequestBody):
+    global retriever, rag_chain
+
+    # If retriever and rag_chain are not initialized, initialize them
+    if retriever is None or rag_chain is None:
+        raise HTTPException(status_code=500, detail="Retriever and rag_chain are not initialized. Call /initialize_model first.")
+
     # Retrieve the file path using the provided file_id
     print(file_id)
     file_path = file_map.get(file_id)
@@ -78,5 +106,5 @@ async def get_response(file_id: str, body: RequestBody):
 
     print("Handling file at ", file_path)
     # Use the file path to answer the question
-    response = model.answeringQuestion(body.question, file_id, file_path)
+    response = model_chain.answeringQuestion(body.question, file_id, rag_chain)
     return {"message": response}

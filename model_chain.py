@@ -88,8 +88,6 @@ def vectorDocuments(file_path):
     # Step 2:
     # else:
     print("Vector file does not exist. Proceed to Step 2 to create new vector file.")
-    method = "Normal"
-
     loader = LLMSherpaFileLoader(
         file_path = file_path,
         new_indent_parser = True,

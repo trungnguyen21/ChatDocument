@@ -1,38 +1,72 @@
-.App {
-  text-align: center;
-}
-
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
-}
-
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
+.message {
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
+  align-items: flex-start;
+  margin-bottom: 2vh;
+}
+
+.avatar {
+  width: 4vh;
+  height: 4vh;
+  border-radius: 50%;
+  background-color: #ccc;
+  margin-right: 0.5vw;
+  margin-left: 0.5vw;
+}
+
+.message-content {
+  flex: 1;
+}
+
+.message-text {
+  background-color: #f0f0f0;
+  padding: 1vh;
+  border-radius: 1vh;
+  margin-right: 0.5vw;
+  margin-left: 0.5vw;
+}
+
+.message-time {
+  font-size: 0.8rem;
+  color: #999;
+}
+
+.user .message-text {
+  background-color: #007bff;
   color: white;
 }
 
-.App-link {
-  color: #61dafb;
+.input-container {
+  margin-top: 2vh;
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
+.messages-container {
+  max-height: 75vh;
+  overflow-y: auto;
+}
+
+.bg-2 {
+    color: white;
+    background-color: #ff4848;
+    margin-left: 18vw;
+    margin-right: 2vw;
+    padding: 1vh;
+    border-bottom-left-radius: 1vh; /* Adjust the value as needed */
+    border-bottom-right-radius: 1vh; /* Adjust the value as needed */
   }
-  to {
-    transform: rotate(360deg);
-  }
+
+.bg-1 {
+    margin-left: 5vw;
+    margin-right: 5vw;
+}
+
+body {
+    overflow-x: hidden;
+}
+
+.text-logo {
+    margin-left: 18vw;
+    margin-right: 18vw;
+    padding-top: 1vh;
+    padding-bottom: 1vh;
+    border-radius: 1vh;
 }
