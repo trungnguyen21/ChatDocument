@@ -59,47 +59,51 @@ vector_path = os.path.dirname(__file__) + "/data/vectorstore/"
 def vectorDocuments(file_path):
     """
     Indexing document, returns VectorStoreRetriever
+    Step 1: Check if the vectorstore for this document exist.
+            If it does, return the data and create a new chain in step 4
+
+    Step 2: 
+        1. Load and ingest the document into vectorstore. 
+        2. Save the vector file afterward
+
+    Step 3: Creating a retrieval chain to retrieve data from the document, 
+            feed it to the LLM model.
     """
     vectorstore_file = f"{file_path.split("/")[-1]}_vectorstore" # sample.pdf_vectorstore
     cur_path = vector_path + vectorstore_file
 
-    # Check if the vectorstore for this document exist
     print("Operating filepath: ", vector_path)
-    print("Checking vectorstore file at: ", cur_path)
+    print("Step 1: Checking vectorstore file at: ", cur_path)
 
-    # if os.path.exists(cur_path):
-    #     print(f"Step 2. File '{vectorstore_file}' already exists. Using indexed file.")
-    #     vector = FAISS.load_local(folder_path=cur_path, 
-    #                               embeddings=embeddings, 
-    #                               index_name=vectorstore_file,
-    #                               allow_dangerous_deserialization=True)
-    #     retriever = vector.as_retriever()
+    # Step 1:
+    if os.path.exists(cur_path):
+        print(f"File '{vectorstore_file}' already exists. Using indexed file.")
+        vector = FAISS.load_local(folder_path=cur_path, 
+                                  embeddings=embeddings, 
+                                  index_name=vectorstore_file,
+                                  allow_dangerous_deserialization=True)
+        retriever = vector.as_retriever()
     
-    # Load the document
-    # Only allows PDFs, handle in client side
-    # else: 
-    loader = LLMSherpaFileLoader(
-        file_path=file_path,
-        new_indent_parser=True,
-        apply_ocr=True,
-        strategy = 'chunks'
-    )
-    docs = loader.load()
-    print("Step 1. Successfully loaded the document.")
+    # Step 2:
+    else:
+        print("Vector file does not exist. Proceed to step 2 to create new vector file.")
+        loader = LLMSherpaFileLoader(
+            file_path=file_path,
+            new_indent_parser=True,
+            apply_ocr=True,
+            strategy = 'chunks'
+        )
+        docs = loader.load()
+        print("Step 2.1. Successfully loaded the document.")
+        text_splitter = SemanticChunker(embeddings)
+        documents = text_splitter.split_documents(docs)
+        vector = FAISS.from_documents(documents, embeddings)
 
-    # Ingest the document into vectorstore
-    text_splitter = SemanticChunker(embeddings)
-    documents = text_splitter.split_documents(docs)
-    vector = FAISS.from_documents(documents, embeddings)
+        vector.save_local(folder_path=cur_path, index_name=f"{vectorstore_file}")
+        print("Step 2.2. Saved the vectorstore file at:", cur_path)
 
-    # vector.save_local(folder_path=cur_path, index_name=f"{vectorstore_file}")
-    print("Step 1.5. Saved the vectorstore file at:", cur_path)
-
-    # Creating a retrieval chain to retrieve data from the document, 
-    # feed it to the LLM model and ask the original question
-    retriever = vector.as_retriever()
-
-    print("Step 2. Successfully created a retriever")
+        retriever = vector.as_retriever()
+        print("Step 3. Successfully created a retriever")
     return retriever
 
 
@@ -114,13 +118,14 @@ def get_session_history(session_id: str) -> BaseChatMessageHistory:
 
 def init_chain_with_history(retriever):
     """
+    Step 4 of starting the chat bot
     Create history chain
     String -> Chain
     """
     history_aware_retriever = create_history_aware_retriever(llm, retriever, contextualize_q_prompt)
     question_answer_chain = create_stuff_documents_chain(llm, prompt)
     rag_chain = create_retrieval_chain(history_aware_retriever, question_answer_chain)
-    print("Step 3. Created agent success")
+    print("Step 4. Created chain success")
     rag_chain_with_history = RunnableWithMessageHistory(
         rag_chain,
         get_session_history = get_session_history,
@@ -157,7 +162,7 @@ def user_interface(file):
         retriever = vectorDocuments(file)
         rag_chain = init_chain_with_history(retriever)
     except Exception as e:
-        return f"Step 3. Unable to create agent: {e}"
+        return f"Step 4. Unable to create chain: {e}"
     
     while True:
         user_input = input("Please ask your question: ")
