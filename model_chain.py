@@ -66,14 +66,13 @@ def vectorDocuments(file_path: str):
 
     Step 2: 
         1. Load and ingest the document into vectorstore. 
-        2. Save the vector file afterward
+        2. Create a retriever to retrieve data from the vectorstore.
 
     Step 3: Creating a retrieval chain to retrieve data from the document, 
             feed it to the LLM model.
     """
     vectorstore_file = f"{file_path.split("/")[-1]}_vectorstore" # sample.pdf_vectorstore
 
-    print("Vector file does not exist. Proceed to Step 2 to create new vector file.")
     loader = LLMSherpaFileLoader(
         file_path = file_path,
         new_indent_parser = True,
@@ -81,22 +80,26 @@ def vectorDocuments(file_path: str):
         strategy = 'chunks'
     )
     docs = loader.load()
-    print("Step 2.1. Successfully loaded the document.")
+    print("Step 1. Successfully loaded the document.")
 
     text_splitter = SemanticChunker(embeddings)
     documents = text_splitter.split_documents(docs)
+    print("Step 2. Splitted the doccument into chunks")
 
     # Ingest the document into vectorstore 100 chunks at a time
-    redis_retriever = ingest_document(documents, vectorstore_file)
+    redis_vector = ingest_document(documents, vectorstore_file)
+    redis_retriever = redis_vector.as_retriever(search_type="similairty", search_kwargs={"k": 2})
+    print("Step 3.1. Created a semantic retriever from RedisVectorStore")
     
     bm25_retriever = BM25Retriever.from_documents(documents)
     bm25_retriever.k = 2
+    print("Step 3.2. Created a BM25 retriever.")
 
     ensemble_retriever = EnsembleRetriever(
         retrievers = [bm25_retriever, redis_retriever], 
         weights = [0.5, 0.5]
     )
-    print("Step 3. Successfully created a retriever")
+    print("Step 3. Successfully created an emsemble retriever")
 
     return ensemble_retriever
 
