@@ -1,30 +1,31 @@
-from langchain_experimental.text_splitter import SemanticChunker
-from langchain.retrievers import EnsembleRetriever
-from langchain_community.retrievers import BM25Retriever
-
-from langchain_google_genai import ChatGoogleGenerativeAI
-from langchain_cohere.embeddings import CohereEmbeddings
+from langchain_google_genai import ChatGoogleGenerativeAI, GoogleGenerativeAIEmbeddings
 from langchain_community.document_loaders.llmsherpa import LLMSherpaFileLoader
-from langchain_community.vectorstores import FAISS
+from langchain_experimental.text_splitter import SemanticChunker
+from langchain_community.vectorstores.redis import Redis
+from langchain_community.retrievers import BM25Retriever
+from langchain.retrievers import EnsembleRetriever
 
-from langchain.chains import create_history_aware_retriever, create_retrieval_chain
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
+
+
+from langchain.chains.retrieval import create_retrieval_chain
+from langchain.chains.history_aware_retriever import create_history_aware_retriever
 from langchain.chains.combine_documents import create_stuff_documents_chain
 from langchain_community.chat_message_histories import RedisChatMessageHistory
-from langchain_core.runnables.history import RunnableWithMessageHistory
-from langchain_core.chat_history import BaseChatMessageHistory
+from langchain_core.runnables import Runnable
 
 import os, config
 
 os.environ["COHERE_API_KEY"] = config.cohere_api_key
 os.environ["GOOGLE_API_KEY"] = config.GOOGLE_GEMINI_API_KEY
-
-file = "data/files/sample.pdf"
-
 REDIS_URL = config.REDIS_URL
 
+# Testing purposes
+file = "data/files/sample.pdf"
+
+
 llm = ChatGoogleGenerativeAI(model="gemini-1.5-pro-latest")
-embeddings = CohereEmbeddings()
+embeddings = GoogleGenerativeAIEmbeddings(model="models/embedding-001")
 
 # Prompt template
 contextualize_q_system_prompt = """Given a chat history and the latest user question \
@@ -57,7 +58,7 @@ prompt = ChatPromptTemplate.from_messages(
 vector_path = os.path.dirname(__file__) + "/data/vectorstore/"
 
 
-def vectorDocuments(file_path):
+def vectorDocuments(file_path: str):
     """
     Indexing document, returns VectorStoreRetriever
     Step 1: Check if the vectorstore for this document exist.
@@ -71,28 +72,13 @@ def vectorDocuments(file_path):
             feed it to the LLM model.
     """
     vectorstore_file = f"{file_path.split("/")[-1]}_vectorstore" # sample.pdf_vectorstore
-    cur_path = vector_path + vectorstore_file
 
-    print("Operating filepath: ", vector_path)
-    print("Step 1: Checking vectorstore file at: ", cur_path)
-
-    # Step 1:
-    # if os.path.exists(cur_path):
-    #     print(f"File '{vectorstore_file}' already exists. Using indexed file.")
-    #     vector = FAISS.load_local(folder_path=cur_path, 
-    #                               embeddings=embeddings, 
-    #                               index_name=vectorstore_file,
-    #                               allow_dangerous_deserialization=True)
-    #     retriever = vector.as_retriever()
-
-    # Step 2:
-    # else:
     print("Vector file does not exist. Proceed to Step 2 to create new vector file.")
     loader = LLMSherpaFileLoader(
         file_path = file_path,
         new_indent_parser = True,
         apply_ocr = True,
-        strategy = 'text'
+        strategy = 'chunks'
     )
     docs = loader.load()
     print("Step 2.1. Successfully loaded the document.")
@@ -100,23 +86,48 @@ def vectorDocuments(file_path):
     text_splitter = SemanticChunker(embeddings)
     documents = text_splitter.split_documents(docs)
 
-    faiss_vectorstore = FAISS.from_documents(documents, embeddings)
-    faiss_retriever = faiss_vectorstore.as_retriever(search_kwargs={"k": 2})
+    # Ingest the document into vectorstore 100 chunks at a time
+    redis_retriever = ingest_document(documents, vectorstore_file)
     
     bm25_retriever = BM25Retriever.from_documents(documents)
     bm25_retriever.k = 2
 
     ensemble_retriever = EnsembleRetriever(
-        retrievers = [bm25_retriever, faiss_retriever], weights=[0.5, 0.5]
+        retrievers = [bm25_retriever, redis_retriever], 
+        weights = [0.5, 0.5]
     )
     print("Step 3. Successfully created a retriever")
 
     return ensemble_retriever
-    
 
-def get_session_history(session_id: str) -> BaseChatMessageHistory:
+
+def ingest_document(docs: list, file_name: str) -> Redis:
     """
-    Get the chat history of the session
+    Ingest document into the vectordb. Redis only supports 100 documents at a time. \n
+    Args: 
+        docs: List[Document]
+        file_name: name of the file stored on Redis
+    """
+    for i in range(0, len(docs), 100):
+        if i + 100 > len(docs):
+            chunks = docs[i:]
+        else:
+            chunks = docs[i:i+100]
+
+        vector = Redis.from_documents(
+            chunks, 
+            embeddings,
+            redis_url=REDIS_URL,
+            index_name=file_name,
+        )
+
+    return vector
+
+def get_session_history(session_id: str):
+    """
+    Get the chat history of the session \n
+    Args:
+        session_id: str
     """
     return RedisChatMessageHistory(session_id, REDIS_URL)
 
@@ -125,36 +136,51 @@ def init_chain_with_history(retriever):
     """
     Step 4 of starting the chat bot
     Create history chain
-    String -> Chain
+    String -> Chain \n
+    Args:
+        retriever: VectorStoreRetriever
     """
     history_aware_retriever = create_history_aware_retriever(llm, retriever, contextualize_q_prompt)
     question_answer_chain = create_stuff_documents_chain(llm, prompt)
     rag_chain = create_retrieval_chain(history_aware_retriever, question_answer_chain)
     print("Step 4. Created chain success")
-    rag_chain_with_history = RunnableWithMessageHistory(
-        rag_chain,
-        get_session_history = get_session_history,
-        input_messages_key = "input",
-        history_messages_key = "chat_history",
-    )
     
-    return rag_chain_with_history
+    return rag_chain
 
 
-def answeringQuestion(question, session_id, rag_chain_with_history):
+def answeringQuestion(question: str, session_id: str, chain: Runnable):
     """
     Answer the given question, session_id and file_path
-    String String chain -> String
+    String String chain -> String \n
+    Args:
+        question: str
+        session_id: str
+        rag_chain_with_history: Runnable
     """
-    output = rag_chain_with_history.invoke(
+    output = chain.invoke(
         {
         'input': question,
-        }, config={"configurable": {"session_id": session_id}},
+        'chat_history': get_session_history(session_id).messages
+        }
     )
+    log_chat_history(session_id, question, str(output["answer"]))
 
     print("Step 4. Successfully generated an output")
     return str(output["answer"])
 
+
+def log_chat_history(session_id: str, human_message, ai_message):
+    """
+    Manually log chat messages into our database \n
+    Args:
+        session_id: str
+        human_message: str
+        ai_message: str
+    """
+    message_log = RedisChatMessageHistory(session_id, config.REDIS_URL)
+    message_log.add_user_message(human_message)
+    message_log.add_ai_message(ai_message)
+    return
 
 ## Testing
 def user_interface(file):
