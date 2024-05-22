@@ -1,4 +1,5 @@
 from fastapi import FastAPI, UploadFile, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import Dict
 
@@ -20,6 +21,16 @@ data_path = "data/files"
 file_names = os.listdir(data_path)
 
 file_map_path = "data/file_map.json"
+
+# Set all CORS enabled origins
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+    expose_headers=["*"],
+)
 
 # Function to load the file map from the JSON file
 def load_file_map() -> Dict[str, str]:

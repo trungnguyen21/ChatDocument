@@ -3,16 +3,30 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import './style.css';
 import axios from 'axios';
 
-
 const FileUploader = () => {
-  const [selectedFiles, setSelectedFiles] = useState([]);
+  const [selectedFile, setSelectedFile] = useState([]);
 
   const handleFileChange = (e) => {
-    setSelectedFiles(Array.from(e.target.files));
+    setSelectedFile(e.target.files);
   };
 
-  const handleUpload = () => {
-    console.log(selectedFiles);
+  const handleUpload = async () => {
+    const formData = {
+      file : selectedFile
+    }
+
+    try {
+      console.log(formData)
+      const response = await axios.post
+      ('http://localhost:8000/uploadfile/', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      });
+      console.log('File ID:', response.data.file_id);
+    } catch (error) {
+      console.error('Error uploading file:', error);
+    }
   };
 
   return (
@@ -26,10 +40,14 @@ const FileUploader = () => {
             onChange={handleFileChange}
             className="form-control-file mb-3"
           />
-          <button className="btn btn-primary" onClick={handleUpload}>
+          <button
+            className="btn btn-primary btn-primary"
+            onClick={handleUpload}
+            disabled={selectedFile.length === 0}
+          >
             Upload
           </button>
-        </div>  
+        </div>
       </div>
     </div>
   );

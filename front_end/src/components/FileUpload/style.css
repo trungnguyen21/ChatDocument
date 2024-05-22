@@ -44,3 +44,9 @@
     background-color: #e04343;
     transform: scale(1.05);
   }
+
+  .btn-primary:disabled {
+    background-color: #fd6e6e;
+    border-color: #fd6e6e;
+    color: #fff;
+  }
