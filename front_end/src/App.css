@@ -1,71 +1,69 @@
 .message {
-  display: flex;
-  align-items: flex-start;
-  margin-bottom: 2vh;
+    display: flex;
+    align-items: flex-start;
+    margin-bottom: 2vh;
 }
-
+  
 .avatar {
-  width: 4vh;
-  height: 4vh;
-  border-radius: 50%;
-  background-color: #ccc;
-  margin-right: 0.5vw;
-  margin-left: 0.5vw;
+    width: 4vh;
+    height: 4vh;
+    border-radius: 50%;
+    background-color: #ccc;
+    margin-right: 0.5vw;
+    margin-left: 0.5vw;
 }
-
+  
 .message-content {
-  flex: 1;
+    flex: 1;
 }
-
+  
 .message-text {
-  background-color: #f0f0f0;
-  padding: 1vh;
-  border-radius: 1vh;
-  margin-right: 0.5vw;
-  margin-left: 0.5vw;
-}
-
-.message-time {
-  font-size: 0.8rem;
-  color: #999;
-}
-
-.user .message-text {
-  background-color: #007bff;
-  color: white;
-}
-
-.input-container {
-  margin-top: 2vh;
-}
-
-.messages-container {
-  max-height: 75vh;
-  overflow-y: auto;
-}
-
-.bg-2 {
-    color: white;
-    background-color: #ff4848;
-    margin-left: 18vw;
-    margin-right: 2vw;
+    background-color: #f0f0f0;
     padding: 1vh;
-    border-bottom-left-radius: 1vh;
-    border-bottom-right-radius: 1vh;
-}
-
-.bg-1 {
-    margin-left: 5vw;
-    margin-right: 5vw;
-}
-
-body {
-    overflow-x: hidden;
-}
-
-.text-logo {
-    padding-top: 1vh;
-    padding-bottom: 1vh;
     border-radius: 1vh;
-    text-align: left;
+    margin-right: 0.5vw;
+    margin-left: 0.5vw;
+    word-break: break-all;
 }
+  
+.message-time {
+    font-size: 0.8rem;
+    color: #999;
+}
+  
+  .user .message-text {
+    background-color: #007bff;
+    color: white;
+  }
+  
+  .input-container {
+    margin-top: 2vh;
+  }
+  
+  .messages-container {
+    max-height: 75vh;
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
+  
+  .bg-1 {
+      margin-left: 5vw;
+      margin-right: 5vw;
+  }
+  
+  body {
+      overflow-x: hidden;
+  }
+  
+  .text-logo {
+      padding-top: 1vh;
+      padding-bottom: 1vh;
+      border-radius: 1vh;
+      text-align: left;
+  }
+  
+  .uploader {
+      margin-right: 10vw;
+      padding-bottom: 5vh;
+  }
+  
