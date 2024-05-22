@@ -9,9 +9,9 @@ const Message = ({ message }) => {
       {!isUser && <div className = "avatar" />}
       <div className = "message-content">
         <div className = "message-text" style = {{ paddingRight: '1vw' }}> {text} </div>
-        <div className = "message-time"> {new Date(timestamp).toLocaleTimeString()} </div>
+        <div className = "message-time">{new Date(timestamp).toLocaleTimeString()} </div>
       </div>
-      {isUser && <div className = "avatar" />}
+      {isUser && <div className="avatar" />}
     </div>
   );
 };
