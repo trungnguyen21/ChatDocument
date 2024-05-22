@@ -88,7 +88,8 @@ def vectorDocuments(file_path: str):
 
     # Ingest the document into vectorstore 100 chunks at a time
     redis_vector = ingest_document(documents, vectorstore_file)
-    redis_retriever = redis_vector.as_retriever(search_type="similairty", search_kwargs={"k": 2})
+    # redis_retriever = redis_vector.as_retriever(search_type="similairty", search_kwargs={"k": 2})
+    redis_retriever = redis_vector.as_retriever(search_kwargs={"k": 2})
     print("Step 3.1. Created a semantic retriever from RedisVectorStore")
     
     bm25_retriever = BM25Retriever.from_documents(documents)
@@ -106,7 +107,8 @@ def vectorDocuments(file_path: str):
 
 def ingest_document(docs: list, file_name: str) -> Redis:
     """
-    Ingest document into the vectordb. Redis only supports 100 documents at a time. \n
+    Ingest document into the vectordb. Redis only supports 100 
+    documents at a time.
     Args: 
         docs: List[Document]
         file_name: name of the file stored on Redis
