@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './style.css';
+import axios from 'axios';
+
 
 const FileUploader = () => {
   const [selectedFiles, setSelectedFiles] = useState([]);

@@ -15,7 +15,7 @@ const Chat = () => {
 
   const sendMessage = (text) => {
     const userMessage = { text: 'User: ' + text, sender: 'user', timestamp: new Date() };
-    const echoMessage = { text: 'Echo: ' + text, sender: 'chatbot', timestamp: new Date() };
+    const echoMessage = { text: 'Doc Assistance: ' + text, sender: 'chatbot', timestamp: new Date() };
     setMessages([...messages, userMessage, echoMessage]);
   };
 

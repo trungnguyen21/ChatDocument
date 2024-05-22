@@ -75,7 +75,6 @@ rag_chain = None
 async def initialize_model(file_id: str):
     """
     Initialize the model
-    W.I.P
     """
     global retriever, rag_chain
 
@@ -97,7 +96,6 @@ async def initialize_model(file_id: str):
 async def get_response(file_id: str, body: RequestBody):
     """
     Get response
-    W.I.P
     """
     global retriever, rag_chain
 

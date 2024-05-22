@@ -31,39 +31,48 @@
     color: #999;
 }
   
-  .user .message-text {
+.user .message-text {
     background-color: #007bff;
     color: white;
-  }
-  
-  .input-container {
+}
+
+.input-container {
     margin-top: 2vh;
-  }
-  
-  .messages-container {
+}
+
+.messages-container {
     max-height: 75vh;
     overflow-y: auto;
     overflow-x: hidden;
-  }
+}
+
+.bg-1 {
+
+    margin-right: 5vw;
+}
+
+body {
+    overflow-x: hidden;
+}
   
-  .bg-1 {
-      margin-left: 5vw;
-      margin-right: 5vw;
-  }
+.text-logo {
+    padding-top: 1vh;
+    padding-bottom: 1vh;
+    border-radius: 1vh;
+    text-align: left;
+}
   
-  body {
-      overflow-x: hidden;
-  }
+.uploader {
+    margin-right: 10vw;
+    padding-bottom: 5vh;
+}
+
+
+.card {
+    border: none;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
   
-  .text-logo {
-      padding-top: 1vh;
-      padding-bottom: 1vh;
-      border-radius: 1vh;
-      text-align: left;
-  }
-  
-  .uploader {
-      margin-right: 10vw;
-      padding-bottom: 5vh;
-  }
-  
+.card-body {
+    padding: 2rem;
+}
