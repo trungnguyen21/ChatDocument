@@ -17,7 +17,7 @@ function App() {
 
         <div className="col-8">
           <div className="bg-1">
-            <h1 className="text-center mt-5 text-logo"> Chat Document</h1>
+            <h1 className="text-center text-logo"> Chat Document</h1>
             <Chat />
           </div>
         </div>
