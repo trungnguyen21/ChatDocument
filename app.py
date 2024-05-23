@@ -59,14 +59,17 @@ def get_files():
     print(file_names)
     return {"message": f"Found {len(file_names)} file(s) in the server"}   
 
+
+file_id = None
 @app.post("/uploadfile/")
 async def create_upload_file(file: UploadFile):
     """
     File upload
     """
+    global file_id
     # Generate a unique ID for the file
-    unique_id = str(uuid.uuid4())
-    file_path = os.path.join(data_path, unique_id + "_" + file.filename)
+    file_id = str(uuid.uuid4())
+    file_path = os.path.join(data_path, file_id + "_" + file.filename)
 
     # Save the file to disk with the unique ID as part of the filename
     async with aiofiles.open(file_path, "wb") as out_file:
@@ -74,16 +77,16 @@ async def create_upload_file(file: UploadFile):
         await out_file.write(content)
     
     # Store the mapping from unique_id to file path
-    file_map[unique_id] = file_path
+    file_map[file_id] = file_path
     save_file_map(file_map)
 
-    return {"Result": "OK", "file_id": unique_id}
+    return {"Result": "OK", "file_id": file_id}
 
 
 retriever = None
 rag_chain = None
-@app.post("/initialize_model")
-async def initialize_model(file_id: str):
+@app.post("/initialize_model/")
+async def initialize_model():
     """
     Initialize the model
     """
@@ -103,8 +106,8 @@ async def initialize_model(file_id: str):
     return {"message": "Retriever and rag_chain initialized successfully."}
 
 
-@app.post("/get_response/{file_id}")
-async def get_response(file_id: str, body: RequestBody):
+@app.post("/get_response/")
+async def get_response(body: RequestBody):
     """
     Get response
     """

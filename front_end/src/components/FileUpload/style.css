@@ -38,6 +38,7 @@
     background-color: #ff4848;
     color: white;
     border: none;
+    margin-top: 1vh;
   }
   
   .btn-primary:hover {

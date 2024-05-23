@@ -64,12 +64,11 @@ def vectorDocuments(file_path: str):
     Step 1: Check if the vectorstore for this document exist.
             If it does, return the data and create a new chain in step 4
 
-    Step 2: 
-        1. Load and ingest the document into vectorstore. 
-        2. Create a retriever to retrieve data from the vectorstore.
+    Step 2: Split the documents into chunks
 
-    Step 3: Creating a retrieval chain to retrieve data from the document, 
-            feed it to the LLM model.
+    Step 3: Create an ensemble retriever
+        1. Create a sematic retriever from RedisVectorStore
+        2. Create a BM25 retriever
     """
     vectorstore_file = f"{file_path.split("/")[-1]}_vectorstore" # sample.pdf_vectorstore
 

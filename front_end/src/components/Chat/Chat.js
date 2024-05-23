@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import Message from './Message.js';
+import axios from 'axios';
 
 const Chat = () => {
   const [messages, setMessages] = useState([]);
@@ -13,10 +14,17 @@ const Chat = () => {
     scrollToBottom();
   }, [messages]);
 
-  const sendMessage = (text) => {
+  const sendMessage = async (text) => {
     const userMessage = { text: 'User: ' + text, sender: 'user', timestamp: new Date() };
-    const echoMessage = { text: 'Doc Assistance: ' + text, sender: 'chatbot', timestamp: new Date() };
-    setMessages([...messages, userMessage, echoMessage]);
+    setMessages([...messages, userMessage]);
+
+    try {
+      const response = await axios.post('http://localhost:8000/get_response/', { question: text });
+      const chatbotMessage = { text: 'Doc Assistance: ' + response.data.message, sender: 'chatbot', timestamp: new Date() };
+      setMessages([...messages, userMessage, chatbotMessage]);
+    } catch (error) {
+      console.error('Error getting response:', error);
+    }
   };
 
   return (
