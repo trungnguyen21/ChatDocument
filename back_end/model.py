@@ -78,13 +78,7 @@ def vectorDocuments(file_path):
     vector.save_local(folder_path=cur_path, index_name=f"{vectorstore_file}")
     print("Step 1.5. Saved the vectorstore file at:", cur_path)
 
-    # Creating a retrieval chain to retrieve data from the document, 
-    # feed it to the LLM model and ask the original question
     retriever = vector.as_retriever()
-    # retriever = rds.as_retriever(search_type="similarity", search_kwargs={
-    #     "k": 5, 
-    #     "distance_threshold": 0.1,
-    # })
     print("Step 2. Successfully created a retriever")
     return retriever
 
@@ -108,7 +102,7 @@ def agent_init(file_path):
     agent_executor = AgentExecutor(agent=agent, tools=tools, verbose=False)
     agent_executor_with_chat_history = RunnableWithMessageHistory(
         agent_executor,
-        get_session_history=get_session_history,
+        get_session_history = get_session_history,
         input_messages_key="input",
         history_messages_key="chat_history",
     )
