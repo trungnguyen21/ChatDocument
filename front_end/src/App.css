@@ -23,7 +23,7 @@
     border-radius: 1vh;
     margin-right: 0.5vw;
     margin-left: 0.5vw;
-    word-break: break-all;
+    overflow-wrap: break-word;
 }
   
 .message-time {

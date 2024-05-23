@@ -8,3 +8,4 @@ redis
 llmsherpa==0.1.4
 aiofiles
 langchain_experimental
+rank_bm25

@@ -20,7 +20,7 @@ const Chat = () => {
 
     try {
       const response = await axios.post('http://localhost:8000/get_response/', { question: text });
-      const chatbotMessage = { text: 'Doc Assistance: ' + response.data.message, sender: 'chatbot', timestamp: new Date() };
+      const chatbotMessage = { text: 'Doc Assistant: ' + response.data.message, sender: 'chatbot', timestamp: new Date() };
       setMessages([...messages, userMessage, chatbotMessage]);
     } catch (error) {
       console.error('Error getting response:', error);

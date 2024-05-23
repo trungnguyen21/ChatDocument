@@ -6,12 +6,17 @@ import axios from 'axios';
 const FileUploader = () => {
   const [selectedFile, setSelectedFile] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [done, setDone] = useState(false);
+  const [loadFile, setLoadFile] = useState(false);
+  const [loadEmbedd, setLoadEmbedd] = useState(false);
 
   const handleFileChange = (e) => {
     setSelectedFile(e.target.files[0]);
   };
 
   const handleUpload = async () => {
+    setLoading(true);
+    setLoadFile(true);
     const formData = new FormData();
     formData.append('file', selectedFile);
 
@@ -22,13 +27,18 @@ const FileUploader = () => {
         }
       });
       console.log('File ID:', response.data.file_id);
+      setDone(true);
     } catch (error) {
       console.error('Error uploading file:', error);
+    } finally {
+      setLoading(false);
+      setLoadFile(false);
     }
   };
 
   const startChat = async () => {
     setLoading(true);
+    setLoadEmbedd(true);
     try {
       const response = await axios.post('http://localhost:8000/initialize_model/', {
         headers: {
@@ -40,6 +50,7 @@ const FileUploader = () => {
       console.error('Error Chain file:', error);
     } finally {
       setLoading(false);
+      setLoadEmbedd(false);
     }
   }
 
@@ -58,7 +69,7 @@ const FileUploader = () => {
             onClick={handleUpload}
             disabled={!selectedFile || loading}
           >
-            Upload
+            {loadFile ? 'Uploading...' : (done ? 'Done' : 'Upload')}
           </button>
 
           <button
@@ -66,7 +77,7 @@ const FileUploader = () => {
             onClick={startChat}
             disabled={!selectedFile || loading}
           >
-            {loading ? 'Starting...' : 'Start!'}
+            {loadEmbedd ? 'Starting...' : 'Start!'}
           </button>
         </div>
       </div>
