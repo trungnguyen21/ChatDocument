@@ -1,7 +1,7 @@
 .message {
     display: flex;
     align-items: flex-start;
-    margin-bottom: 2vh;
+    margin-bottom: 1vh;
 }
   
 .avatar {
@@ -30,6 +30,7 @@
     padding-inline: 1rem;
     padding-block: 0.5rem;
     max-width: 60%;
+    font-size: 0.85rem;
 }
   
 .message-time {
@@ -61,7 +62,7 @@
 }
 
 .messages-container {
-    height: 70vh;
+    height: 77vh;
     overflow-y: auto;
     overflow-x: hidden;
 }
@@ -72,5 +73,5 @@
   }
   
 .card-body {
-    padding: 1rem;
+    padding: 1.5rem;
 }

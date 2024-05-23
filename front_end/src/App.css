@@ -3,7 +3,7 @@ body {
 }
 
 .bg-1 {
-    margin-right: 5vw;
+    max-width: 90%;
 }
 
   
@@ -14,17 +14,3 @@ body {
     text-align: left;
 }
   
-.uploader {
-    margin-right: 10vw;
-    padding-bottom: 5vh;
-}
-
-.card {
-    border: none;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-}
-  
-.card-body {
-    padding: 2rem;
-}
-

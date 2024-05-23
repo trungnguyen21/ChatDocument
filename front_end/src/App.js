@@ -9,7 +9,7 @@ function App() {
     <div>
       <div className="row">
         <div className="col-4">
-          <div className="uploader">
+          <div className="uploader ">
             <FileUploader />
             <SectionSwitchBar />
           </div>
