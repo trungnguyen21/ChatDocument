@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import Message from './Message.js';
 import axios from 'axios';
+import './style.css';
 
 const Chat = () => {
   const [messages, setMessages] = useState([]);
@@ -28,17 +29,17 @@ const Chat = () => {
   };
 
   return (
-    <div className = "chat-container">
-      <div className = "messages-container">
+    <div className="card chat-container">
+      <div className="card-body d-flex flex-column messages-container">
         {messages.map((message, index) => (
-          <Message key = {index} message = {message} />
+          <Message key={index} message={message} />
         ))}
-        <div ref = {messagesEndRef} />
+        <div ref={messagesEndRef} />
       </div>
-      <div className = "input-container">
+      <div className="card-footer input-container">
         <input
-          type = "text"
-          placeholder = "Type a message..."
+          type="text"
+          placeholder="Type a message..."
           onKeyDown={(e) => {
             if (e.key === 'Enter' && e.target.value.trim() !== '') {
               sendMessage(e.target.value);

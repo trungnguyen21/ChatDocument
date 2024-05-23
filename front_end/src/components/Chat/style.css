@@ -1,0 +1,60 @@
+.avatar {
+    width: 4vh;
+    height: 4vh;
+    border-radius: 50%;
+    background-color: #ccc;
+    margin-right: 0.5vw;
+    margin-left: 0.5vw;
+}
+
+.message {
+    display: flex;
+    align-items: flex-start;
+    margin-bottom: 1rem;
+  }
+  
+  .message-content {
+    flex: 1;
+    display: inline-flex;
+    flex-direction: column; 
+  }
+  
+  .message-text {
+    background-color: #f0f0f0;
+    padding: 0.3rem 0.8rem;
+    border-radius: 1rem;
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+    font-size: 0.85rem;
+    max-width: 70%; 
+
+}.message-time {
+    font-size: 0.8rem;
+    color: #999;
+  }
+  
+  .user .message-text {
+    background-color: #007bff;
+    color: white;
+    
+  }
+  
+  .input-container {
+    margin-top: 1rem;
+  }
+  
+  .messages-container {
+    max-height: 70vh;
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
+  
+  .card {
+    border: none;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  .card-body {
+    padding: 1.5rem;
+  }
+  
