@@ -3,6 +3,7 @@ body {
 }
 
 .bg-1 {
+    margin-inline: auto;
     max-width: 90%;
 }
 
