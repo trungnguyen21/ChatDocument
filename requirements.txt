@@ -2,3 +2,9 @@ langchain == 0.1.19
 fastapi
 cohere
 uvicorn
+langchain_google_genai
+faiss-cpu==1.8.0
+redis
+llmsherpa==0.1.4
+aiofiles
+langchain_experimental
