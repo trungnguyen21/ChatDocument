@@ -75,7 +75,7 @@ const FileUploader = () => {
           <button
             className="btn btn-primary"
             onClick={startChat}
-            disabled={!selectedFile || loading}
+            disabled={!selectedFile || loading || !done}
           >
             {loadEmbedd ? 'Starting...' : 'Start!'}
           </button>
