@@ -14,4 +14,45 @@ body {
     border-radius: 1vh;
     text-align: left;
 }
+
+.toggle-dark-mode {
+    font-size: 1.5rem;
+    padding-block: 1vh;
+    max-width: fit-content;
+    height: 100%;
+    align-content: center;
+    margin-inline: auto;
+    border:none;
+    background-color: transparent;
+}
+
+body.dark-mode {
+    background-color: #2E2E2E;
+    color: #ffffff;
+}
+
+body.dark-mode .card {
+    background-color: #3e3e3e;
+    color: #ffffff;
+}
+
+body.dark-mode .card-title {
+    color: #ffffff;
+}
   
+body.dark-mode .form-control {
+    background-color: #3e3e3e;
+    color:#fff;
+}
+
+body.dark-mode .form-control::placeholder {
+    color: #9d9d9d;
+}
+
+body.dark-mode .form-control:focus {
+    border:none;
+}
+
+body.dark-mode .input-container {
+    background-color: #353434;
+}
