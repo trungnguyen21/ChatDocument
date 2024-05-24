@@ -8,6 +8,11 @@ function App() {
   return (
     <div>
       <div className="row">
+        <div className="col-4"></div>
+        <h1 className="text-center text-logo col-8"> Chat Document</h1>
+      </div>
+      
+      <div className="row">
         <div className="col-4">
           <div className="uploader ">
             <FileUploader />
@@ -17,7 +22,6 @@ function App() {
 
         <div className="col-8">
           <div className="bg-1">
-            <h1 className="text-center text-logo"> Chat Document</h1>
             <Chat />
           </div>
         </div>
