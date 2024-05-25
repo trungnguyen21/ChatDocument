@@ -63,3 +63,7 @@ body.dark-mode .input-container {
 body.dark-mode .toggle-dark-mode {
     color: #ffffff;
 }
+
+body.dark-mode .btn {
+    color: white;
+}

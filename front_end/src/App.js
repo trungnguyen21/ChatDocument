@@ -29,12 +29,12 @@ function App() {
             {darkMode ? <i class="bi bi-moon"></i> : <i class="bi bi-moon-fill"></i>}
           </button>
         </div>
-        <h1 className="text-center text-logo col-8"> Chat Document</h1>
+        <h1 className="text-center text-logo col-8"> Chat with your Document </h1>
       </div>
       
       <div className="row">
         <div className="col-4">
-          <div className="uploader ">
+          <div className="uploader">
             <FileUploader />
             <SectionSwitchBar />
           </div>

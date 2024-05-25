@@ -56,8 +56,11 @@ async def root():
 
 @app.get("/get_files")
 def get_files():
-    print(file_names)
-    return {"message": f"Found {len(file_names)} file(s) in the server"}   
+    # Create a dictionary with the file_id and the file name
+    for file_id, file_path in file_map.items():
+        file_name = os.path.basename(file_path)
+        file_map[file_id] = file_name.split("_")[-1]
+    return {"message": file_map}   
 
 
 file_id = None
