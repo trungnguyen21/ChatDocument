@@ -49,6 +49,9 @@ file_map: Dict[str, str] = load_file_map()
 class RequestBody(BaseModel):
     question: str
 
+class SectionIDBody(BaseModel):
+    section_id: str
+
 @app.get("/")
 async def root():
     return {"message": "Starting"}
@@ -56,7 +59,6 @@ async def root():
 
 @app.get("/get_files")
 def get_files():
-    # Create a dictionary with the file_id and the file name
     for file_id, file_path in file_map.items():
         file_name = os.path.basename(file_path)
         file_map[file_id] = file_name.split("_")[-1]
@@ -72,7 +74,8 @@ async def create_upload_file(file: UploadFile):
     global file_id
     # Generate a unique ID for the file
     file_id = str(uuid.uuid4())
-    file_path = os.path.join(data_path, file_id + "_" + file.filename)
+    file_type = file.filename.split(".")[-1]
+    file_path = os.path.join(data_path, file_id + "." + file_type)
 
     # Save the file to disk with the unique ID as part of the filename
     async with aiofiles.open(file_path, "wb") as out_file:
@@ -98,8 +101,9 @@ async def initialize_model():
     # Retrieve the file path using the provided file_id
     print(file_id)
     file_path = file_map.get(file_id)
-    print(file_map)
     print("Looking at file path: " + str(file_path))
+    # Handle secton existed section
+    ######################################
     if not file_path or not os.path.exists(file_path):
         raise HTTPException(status_code=404, detail="File not found or invalid file_id")
 
@@ -121,9 +125,7 @@ async def get_response(body: RequestBody):
         raise HTTPException(status_code=500, detail="Retriever and rag_chain are not initialized. Call /initialize_model first.")
 
     # Retrieve the file path using the provided file_id
-    print(file_id)
     file_path = file_map.get(file_id)
-    print(file_map)
     print("Looking at file path: " + str(file_path))
     if not file_path or not os.path.exists(file_path):
         raise HTTPException(status_code=404, detail="File not found or invalid file_id")
@@ -132,3 +134,12 @@ async def get_response(body: RequestBody):
     # Use the file path to answer the question
     response = model_chain.answeringQuestion(body.question, file_id, rag_chain)
     return {"message": response}
+
+@app.post("/change_section/")
+async def change_section(body: SectionIDBody):
+    """
+    Change section
+    """
+    global file_id
+    file_id = body.section_id
+    return {"message": "Change ID successfully."}

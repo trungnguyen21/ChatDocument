@@ -7,18 +7,24 @@ import './style.css'
 
 const SectionSwitchBar = ({ sections, activeSection, setActiveSection }) => {
   const [files, setFiles] = useState([]);
+  const handleClick = (file) => {
+    const fileId = files.map[file];
+    console.log("File ID:", fileId);
+  };
 
   useEffect(() => { 
     const fetchFiles = async () => {
       try {
         const response = await axios.get('http://localhost:8000/get_files/');
-        // console.log(typeof(response.data.message))
         console.log(Object.values(response.data.message))
         setFiles(Object.values(response.data.message));
       } catch (error) {
         console.error('Error fetching files:', error);
       }
     };
+
+  // Upload file:
+  
 
     fetchFiles();
   }, []);
@@ -31,7 +37,7 @@ const SectionSwitchBar = ({ sections, activeSection, setActiveSection }) => {
           <div className='contained'>
               <div class="d-flex flex-column gap-2 mx-auto w-100">
                 {files.map((file) => (
-                    <button type="button" className="btn btn-outline-secondary">
+                    <button type="button" className="btn btn-outline-secondary" onClick={() => handleClick(file)}>
                       {file}
                     </button>
                 ))}

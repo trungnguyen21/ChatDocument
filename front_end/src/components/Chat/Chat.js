@@ -33,7 +33,7 @@ const Chat = () => {
       <div className="card-body d-flex flex-column messages-container">
         {messages.map((message, index) => (
           <Message key={index} message={message} />
-        ))}
+        ))} 
         <div ref={messagesEndRef} />
       </div>
       <div className="card-footer input-container">
