@@ -122,7 +122,7 @@ def ingest_document(docs: list, file_name: str) -> Redis:
             chunks, 
             embeddings,
             redis_url=REDIS_URL,
-            index_name=file_name,
+            index_name=file_name.split("_")[0],
         )
 
     return vector

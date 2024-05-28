@@ -23,9 +23,9 @@ const SectionSwitchBar = ({ sections, activeSection, setActiveSection }) => {
       }
     };
 
-  // Upload file:
+  // Change files
   
-
+  
     fetchFiles();
   }, []);
 

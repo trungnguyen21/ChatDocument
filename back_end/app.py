@@ -74,8 +74,8 @@ async def create_upload_file(file: UploadFile):
     global file_id
     # Generate a unique ID for the file
     file_id = str(uuid.uuid4())
-    file_type = file.filename.split(".")[-1]
-    file_path = os.path.join(data_path, file_id + "." + file_type)
+    file_name = file.filename
+    file_path = os.path.join(data_path, file_id + "_" + file_name)
 
     # Save the file to disk with the unique ID as part of the filename
     async with aiofiles.open(file_path, "wb") as out_file:
@@ -105,7 +105,7 @@ async def initialize_model():
     # Handle secton existed section
     ######################################
     if not file_path or not os.path.exists(file_path):
-        raise HTTPException(status_code=404, detail="File not found or invalid file_id")
+        raise HTTPException(status_code=404, detail="File not found or invalid file_id" + file_path)
 
     print("Initializing retriever and rag_chain...")
     retriever = model_chain.vectorDocuments(file_path)
