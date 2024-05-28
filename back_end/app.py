@@ -149,7 +149,6 @@ async def get_chat_history():
     Get chat history
     """
     global file_id
-    redis_client = redis.from_url(url=config.REDIS_URL)
-    # chat_history = redis_client.lrange("message_store:41519d16-3f99-4eaf-a902-e76d2026119c", 0, -1)
+    chat_history = model_chain.get_session_history(file_id).messages
     # docs = redis_client.lrange("doc:41519d16-3f99-4eaf-a902-e76d2026119c", 0, -1)
     return {"message": chat_history}

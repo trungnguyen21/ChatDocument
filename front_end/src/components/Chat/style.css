@@ -57,6 +57,10 @@
   background-color: #ccc;
 }
 
+.chatbot .message-text {
+  color: #000;
+}
+
 .input-container {
   margin-top: 2vh;
 }

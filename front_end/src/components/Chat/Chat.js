@@ -1,15 +1,38 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useContext } from 'react';
 import Message from './Message.js';
 import axios from 'axios';
+import ChatContext from '../context/ChatContext';
 import './style.css';
 
 const Chat = () => {
   const [messages, setMessages] = useState([]);
   const messagesEndRef = useRef(null);
+  const { state } = useContext(ChatContext);
 
   const scrollToBottom = () => {
     messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
   };
+
+  useEffect(() => {
+    const fetchChatHistory = async () => {
+      if (state.sessionId) {
+        try {
+          const response = await axios.get('http://localhost:8000/get_chat_history');
+          console.log(response.data.message)
+          const chatHistory = response.data.message.map((message) => ({
+            text: message.content,
+            sender: message.type === 'human' ? 'user' : 'chatbot',
+            timestamp: new Date()
+          }));
+          setMessages(chatHistory);
+        } catch (error) {
+          console.error('Error fetching chat history:', error);
+        }
+      }
+    };
+
+    fetchChatHistory();
+  }, [state.sessionId]);
 
   useEffect(() => {
     scrollToBottom();
@@ -17,12 +40,12 @@ const Chat = () => {
 
   const sendMessage = async (text) => {
     const userMessage = { text: text, sender: 'user', timestamp: new Date() };
-    setMessages([...messages, userMessage]);
+    setMessages((prevMessages) => [...prevMessages, userMessage]);
 
     try {
       const response = await axios.post('http://localhost:8000/get_response/', { question: text });
       const chatbotMessage = { text: response.data.message, sender: 'chatbot', timestamp: new Date() };
-      setMessages([...messages, userMessage, chatbotMessage]);
+      setMessages((prevMessages) => [...prevMessages, userMessage, chatbotMessage]);
     } catch (error) {
       console.error('Error getting response:', error);
     }
@@ -33,7 +56,7 @@ const Chat = () => {
       <div className="card-body d-flex flex-column messages-container">
         {messages.map((message, index) => (
           <Message key={index} message={message} />
-        ))} 
+        ))}
         <div ref={messagesEndRef} />
       </div>
       <div className="card-footer input-container">

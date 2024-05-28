@@ -1,22 +1,30 @@
 import React, { useEffect, useState } from 'react';
+import { useContext } from 'react';
+import ChatContext from '../context/ChatContext';
 import axios from 'axios';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './style.css'
 
-const SectionSwitchBar = ({ sections, activeSection, setActiveSection }) => {
+const SectionSwitchBar = () => {
   const [files, setFiles] = useState([]);
+  const { dispatch } = useContext(ChatContext);
 
-  const handleClick = async (fileId) => { 
+  const changeSession = (sessionID) => {
+    dispatch({ type: 'UPDATE_SESSION_ID', payload: sessionID });
+  }
+
+  const handleClick = async (fileId) => {
     console.log("File ID:", fileId);
     try {
       const response = await axios.post('http://localhost:8000/change_section/', { section_id: fileId });
+      changeSession(fileId);
       console.log('Change section to: ', fileId);
     } catch (error) {
       console.error('Error changing section:', error);
     }
   };
 
-  useEffect(() => { 
+  useEffect(() => {
     const fetchFiles = async () => {
       try {
         const response = await axios.get('http://localhost:8000/get_files/');
