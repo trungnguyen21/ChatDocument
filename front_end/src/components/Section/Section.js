@@ -1,17 +1,18 @@
-import React, { useEffect, useState } from 'react';
-import { useContext } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import ChatContext from '../context/ChatContext';
+import FileContext from '../context/FileContext';
 import axios from 'axios';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import './style.css'
+import './style.css';
 
 const SectionSwitchBar = () => {
   const [files, setFiles] = useState([]);
   const { dispatch } = useContext(ChatContext);
+  const { fileUploaded } = useContext(FileContext);
 
   const changeSession = (sessionID) => {
     dispatch({ type: 'UPDATE_SESSION_ID', payload: sessionID });
-  }
+  };
 
   const handleClick = async (fileId) => {
     console.log("File ID:", fileId);
@@ -43,7 +44,7 @@ const SectionSwitchBar = () => {
     };
 
     fetchFiles();
-  }, []);
+  }, [fileUploaded]); // Re-fetch files whenever fileUploaded changes
 
   return (
     <div className='container mt-3'>

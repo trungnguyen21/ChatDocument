@@ -1,12 +1,14 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
+import axios from 'axios';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './style.css';
-import axios from 'axios';
+import FileContext from '../context/FileContext';
 
 const FileUploader = () => {
   const [selectedFile, setSelectedFile] = useState(null);
   const [loading, setLoading] = useState(false);
   const [done, setDone] = useState(false);
+  const { notifyFileUploaded } = useContext(FileContext);
 
   const handleFileChange = (e) => {
     setSelectedFile(e.target.files[0]);
@@ -24,29 +26,14 @@ const FileUploader = () => {
         }
       });
       console.log('File ID:', response.data.file_id);
-      startChat();
+      notifyFileUploaded();
+      setDone(true);
     } catch (error) {
       console.error('Error uploading file:', error);
-      setDone(true);
+    } finally {
       setLoading(false);
     }
   };
-
-  const startChat = async () => {
-    try {
-      const response = await axios.post('http://localhost:8000/initialize_model/', {
-        headers: {
-          'Content-Type': 'multipart/form-data'
-        }
-      });
-      console.log("Complete");
-    } catch (error) {
-      console.error('Error Chain file:', error);
-    } finally {
-      setDone(true);
-      setLoading(false);
-    }
-  }
 
   return (
     <div className="container">
