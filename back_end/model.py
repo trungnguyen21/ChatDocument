@@ -16,10 +16,6 @@ import os, config
 os.environ["COHERE_API_KEY"] = config.cohere_api_key
 file = "data/sample.pdf"
 
-# local host redis db
-# docker run -d -p 6379:6379 -p 8001:8001 redis/redis-stack:latest
-# REDIS_URL = "redis://localhost:6379/0"
-
 # redis cloud db for ChatHistory
 REDIS_URL = os.environ.get("REDIS_URL")
 

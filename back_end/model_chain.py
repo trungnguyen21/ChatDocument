@@ -70,7 +70,9 @@ def vectorDocuments(file_path: str):
         1. Create a sematic retriever from RedisVectorStore
         2. Create a BM25 retriever
     """
-    vectorstore_file = f"{file_path.split("/")[-1]}_vectorstore" # sample.pdf_vectorstore
+    first_cut = f"{file_path.split("/")[-1]}_vectorstore"
+    second_cut = first_cut.removeprefix("files")
+    vectorstore_file = second_cut[1:]
 
     loader = LLMSherpaFileLoader(
         file_path = file_path,
@@ -85,9 +87,9 @@ def vectorDocuments(file_path: str):
     documents = text_splitter.split_documents(docs)
     print("Step 2. Splitted the doccument into chunks")
 
-    # Ingest the document into vectorstore 100 chunks at a time
+
     redis_vector = ingest_document(documents, vectorstore_file)
-    # redis_retriever = redis_vector.as_retriever(search_type="similairty", search_kwargs={"k": 2})
+    
     redis_retriever = redis_vector.as_retriever(search_kwargs={"k": 2})
     print("Step 3.1. Created a semantic retriever from RedisVectorStore")
     
