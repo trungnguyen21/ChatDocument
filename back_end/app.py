@@ -5,7 +5,7 @@ from typing import Dict
 
 import aiofiles, uuid, json
 import os
-import model_chain
+import model_chain, redis, config
 
 app = FastAPI()
 
@@ -142,3 +142,14 @@ async def change_section(body: SectionIDBody):
     global file_id
     file_id = body.section_id
     return {"message": "Change ID successfully."}
+
+@app.get("/get_chat_history/")
+async def get_chat_history():
+    """
+    Get chat history
+    """
+    global file_id
+    redis_client = redis.from_url(url=config.REDIS_URL)
+    # chat_history = redis_client.lrange("message_store:41519d16-3f99-4eaf-a902-e76d2026119c", 0, -1)
+    # docs = redis_client.lrange("doc:41519d16-3f99-4eaf-a902-e76d2026119c", 0, -1)
+    return {"message": chat_history}
