@@ -6,8 +6,14 @@ import './style.css'
 const SectionSwitchBar = ({ sections, activeSection, setActiveSection }) => {
   const [files, setFiles] = useState([]);
 
-  const handleClick = (file) => {
-    console.log("File name:", file);
+  const handleClick = async (fileId) => { 
+    console.log("File ID:", fileId);
+    try {
+      const response = await axios.post('http://localhost:8000/change_section/', { section_id: fileId });
+      console.log('Change section to: ', fileId);
+    } catch (error) {
+      console.error('Error changing section:', error);
+    }
   };
 
   useEffect(() => { 
@@ -16,11 +22,11 @@ const SectionSwitchBar = ({ sections, activeSection, setActiveSection }) => {
         const response = await axios.get('http://localhost:8000/get_files/');
         const filesData = response.data.message;
         console.log(filesData);
-        // Extract file names
         const fileNames = Object.values(filesData).map(file => {
           const parts = file.split('_');
-          parts.shift(); // Remove the first part (file_id)
-          return parts.join('_'); // Remaining parts form the file name
+          const fileId = parts.shift();
+          const fileName = parts.join('_');
+          return { fileName, fileId };
         });
         setFiles(fileNames);
       } catch (error) {
@@ -38,9 +44,9 @@ const SectionSwitchBar = ({ sections, activeSection, setActiveSection }) => {
           <h1 className='card-title'>Files</h1>
           <div className='contained'>
             <div className="d-flex flex-column gap-2 mx-auto w-100">
-              {files.map((file) => (
-                <button key={file} type="button" className="btn btn-outline-secondary" onClick={() => handleClick(file)}>
-                  {file}
+              {files.map(({ fileName, fileId }) => (
+                <button key={fileName} type="button" className="btn btn-outline-secondary" onClick={() => handleClick(fileId)}>
+                  {fileName}
                 </button>
               ))}
             </div>
