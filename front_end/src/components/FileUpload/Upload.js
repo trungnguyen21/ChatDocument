@@ -25,6 +25,7 @@ const FileUploader = () => {
           'Content-Type': 'multipart/form-data'
         }
       });
+      await axios.post('http://localhost:8000/initialize_model/');
       console.log('File ID:', response.data.file_id);
       notifyFileUploaded();
       setDone(true);

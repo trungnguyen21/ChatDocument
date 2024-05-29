@@ -22,7 +22,6 @@ const Chat = () => {
           const chatHistory = response.data.message.map((message) => ({
             text: message.content,
             sender: message.type === 'human' ? 'user' : 'chatbot',
-            timestamp: new Date()
           }));
           setMessages(chatHistory);
         } catch (error) {
@@ -39,12 +38,12 @@ const Chat = () => {
   }, [messages]);
 
   const sendMessage = async (text) => {
-    const userMessage = { text: text, sender: 'user', timestamp: new Date() };
+    const userMessage = { text: text, sender: 'user' };
     setMessages((prevMessages) => [...prevMessages, userMessage]);
 
     try {
       const response = await axios.post('http://localhost:8000/get_response/', { question: text });
-      const chatbotMessage = { text: response.data.message, sender: 'chatbot', timestamp: new Date() };
+      const chatbotMessage = { text: response.data.message, sender: 'chatbot' };
       setMessages((prevMessages) => [...prevMessages, userMessage, chatbotMessage]);
     } catch (error) {
       console.error('Error getting response:', error);

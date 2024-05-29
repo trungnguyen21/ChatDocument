@@ -70,7 +70,10 @@ def load_document(file_path: str):
     try:
         first_cut = f"{file_path.split('/')[-1]}"
         second_cut = first_cut.removeprefix("files")
-        vectorstore_file = second_cut.split("\\")[-1]
+        thirdcut = second_cut.split("\\")[-1]
+        vectorstore_file = thirdcut.split("_")[0]
+
+        print("loading file name:" + vectorstore_file)
 
         redis_client = redis.from_url(REDIS_URL)
         # check if the vectorstore already exist

@@ -99,7 +99,7 @@ async def initialize_model():
 
     # Retrieve the file path using the provided file_id
     print(file_id)
-    file_path = file_map.get(file_id)
+    file_path = "data/files/" + file_map.get(file_id)
     print("Looking at file path: " + str(file_path))
     # Handle secton existed section
     ######################################
@@ -107,8 +107,12 @@ async def initialize_model():
         raise HTTPException(status_code=404, detail="File not found or invalid file_id" + file_path)
 
     print("Initializing retriever and rag_chain...")
-    retriever = model_chain.vectorDocuments(file_path)
-    rag_chain = model_chain.init_chain_with_history(retriever)
+    try:
+        retriever = model_chain.vectorDocuments(file_path)
+        rag_chain = model_chain.init_chain_with_history(retriever)
+    except Exception as e:
+        print(f"Error in initializing model: {e}")
+        raise
     return {"message": "Retriever and rag_chain initialized successfully."}
 
 
@@ -124,7 +128,7 @@ async def get_response(body: RequestBody):
         raise HTTPException(status_code=500, detail="Retriever and rag_chain are not initialized. Call /initialize_model first.")
 
     # Retrieve the file path using the provided file_id
-    file_path = file_map.get(file_id)
+    file_path = "data/files/" + file_map.get(file_id)
     print("Looking at file path: " + str(file_path))
     if not file_path or not os.path.exists(file_path):
         raise HTTPException(status_code=404, detail="File not found or invalid file_id")
