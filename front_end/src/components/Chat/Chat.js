@@ -38,15 +38,32 @@ const Chat = () => {
   }, [messages]);
 
   const sendMessage = async (text) => {
+    // Add user's message first
     const userMessage = { text: text, sender: 'user' };
     setMessages((prevMessages) => [...prevMessages, userMessage]);
   
+    // Add loading message
+    const loadingMessage = { text: 'Generating a response...', sender: 'chatbot' };
+    setMessages((prevMessages) => [...prevMessages, loadingMessage]);
+  
     try {
       const response = await axios.post('http://localhost:8000/get_response/', { question: text });
+      // Replace loading message with chatbot's response
       const chatbotMessage = { text: response.data.message, sender: 'chatbot' };
-      setMessages((prevMessages) => [...prevMessages, chatbotMessage]);
+      setMessages((prevMessages) => {
+        const updatedMessages = [...prevMessages];
+        // Find index of loading message and replace it with chatbot's response
+        const loadingMessageIndex = updatedMessages.findIndex(
+          (message) => message.sender === 'chatbot' && message.text === 'Generating a response...'
+        );
+        if (loadingMessageIndex !== -1) {
+          updatedMessages.splice(loadingMessageIndex, 1, chatbotMessage);
+        }
+        return updatedMessages;
+      });
     } catch (error) {
       console.error('Error getting response:', error);
+      // Optionally, handle error here
     }
   };
 

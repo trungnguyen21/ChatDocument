@@ -25,8 +25,7 @@
   background-color: #f0f0f0;
   padding: 1vh;
   border-radius: 1.5vh;
-  margin-right: 0.5vw;
-  margin-left: 0.5vw;
+  margin-inline: 0.5vw;
   overflow-wrap: break-word;
   width: fit-content;
   padding-inline: 1rem;
