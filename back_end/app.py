@@ -99,10 +99,9 @@ async def initialize_model():
 
     # Retrieve the file path using the provided file_id
     print(file_id)
-    file_path = "data/files/" + file_map.get(file_id)
+    file_path = file_map.get(file_id)
     print("Looking at file path: " + str(file_path))
-    # Handle secton existed section
-    ######################################
+
     if not file_path or not os.path.exists(file_path):
         raise HTTPException(status_code=404, detail="File not found or invalid file_id" + file_path)
 
@@ -121,19 +120,12 @@ async def get_response(body: RequestBody):
     """
     Get response
     """
-    global retriever, rag_chain
+    global retriever, rag_chain, file_id
 
     # If retriever and rag_chain are not initialized, initialize them
     if retriever is None or rag_chain is None:
         raise HTTPException(status_code=500, detail="Retriever and rag_chain are not initialized. Call /initialize_model first.")
 
-    # Retrieve the file path using the provided file_id
-    file_path = "data/files/" + file_map.get(file_id)
-    print("Looking at file path: " + str(file_path))
-    if not file_path or not os.path.exists(file_path):
-        raise HTTPException(status_code=404, detail="File not found or invalid file_id")
-
-    print("Handling file at ", file_path)
     # Use the file path to answer the question
     response = model_chain.answeringQuestion(body.question, file_id, rag_chain)
     return {"message": response}
@@ -154,5 +146,4 @@ async def get_chat_history():
     """
     global file_id
     chat_history = model_chain.get_session_history(file_id).messages
-    # docs = redis_client.lrange("doc:41519d16-3f99-4eaf-a902-e76d2026119c", 0, -1)
     return {"message": chat_history}
