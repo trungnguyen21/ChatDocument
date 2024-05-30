@@ -19,8 +19,9 @@ const SectionSwitchBar = () => {
     try {
       await axios.post('http://localhost:8000/change_section/', { section_id: fileId });
       changeSession(fileId);
-      await axios.post('http://localhost:8000/initialize_model/');
       console.log('Change section to: ', fileId);
+      await axios.post('http://localhost:8000/initialize_model/');
+      console.log('Finish: ', fileId);
     } catch (error) {
       console.error('Error changing section:', error);
     }

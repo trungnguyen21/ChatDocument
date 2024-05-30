@@ -59,10 +59,11 @@ async def root():
 
 @app.get("/get_files")
 def get_files():
+    files = {}
     for file_id, file_path in file_map.items():
         file_name = os.path.basename(file_path)
-        file_map[file_id] = file_name
-    return {"message": file_map}
+        files[file_id] = file_name
+    return {"message": files}
 
 file_id = None
 @app.post("/uploadfile/")
