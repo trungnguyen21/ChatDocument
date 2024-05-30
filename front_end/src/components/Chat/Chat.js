@@ -19,7 +19,7 @@ const Chat = () => {
         try {
           const response = await axios.get('http://localhost:8000/get_chat_history');
           console.log(response.data.message)
-          const chatHistory = response.data.message.map((message) => ({
+          const chatHistory = await response.data.message.map((message) => ({
             text: message.content,
             sender: message.type === 'human' ? 'user' : 'chatbot',
           }));

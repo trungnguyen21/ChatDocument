@@ -17,7 +17,7 @@ const SectionSwitchBar = () => {
   const handleClick = async (fileId) => {
     console.log("File ID:", fileId);
     try {
-      const response = await axios.post('http://localhost:8000/change_section/', { section_id: fileId });
+      await axios.post('http://localhost:8000/change_section/', { section_id: fileId });
       changeSession(fileId);
       await axios.post('http://localhost:8000/initialize_model/');
       console.log('Change section to: ', fileId);

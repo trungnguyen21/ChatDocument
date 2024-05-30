@@ -18,15 +18,19 @@ body {
     text-align: left;
 }
 
-.toggle-dark-mode {
+.toggle {
     font-size: 1.5rem;
     padding-block: 1vh;
     max-width: fit-content;
     height: 100%;
     align-content: center;
-    margin-inline: auto;
+    margin-inline: 1rem;
     border:none;
     background-color: transparent;
+}
+
+body.dark-mode .toggle {
+    color:#fff;
 }
 
 body.dark-mode {
