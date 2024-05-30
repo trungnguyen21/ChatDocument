@@ -40,11 +40,11 @@ const Chat = () => {
   const sendMessage = async (text) => {
     const userMessage = { text: text, sender: 'user' };
     setMessages((prevMessages) => [...prevMessages, userMessage]);
-
+  
     try {
       const response = await axios.post('http://localhost:8000/get_response/', { question: text });
       const chatbotMessage = { text: response.data.message, sender: 'chatbot' };
-      setMessages((prevMessages) => [...prevMessages, userMessage, chatbotMessage]);
+      setMessages((prevMessages) => [...prevMessages, chatbotMessage]);
     } catch (error) {
       console.error('Error getting response:', error);
     }
