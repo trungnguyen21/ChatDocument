@@ -1,58 +1,15 @@
-.message {
-    display: flex;
-    align-items: flex-start;
-    margin-bottom: 2vh;
-}
-  
-.avatar {
-    width: 4vh;
-    height: 4vh;
-    border-radius: 50%;
-    background-color: #ccc;
-    margin-right: 0.5vw;
-    margin-left: 0.5vw;
-}
-  
-.message-content {
-    flex: 1;
-}
-  
-.message-text {
-    background-color: #f0f0f0;
-    padding: 1vh;
-    border-radius: 1vh;
-    margin-right: 0.5vw;
-    margin-left: 0.5vw;
-    overflow-wrap: break-word;
-}
-  
-.message-time {
-    font-size: 0.8rem;
-    color: #999;
-}
-  
-.user .message-text {
-    background-color: #007bff;
-    color: white;
-}
-
-.input-container {
-    margin-top: 2vh;
-}
-
-.messages-container {
-    max-height: 75vh;
-    overflow-y: auto;
-    overflow-x: hidden;
-}
-
-.bg-1 {
-    margin-right: 5vw;
-}
+@import url("https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css");
 
 body {
     overflow-x: hidden;
+    transition: background-color 0.25s ease-in-out;
 }
+
+.bg-1 {
+    margin-inline: auto;
+    max-width: 90%;
+}
+
   
 .text-logo {
     padding-top: 1vh;
@@ -60,18 +17,57 @@ body {
     border-radius: 1vh;
     text-align: left;
 }
-  
-.uploader {
-    margin-right: 10vw;
-    padding-bottom: 5vh;
+
+.toggle {
+    font-size: 1.5rem;
+    padding-block: 1vh;
+    max-width: fit-content;
+    height: 100%;
+    align-content: center;
+    margin-inline: 1rem;
+    border:none;
+    background-color: transparent;
 }
 
+body.dark-mode .toggle {
+    color:#fff;
+}
 
-.card {
-    border: none;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+body.dark-mode {
+    background-color: #2E2E2E;
+    color: #ffffff;
+}
+
+body.dark-mode .card {
+    background-color: #3e3e3e;
+    color: #ffffff;
+}
+
+body.dark-mode .card-title {
+    color: #ffffff;
 }
   
-.card-body {
-    padding: 2rem;
+body.dark-mode .form-control {
+    background-color: #3e3e3e;
+    color:#fff;
+}
+
+body.dark-mode .form-control::placeholder {
+    color: #9d9d9d;
+}
+
+body.dark-mode .form-control:focus {
+    border:none;
+}
+
+body.dark-mode .input-container {
+    background-color: #353434;
+}
+
+body.dark-mode .toggle-dark-mode {
+    color: #ffffff;
+}
+
+body.dark-mode .btn {
+    color: white;
 }

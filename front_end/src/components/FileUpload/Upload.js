@@ -1,14 +1,14 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
+import axios from 'axios';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './style.css';
-import axios from 'axios';
+import FileContext from '../context/FileContext';
 
 const FileUploader = () => {
   const [selectedFile, setSelectedFile] = useState(null);
   const [loading, setLoading] = useState(false);
   const [done, setDone] = useState(false);
-  const [loadFile, setLoadFile] = useState(false);
-  const [loadEmbedd, setLoadEmbedd] = useState(false);
+  const { notifyFileUploaded } = useContext(FileContext);
 
   const handleFileChange = (e) => {
     setSelectedFile(e.target.files[0]);
@@ -16,7 +16,6 @@ const FileUploader = () => {
 
   const handleUpload = async () => {
     setLoading(true);
-    setLoadFile(true);
     const formData = new FormData();
     formData.append('file', selectedFile);
 
@@ -26,36 +25,19 @@ const FileUploader = () => {
           'Content-Type': 'multipart/form-data'
         }
       });
+      await axios.post('http://localhost:8000/initialize_model/');
       console.log('File ID:', response.data.file_id);
+      notifyFileUploaded();
       setDone(true);
     } catch (error) {
       console.error('Error uploading file:', error);
     } finally {
       setLoading(false);
-      setLoadFile(false);
     }
   };
 
-  const startChat = async () => {
-    setLoading(true);
-    setLoadEmbedd(true);
-    try {
-      const response = await axios.post('http://localhost:8000/initialize_model/', {
-        headers: {
-          'Content-Type': 'multipart/form-data'
-        }
-      });
-      console.log("Complete");
-    } catch (error) {
-      console.error('Error Chain file:', error);
-    } finally {
-      setLoading(false);
-      setLoadEmbedd(false);
-    }
-  }
-
   return (
-    <div className="container mt-5">
+    <div className="container">
       <div className="card">
         <div className="card-body">
           <h5 className="card-title">Upload Your File</h5>
@@ -64,21 +46,15 @@ const FileUploader = () => {
             onChange={handleFileChange}
             className="form-control-file mb-3"
           />
-          <button
-            className="btn btn-primary"
-            onClick={handleUpload}
-            disabled={!selectedFile || loading}
-          >
-            {loadFile ? 'Uploading...' : (done ? 'Done' : 'Upload')}
-          </button>
-
-          <button
-            className="btn btn-primary"
-            onClick={startChat}
-            disabled={!selectedFile || loading}
-          >
-            {loadEmbedd ? 'Starting...' : 'Start!'}
-          </button>
+          <div className="text-center">
+            <button
+              className="btn btn-primary"
+              onClick={handleUpload}
+              disabled={!selectedFile || loading}
+            >
+              {loading ? 'Uploading...' : (done ? 'Done' : 'Upload')}
+            </button>
+          </div>
         </div>
       </div>
     </div>

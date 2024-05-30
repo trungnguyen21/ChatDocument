@@ -1,0 +1,15 @@
+.btn {
+    width: 100%;
+    padding-inline: 0;
+    padding-block: 0.5rem;
+    color: black;
+}
+
+.contained {
+    max-height: 40vh;
+    overflow-y: scroll;
+}
+
+::-webkit-scrollbar {
+    display: none;
+}

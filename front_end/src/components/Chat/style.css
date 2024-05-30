@@ -1,0 +1,82 @@
+.message {
+  display: flex;
+  align-items: flex-start;
+  margin-bottom: 1vh;
+}
+  
+.avatar {
+  width: 4vh;
+  height: 4vh;
+  border-radius: 50%;
+  background-color: #ccc;
+  margin-inline: 0.5vw;
+  margin-top: 0.5vh;
+}
+  
+.message-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  margin-bottom: 0.75rem;
+}
+  
+.message-text {
+  background-color: #f0f0f0;
+  padding: 1vh;
+  border-radius: 1.5vh;
+  margin-right: 0.5vw;
+  margin-left: 0.5vw;
+  overflow-wrap: break-word;
+  width: fit-content;
+  padding-inline: 1rem;
+  padding-block: 0.5rem;
+  max-width: 60%;
+  font-size: 0.85rem;
+}
+  
+.message-time {
+  font-size: 0.8rem;
+  color: #999;
+  margin-inline: 1rem;
+}
+  
+.user .message-text {
+  background-color: #007bff;
+  color: white;
+}
+
+.user .message-content {
+  align-items: flex-end;
+}
+
+.user .avatar {
+  background-color: #ccc;
+}
+
+.chatbot .avatar {
+  background-color: #ccc;
+}
+
+.chatbot .message-text {
+  color: #000;
+}
+
+.input-container {
+  margin-top: 2vh;
+}
+
+.messages-container {
+  height: 77vh;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.card {
+  border: none;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+  
+.card-body {
+  padding: 1.5rem;
+}

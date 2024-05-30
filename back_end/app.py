@@ -5,7 +5,7 @@ from typing import Dict
 
 import aiofiles, uuid, json
 import os
-import model_chain
+import model_chain, redis, config
 
 app = FastAPI()
 
@@ -49,6 +49,9 @@ file_map: Dict[str, str] = load_file_map()
 class RequestBody(BaseModel):
     question: str
 
+class SectionIDBody(BaseModel):
+    section_id: str
+
 @app.get("/")
 async def root():
     return {"message": "Starting"}
@@ -56,9 +59,10 @@ async def root():
 
 @app.get("/get_files")
 def get_files():
-    print(file_names)
-    return {"message": f"Found {len(file_names)} file(s) in the server"}   
-
+    for file_id, file_path in file_map.items():
+        file_name = os.path.basename(file_path)
+        file_map[file_id] = file_name
+    return {"message": file_map}
 
 file_id = None
 @app.post("/uploadfile/")
@@ -69,7 +73,8 @@ async def create_upload_file(file: UploadFile):
     global file_id
     # Generate a unique ID for the file
     file_id = str(uuid.uuid4())
-    file_path = os.path.join(data_path, file_id + "_" + file.filename)
+    file_name = file.filename
+    file_path = os.path.join(data_path, file_id + "_" + file_name)
 
     # Save the file to disk with the unique ID as part of the filename
     async with aiofiles.open(file_path, "wb") as out_file:
@@ -94,15 +99,20 @@ async def initialize_model():
 
     # Retrieve the file path using the provided file_id
     print(file_id)
-    file_path = file_map.get(file_id)
-    print(file_map)
+    file_path = "data/files/" + file_map.get(file_id)
     print("Looking at file path: " + str(file_path))
+    # Handle secton existed section
+    ######################################
     if not file_path or not os.path.exists(file_path):
-        raise HTTPException(status_code=404, detail="File not found or invalid file_id")
+        raise HTTPException(status_code=404, detail="File not found or invalid file_id" + file_path)
 
     print("Initializing retriever and rag_chain...")
-    retriever = model_chain.vectorDocuments(file_path)
-    rag_chain = model_chain.init_chain_with_history(retriever)
+    try:
+        retriever = model_chain.vectorDocuments(file_path)
+        rag_chain = model_chain.init_chain_with_history(retriever)
+    except Exception as e:
+        print(f"Error in initializing model: {e}")
+        raise
     return {"message": "Retriever and rag_chain initialized successfully."}
 
 
@@ -118,9 +128,7 @@ async def get_response(body: RequestBody):
         raise HTTPException(status_code=500, detail="Retriever and rag_chain are not initialized. Call /initialize_model first.")
 
     # Retrieve the file path using the provided file_id
-    print(file_id)
-    file_path = file_map.get(file_id)
-    print(file_map)
+    file_path = "data/files/" + file_map.get(file_id)
     print("Looking at file path: " + str(file_path))
     if not file_path or not os.path.exists(file_path):
         raise HTTPException(status_code=404, detail="File not found or invalid file_id")
@@ -129,3 +137,22 @@ async def get_response(body: RequestBody):
     # Use the file path to answer the question
     response = model_chain.answeringQuestion(body.question, file_id, rag_chain)
     return {"message": response}
+
+@app.post("/change_section/")
+async def change_section(body: SectionIDBody):
+    """
+    Change section
+    """
+    global file_id
+    file_id = body.section_id
+    return {"message": "Change ID successfully."}
+
+@app.get("/get_chat_history/")
+async def get_chat_history():
+    """
+    Get chat history
+    """
+    global file_id
+    chat_history = model_chain.get_session_history(file_id).messages
+    # docs = redis_client.lrange("doc:41519d16-3f99-4eaf-a902-e76d2026119c", 0, -1)
+    return {"message": chat_history}
