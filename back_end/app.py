@@ -148,3 +148,26 @@ async def get_chat_history():
     global file_id
     chat_history = model_chain.get_session_history(file_id).messages
     return {"message": chat_history}
+
+@app.delete("/flush_all/")
+async def flush_all():
+    """
+    Flush all data
+    """
+    global retriever, rag_chain
+    retriever = None
+    rag_chain = None
+    save_file_map({})
+    
+    #delete all files in data/files
+    for file in file_names:
+        os.remove(os.path.join(data_path, file))
+
+    #delete all keys in redis
+    redis_client = redis.from_url(config.REDIS_URL)
+    try:
+        redis_client.flushall()
+    except Exception as e:
+        print(f"Error in flushing data: {e}")
+        raise
+    return {"message": "Data flushed successfully."}

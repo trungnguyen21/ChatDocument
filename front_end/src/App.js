@@ -6,6 +6,7 @@ import FileUploader from './components/FileUpload/Upload';
 import SectionSwitchBar from './components/Section/Section';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './App.css';
+import axios from 'axios';
 
 function App() {
   const [darkMode, setDarkMode] = useState(() => {
@@ -28,6 +29,11 @@ function App() {
     setDarkMode(!darkMode);
   };
 
+  const flushRedis = async () => {
+    await axios.delete('http://localhost:8000/flush_all/')
+    window.location.reload();
+  }
+
   return (
     <ChatProvider>
       <FileProvider>
@@ -37,7 +43,7 @@ function App() {
               <button className='toggle' onClick={toggleDarkMode}>
                 {darkMode ? <i class="bi bi-moon"></i> : <i class="bi bi-moon-fill"></i>}
               </button>
-              <button className='toggle' onClick={() => window.location.reload()}>
+              <button className='toggle' onClick={flushRedis}>
                 {darkMode ? <i class="bi bi-trash"></i> : <i class="bi bi-trash-fill"></i>}
               </button>
             </div>
