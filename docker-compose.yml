@@ -1,0 +1,16 @@
+version: '3'
+services:
+  front_end:
+    build:
+      context: ./front_end
+    volumes:
+      - ./front_end:/client
+    ports:
+      - 3000:3000
+  back_end:
+    build:
+      context: ./back_end
+    volumes:
+      - ./back_end:/app
+    ports:
+      - 8000:8000
