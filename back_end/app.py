@@ -18,8 +18,6 @@ if not os.path.exists("data/vectorstore"):
     os.mkdir("data/vectorstore")
 
 data_path = "data/files"
-file_names = os.listdir(data_path)
-
 file_map_path = "data/file_map.json"
 
 # Set all CORS enabled origins
@@ -59,6 +57,7 @@ async def root():
 
 @app.get("/get_files")
 def get_files():
+    file_map = load_file_map()
     files = {}
     for file_id, file_path in file_map.items():
         file_name = os.path.basename(file_path)
@@ -154,14 +153,17 @@ async def flush_all():
     """
     Flush all data
     """
-    global retriever, rag_chain
+    global retriever, rag_chain, file_id
     retriever = None
     rag_chain = None
-    save_file_map({})
+    file_id = None
     
     #delete all files in data/files
+    file_names = os.listdir(data_path)
     for file in file_names:
         os.remove(os.path.join(data_path, file))
+
+    save_file_map({})
 
     #delete all keys in redis
     redis_client = redis.from_url(config.REDIS_URL)
