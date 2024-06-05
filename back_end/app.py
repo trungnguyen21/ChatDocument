@@ -65,9 +65,8 @@ def get_files():
     """
     Get the list of files
     """
-    files = redis_client.keys("doc:*")
-    print(files)
-    return {"message": files}
+    # TODO: implement with external db
+    return {"message": "None"}
 
 @app.post("/uploadfile/")
 async def create_upload_file(file: UploadFile):
@@ -159,9 +158,6 @@ async def flush_all():
     file_names = os.listdir(data_path)
     for file in file_names:
         os.remove(os.path.join(data_path, file))
-
-    save_file_map({})
-
 
     try:
         redis_client.flushall()

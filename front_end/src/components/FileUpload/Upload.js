@@ -33,6 +33,12 @@ const FileUploader = () => {
       });
       await axios.post('http://localhost:8000/initialize_model/', { session_id: response.data.file_id });
       console.log('File ID:', response.data.file_id);
+
+      // Update local storage with new file
+      const fileMap = JSON.parse(localStorage.getItem('fileMap')) || {};
+      fileMap[response.data.file_id] = selectedFile.name;
+      localStorage.setItem('fileMap', JSON.stringify(fileMap));
+
       notifyFileUploaded();
       changeSession(response.data.file_id);
       setDone(true);
