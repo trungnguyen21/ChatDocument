@@ -25,6 +25,9 @@ file = "data/files/sample1.pdf"
 llm = ChatGoogleGenerativeAI(model="gemini-1.5-pro-latest")
 embeddings = GoogleGenerativeAIEmbeddings(model="models/embedding-001")
 
+# Create a redis client
+redis_client = redis.from_url(REDIS_URL)
+
 # Prompt template
 contextualize_q_system_prompt = """Given a chat history and the latest user question \
 which might reference context in the chat history, formulate a standalone question \
@@ -75,7 +78,6 @@ def load_document(file_path: str):
 
         print("loading file name:" + vectorstore_file)
 
-        redis_client = redis.from_url(REDIS_URL)
         # check if the vectorstore already exist
         if len(redis_client.keys(f"doc:{vectorstore_file}:*")) > 0:
             print("Step 1. Vectorstore already exist. Skipping step 2")
