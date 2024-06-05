@@ -22,7 +22,7 @@ REDIS_URL = config.REDIS_URL
 # Testing purposes
 file = "data/files/sample1.pdf"
 
-llm = ChatGoogleGenerativeAI(model="gemini-1.5-pro-latest")
+llm = ChatGoogleGenerativeAI(model="gemini-1.5-pro-latest", streaming=True)
 embeddings = GoogleGenerativeAIEmbeddings(model="models/embedding-001")
 
 # Create a redis client

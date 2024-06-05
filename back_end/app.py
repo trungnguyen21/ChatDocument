@@ -14,8 +14,6 @@ if not os.path.exists("data"):
     os.mkdir("data")
 if not os.path.exists("data/files"):
     os.mkdir("data/files")
-if not os.path.exists("data/vectorstore"):
-    os.mkdir("data/vectorstore")
 
 data_path = "data/files"
 file_map_path = "data/file_map.json"
@@ -67,17 +65,15 @@ def get_files():
     """
     Get the list of files
     """
-    files = redis_client.keys("docs:*")
+    files = redis_client.keys("doc:*")
     print(files)
     return {"message": files}
 
-file_id = None
 @app.post("/uploadfile/")
 async def create_upload_file(file: UploadFile):
     """
     File upload
     """
-    global file_id
     # Generate a unique ID for the file
     file_id = str(uuid.uuid4())
     file_name = file.filename
@@ -100,7 +96,6 @@ async def initialize_model(session_body: SectionIDBody):
     """
     Initialize the model
     """
-    # global retriever, rag_chain
 
     # Retrieve the file path using the provided file_id
     file_id = session_body.session_id
@@ -143,15 +138,6 @@ async def get_response(body: RequestBody):
     # Use the file path to answer the question
     response = model_chain.answeringQuestion(body.question, file_id, rag_chain)
     return {"message": response}
-
-# @app.post("/change_section/")
-# async def change_section(body: SectionIDBody):
-#     """
-#     Change section
-#     """
-#     global file_id
-#     file_id = body.session_id
-#     return {"message": "Change ID successfully."}
 
 @app.get("/get_chat_history/")
 async def get_chat_history(session_id: str):
