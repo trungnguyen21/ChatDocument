@@ -18,7 +18,7 @@ const Chat = () => {
     const fetchChatHistory = async () => {
       if (state.sessionId) {
         try {
-          const response = await axios.get('http://localhost:8000/get_chat_history', { params: { session_id: state.sessionId } });
+          const response = await axios.get('http://localhost:8000/chat_history/', { params: { session_id: state.sessionId } });
           const chatHistory = await response.data.message.map((message) => ({
             text: message.content,
             sender: message.type === 'human' ? 'user' : 'chatbot',
@@ -48,7 +48,7 @@ const Chat = () => {
   
     try {
       console.log('Session ID at Chat.js:', session_id);
-      const response = await axios.post('http://localhost:8000/get_response/', { question: text, session_id: session_id});
+      const response = await axios.post('http://localhost:8000/chat_completion/', {question: text, session_id: session_id});
       // Replace loading message with chatbot's response
       const chatbotMessage = { text: response.data.message, sender: 'chatbot' };
       setMessages((prevMessages) => {

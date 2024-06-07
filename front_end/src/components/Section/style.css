@@ -10,6 +10,14 @@
     overflow-y: scroll;
 }
 
+.btn-label {
+    flex: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    padding-inline: 0.5rem;
+}
+
 ::-webkit-scrollbar {
     display: none;
 }

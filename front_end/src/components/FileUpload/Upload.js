@@ -14,6 +14,7 @@ const FileUploader = () => {
 
   const handleFileChange = (e) => {
     setSelectedFile(e.target.files[0]);
+    setDone(false);
   };
 
   const changeSession = (sessionID) => {
@@ -26,12 +27,12 @@ const FileUploader = () => {
     formData.append('file', selectedFile);
 
     try {
-      const response = await axios.post('http://localhost:8000/uploadfile/', formData, {
+      const response = await axios.post('http://localhost:8000/upload/', formData, {
         headers: {
           'Content-Type': 'multipart/form-data'
         }
       });
-      await axios.post('http://localhost:8000/initialize_model/', { session_id: response.data.file_id });
+      await axios.post('http://localhost:8000/model_activation/', { session_id: response.data.file_id });
       console.log('File ID:', response.data.file_id);
 
       // Update local storage with new file

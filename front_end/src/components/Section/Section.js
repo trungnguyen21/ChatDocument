@@ -19,7 +19,7 @@ const SectionSwitchBar = () => {
     try {
       changeSession(fileId);
       console.log('Change section to: ', fileId);
-      await axios.post('http://localhost:8000/initialize_model/', { session_id: fileId });
+      await axios.post('http://localhost:8000/model_activation/', { session_id: fileId });
       console.log('Finish: ', fileId);
     } catch (error) {
       console.error('Error changing section:', error);
@@ -44,14 +44,16 @@ const SectionSwitchBar = () => {
           <div className='contained'>
             <div className="d-flex flex-column gap-2 mx-auto w-100">
               {files.map(({ fileName, fileId }) => (
-                <button
-                  key={fileId}
-                  type="button"
-                  className={`btn ${fileId === state.sessionId ? 'btn btn-secondary' : 'btn-outline-secondary'}`}
-                  onClick={() => handleClick(fileId)}
-                >
-                  {fileName}
-                </button>
+                <div>
+                  <button
+                    key={fileId}
+                    type="button"
+                    className={`btn-label ${fileId === state.sessionId ? 'btn btn-secondary' : 'btn btn-outline-secondary'}`}
+                    onClick={() => handleClick(fileId)}
+                  >
+                    {fileName}
+                  </button>
+                </div>
               ))}
             </div>
           </div>

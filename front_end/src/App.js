@@ -30,7 +30,7 @@ function App() {
   };
 
   const flushRedis = async () => {
-    await axios.delete('http://localhost:8000/flush_all/')
+    await axios.delete('http://localhost:8000/flush/')
     // clear local storage file_map
     localStorage.removeItem('fileMap');
     window.location.reload();
