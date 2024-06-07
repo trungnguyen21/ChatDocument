@@ -185,7 +185,7 @@ def output_generation(question: str, session_id: str, chain: Runnable):
         print("Step 4. Successfully generated an output")
         return str(output["answer"])
     except Exception as e:
-        print(f"Error in answeringQuestion: {e}")
+        print(f"Error in output_generation: {e}")
         raise
 
 @measure_time
