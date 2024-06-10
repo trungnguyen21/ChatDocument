@@ -5,7 +5,7 @@ from typing import Dict
 
 import aiofiles, uuid, json
 import os
-import redis, config
+import redis
 import model_chain as model
 
 app = FastAPI()
@@ -20,7 +20,8 @@ data_path = "data/files"
 file_map_path = "data/file_map.json"
 
 #delete all keys in redis
-redis_client = redis.from_url(config.REDIS_URL)
+REDIS_URL = os.environ.get("REDIS_URL")
+redis_client = redis.from_url(REDIS_URL)
 
 retrievers = {}
 rag_chains = {}

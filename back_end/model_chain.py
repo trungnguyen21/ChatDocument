@@ -11,12 +11,20 @@ from langchain.chains.combine_documents import create_stuff_documents_chain
 from langchain_community.chat_message_histories import RedisChatMessageHistory
 from langchain_core.runnables import Runnable
 
-import os, config, redis
+import os, redis
 import time  # Import time module
+from dotenv import load_dotenv
+import os
 
-os.environ["COHERE_API_KEY"] = config.cohere_api_key
-os.environ["GOOGLE_API_KEY"] = config.GOOGLE_GEMINI_API_KEY
-REDIS_URL = config.REDIS_URL
+load_dotenv()
+
+if "GOOGLE_API_KEY" not in os.environ:
+    os.environ["GOOGLE_API_KEY"] = os.getenv("GOOGLE_API_KEY")
+
+if "REDIS_URL" not in os.environ:
+    os.environ["REDIS_URL"] = os.getenv("REDIS_URL")
+
+REDIS_URL = os.getenv("REDIS_URL")
 
 # Testing purposes
 file = "data/files/sample1.pdf"
@@ -194,7 +202,7 @@ def log_chat_history(session_id: str, human_message, ai_message):
     Manually log chat messages into our database.
     """
     try:
-        message_log = RedisChatMessageHistory(session_id, config.REDIS_URL)
+        message_log = RedisChatMessageHistory(session_id, REDIS_URL)
         message_log.add_user_message(human_message)
         message_log.add_ai_message(ai_message)
     except Exception as e:
