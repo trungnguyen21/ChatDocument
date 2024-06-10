@@ -1,0 +1,13 @@
+
+services:
+  - type: web
+    runtime: docker
+    dockerfilePath: ./back_end/Dockerfile
+    name: back_end
+    region: singapore
+
+  - type: web
+    runtime: docker
+    dockerfilePath: ./front_end/Dockerfile
+    name: front_end
+    region: singapore
