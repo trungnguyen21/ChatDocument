@@ -2,8 +2,6 @@ from langchain_google_genai import ChatGoogleGenerativeAI, GoogleGenerativeAIEmb
 from langchain_community.document_loaders import PyPDFLoader
 from langchain_experimental.text_splitter import SemanticChunker
 from langchain_community.vectorstores.redis import Redis
-from langchain_community.retrievers import BM25Retriever
-from langchain.retrievers import EnsembleRetriever
 
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 
@@ -13,17 +11,29 @@ from langchain.chains.combine_documents import create_stuff_documents_chain
 from langchain_community.chat_message_histories import RedisChatMessageHistory
 from langchain_core.runnables import Runnable
 
-import os, config, redis
+import os, redis
+import time  # Import time module
+from dotenv import load_dotenv
+import os
 
-os.environ["COHERE_API_KEY"] = config.cohere_api_key
-os.environ["GOOGLE_API_KEY"] = config.GOOGLE_GEMINI_API_KEY
-REDIS_URL = config.REDIS_URL
+load_dotenv()
+
+if "GOOGLE_API_KEY" not in os.environ:
+    os.environ["GOOGLE_API_KEY"] = os.getenv("GOOGLE_API_KEY")
+
+if "REDIS_URL" not in os.environ:
+    os.environ["REDIS_URL"] = os.getenv("REDIS_URL")
+
+REDIS_URL = os.getenv("REDIS_URL")
 
 # Testing purposes
 file = "data/files/sample1.pdf"
 
-llm = ChatGoogleGenerativeAI(model="gemini-1.5-pro-latest")
+llm = ChatGoogleGenerativeAI(model="gemini-1.5-pro-latest", streaming=True)
 embeddings = GoogleGenerativeAIEmbeddings(model="models/embedding-001")
+
+# Create a redis client
+redis_client = redis.from_url(REDIS_URL)
 
 # Prompt template
 contextualize_q_system_prompt = """Given a chat history and the latest user question \
@@ -55,17 +65,20 @@ prompt = ChatPromptTemplate.from_messages(
 
 vector_path = os.path.dirname(__file__) + "/data/vectorstore/"
 
+def measure_time(func):
+    """Decorator to measure the execution time of a function."""
+    def wrapper(*args, **kwargs):
+        start_time = time.time()
+        result = func(*args, **kwargs)
+        end_time = time.time()
+        print(f"{func.__name__} took {end_time - start_time:.2f} seconds")
+        return result
+    return wrapper
+
+@measure_time
 def load_document(file_path: str):
     """
     Indexing document, returns VectorStoreRetriever
-    Step 1: Check if the vectorstore for this document exist.
-            If it does, return the data and create a new chain in step 4
-
-    Step 2: Split the documents into chunks
-
-    Step 3: Create an ensemble retriever
-        1. Create a sematic retriever from RedisVectorStore
-        2. Create a BM25 retriever
     """
     try:
         first_cut = f"{file_path.split('/')[-1]}"
@@ -75,7 +88,6 @@ def load_document(file_path: str):
 
         print("loading file name:" + vectorstore_file)
 
-        redis_client = redis.from_url(REDIS_URL)
         # check if the vectorstore already exist
         if len(redis_client.keys(f"doc:{vectorstore_file}:*")) > 0:
             print("Step 1. Vectorstore already exist. Skipping step 2")
@@ -102,8 +114,10 @@ def load_document(file_path: str):
         print(f"Error in load_document: {e}")
         raise
 
-def vectorDocuments(file_path: str):
+@measure_time
+def vector_document(file_path: str):
     """
+    Create and return a retriever for the document.
     """
     try:
         redis_vector = load_document(file_path)
@@ -112,16 +126,13 @@ def vectorDocuments(file_path: str):
 
         return retriever
     except Exception as e:
-        print(f"Error in vectorDocuments: {e}")
+        print(f"Error in vector_document: {e}")
         raise
 
+@measure_time
 def ingest_document(docs: list, file_name: str) -> Redis:
     """
-    Ingest document into the vectordb. Redis only supports 100 
-    documents at a time.
-    Args: 
-        docs: List[Document]
-        file_name: name of the file stored on Redis
+    Ingest document into the vectordb.
     """
     try:
         for i in range(0, len(docs), 100):
@@ -142,21 +153,17 @@ def ingest_document(docs: list, file_name: str) -> Redis:
         print(f"Error in ingest_document: {e}")
         raise
 
+@measure_time
 def get_session_history(session_id: str):
     """
-    Get the chat history of the session \n
-    Args:
-        session_id: str
+    Get the chat history of the session.
     """
     return RedisChatMessageHistory(session_id, REDIS_URL)
 
+@measure_time
 def init_chain_with_history(retriever):
     """
-    Step 4 of starting the chat bot
-    Create history chain
-    String -> Chain \n
-    Args:
-        retriever: VectorStoreRetriever
+    Create history chain.
     """
     try:
         history_aware_retriever = create_history_aware_retriever(llm, retriever, contextualize_q_prompt)
@@ -169,14 +176,10 @@ def init_chain_with_history(retriever):
         print(f"Error in init_chain_with_history: {e}")
         raise
 
-def answeringQuestion(question: str, session_id: str, chain: Runnable):
+@measure_time
+def output_generation(question: str, session_id: str, chain: Runnable):
     """
-    Answer the given question, session_id and file_path
-    String String chain -> String \n
-    Args:
-        question: str
-        session_id: str
-        rag_chain_with_history: Runnable
+    Answer the given question.
     """
     try:
         output = chain.invoke(
@@ -190,19 +193,16 @@ def answeringQuestion(question: str, session_id: str, chain: Runnable):
         print("Step 4. Successfully generated an output")
         return str(output["answer"])
     except Exception as e:
-        print(f"Error in answeringQuestion: {e}")
+        print(f"Error in output_generation: {e}")
         raise
 
+@measure_time
 def log_chat_history(session_id: str, human_message, ai_message):
     """
-    Manually log chat messages into our database \n
-    Args:
-        session_id: str
-        human_message: str
-        ai_message: str
+    Manually log chat messages into our database.
     """
     try:
-        message_log = RedisChatMessageHistory(session_id, config.REDIS_URL)
+        message_log = RedisChatMessageHistory(session_id, REDIS_URL)
         message_log.add_user_message(human_message)
         message_log.add_ai_message(ai_message)
     except Exception as e:
@@ -215,7 +215,7 @@ def user_interface(file):
 
     session_id = input("Please enter your session id: ")
     try:
-        retriever = vectorDocuments(file)
+        retriever = vector_document(file)
         rag_chain = init_chain_with_history(retriever)
     except Exception as e:
         print(f"Step 4. Unable to create chain: {e}")
@@ -225,7 +225,7 @@ def user_interface(file):
         user_input = input("Please ask your question: ")
         if user_input == "exit":
             return
-        print("DocumentAssist: " + answeringQuestion(user_input, session_id, rag_chain))
+        print("DocumentAssist: " + output_generation(user_input, session_id, rag_chain))
 
 if __name__ == "__main__":
     user_interface(file)

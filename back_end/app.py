@@ -5,7 +5,8 @@ from typing import Dict
 
 import aiofiles, uuid, json
 import os
-import model_chain, redis, config
+import redis
+import model_chain as model
 
 app = FastAPI()
 
@@ -14,11 +15,16 @@ if not os.path.exists("data"):
     os.mkdir("data")
 if not os.path.exists("data/files"):
     os.mkdir("data/files")
-if not os.path.exists("data/vectorstore"):
-    os.mkdir("data/vectorstore")
 
 data_path = "data/files"
 file_map_path = "data/file_map.json"
+
+#delete all keys in redis
+REDIS_URL = os.environ.get("REDIS_URL")
+redis_client = redis.from_url(REDIS_URL)
+
+retrievers = {}
+rag_chains = {}
 
 # Set all CORS enabled origins
 app.add_middleware(
@@ -46,31 +52,29 @@ file_map: Dict[str, str] = load_file_map()
 
 class RequestBody(BaseModel):
     question: str
+    session_id: str
 
 class SectionIDBody(BaseModel):
-    section_id: str
+    session_id: str
 
 @app.get("/")
 async def root():
-    return {"message": "Starting"}
+    return {"message": "Hello World"}
 
 
-@app.get("/get_files")
-def get_files():
-    file_map = load_file_map()
-    files = {}
-    for file_id, file_path in file_map.items():
-        file_name = os.path.basename(file_path)
-        files[file_id] = file_name
-    return {"message": files}
+@app.get("/files")
+def files():
+    """
+    Get the list of files
+    """
+    # TODO: implement with external db
+    return {"message": "None"}
 
-file_id = None
-@app.post("/uploadfile/")
-async def create_upload_file(file: UploadFile):
+@app.post("/upload/")
+async def upload(file: UploadFile):
     """
     File upload
     """
-    global file_id
     # Generate a unique ID for the file
     file_id = str(uuid.uuid4())
     file_name = file.filename
@@ -88,16 +92,14 @@ async def create_upload_file(file: UploadFile):
     return {"Result": "OK", "file_id": file_id}
 
 
-retriever = None
-rag_chain = None
-@app.post("/initialize_model/")
-async def initialize_model():
+@app.post("/model_activation")
+async def model_activation(session_body: SectionIDBody):
     """
     Initialize the model
     """
-    global retriever, rag_chain
 
     # Retrieve the file path using the provided file_id
+    file_id = session_body.session_id
     print(file_id)
     file_path = file_map.get(file_id)
     print("Looking at file path: " + str(file_path))
@@ -107,69 +109,84 @@ async def initialize_model():
 
     print("Initializing retriever and rag_chain...")
     try:
-        retriever = model_chain.vectorDocuments(file_path)
-        rag_chain = model_chain.init_chain_with_history(retriever)
+        if retrievers.get(file_id) is None:
+            retrievers[file_id] = model.vector_document(file_path)
+
+        if rag_chains.get(file_id) is None:
+            rag_chains[file_id] = model.init_chain_with_history(retrievers[file_id])
     except Exception as e:
         print(f"Error in initializing model: {e}")
         raise
+
     return {"message": "Retriever and rag_chain initialized successfully."}
 
 
-@app.post("/get_response/")
-async def get_response(body: RequestBody):
+@app.post("/chat_completion/")
+async def chat_completion(body: RequestBody):
     """
     Get response
     """
-    global retriever, rag_chain, file_id
-
+    file_id = body.session_id
+    retriever = retrievers.get(file_id)
+    rag_chain = rag_chains.get(file_id)
     # If retriever and rag_chain are not initialized, initialize them
     if retriever is None or rag_chain is None:
         raise HTTPException(status_code=500, detail="Retriever and rag_chain are not initialized. Call /initialize_model first.")
 
     # Use the file path to answer the question
-    response = model_chain.answeringQuestion(body.question, file_id, rag_chain)
+    response = model.output_generation(body.question, file_id, rag_chain)
     return {"message": response}
 
-@app.post("/change_section/")
-async def change_section(body: SectionIDBody):
-    """
-    Change section
-    """
-    global file_id
-    file_id = body.section_id
-    return {"message": "Change ID successfully."}
-
-@app.get("/get_chat_history/")
-async def get_chat_history():
+@app.get("/chat_history")
+async def chat_history(session_id: str):
     """
     Get chat history
     """
-    global file_id
-    chat_history = model_chain.get_session_history(file_id).messages
+    chat_history = model.get_session_history(session_id).messages
     return {"message": chat_history}
 
-@app.delete("/flush_all/")
-async def flush_all():
+@app.delete("/flush")
+async def flush():
     """
     Flush all data
     """
-    global retriever, rag_chain, file_id
-    retriever = None
-    rag_chain = None
-    file_id = None
+    retrievers.clear()
+    rag_chains.clear()
     
     #delete all files in data/files
     file_names = os.listdir(data_path)
     for file in file_names:
         os.remove(os.path.join(data_path, file))
 
-    save_file_map({})
-
-    #delete all keys in redis
-    redis_client = redis.from_url(config.REDIS_URL)
     try:
         redis_client.flushall()
     except Exception as e:
         print(f"Error in flushing data: {e}")
         raise
     return {"message": "Data flushed successfully."}
+
+@app.delete("/delete/{file_id}")
+async def delete(file_id: str):
+    """
+    Delete a file
+    """
+    file_path = file_map.get(file_id)
+    if file_path:
+        try:
+            os.remove(file_path)
+            del file_map[file_id]
+            save_file_map(file_map)
+        except Exception as e:
+            print(f"Error in deleting file: {e}")
+            raise
+    # delete the file from the file_map
+    file_map.pop(file_id)
+    save_file_map(file_map)
+
+    retrievers.pop(file_id)
+    rag_chains.pop(file_id)
+    
+    redis_client.delete(f"doc:{file_id}:*")
+    redis_client.delete(f"message_store:{file_id}:*")
+    
+    return {"message": "File deleted successfully."}
