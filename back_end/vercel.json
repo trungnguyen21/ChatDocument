@@ -1,15 +1,20 @@
 {
-    "devCommand": "uvicorn app:app",
-    "builds": [
-      {
-        "src": "app.py",
-        "use": "@vercel/python"
-      }
-    ],
-    "routes": [
-      {
-        "src": "/(.*)",
-        "dest": "app.py"
-      }
-    ]
-  }
+  "devCommand": "uvicorn app:app",
+  "builds": [
+    {
+      "src": "app.py",
+      "use": "@vercel/python"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "app.py"
+    }
+  ],
+  "exclude": [
+    "sample_chain.py",
+    "test.py",
+    "model.py"
+  ]
+}
