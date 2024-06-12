@@ -6,7 +6,7 @@ import FileUploader from './components/FileUpload/Upload';
 import SectionSwitchBar from './components/Section/Section';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './App.css';
-import axios from 'axios';
+import api from './api';
 
 function App() {
   const [darkMode, setDarkMode] = useState(() => {
@@ -30,7 +30,7 @@ function App() {
   };
 
   const flushRedis = async () => {
-    await axios.delete('http://localhost:8000/flush/')
+    await api.delete("/flush/")
     // clear local storage file_map
     localStorage.removeItem('fileMap');
     window.location.reload();
