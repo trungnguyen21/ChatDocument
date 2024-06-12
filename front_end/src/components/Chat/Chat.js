@@ -3,6 +3,7 @@ import Message from './Message.js';
 import axios from 'axios';
 import ChatContext from '../context/ChatContext.js';
 import './style.css';
+import api from '../../api.js';
 
 const Chat = () => {
   const [messages, setMessages] = useState([]);
@@ -18,7 +19,7 @@ const Chat = () => {
     const fetchChatHistory = async () => {
       if (state.sessionId) {
         try {
-          const response = await axios.get('http://localhost:8000/chat_history/', { params: { session_id: state.sessionId } });
+          const response = await api.get('/chat_history/', { params: { session_id: state.sessionId } });
           const chatHistory = await response.data.message.map((message) => ({
             text: message.content,
             sender: message.type === 'human' ? 'user' : 'chatbot',
@@ -48,7 +49,7 @@ const Chat = () => {
   
     try {
       console.log('Session ID at Chat.js:', session_id);
-      const response = await axios.post('http://localhost:8000/chat_completion/', {question: text, session_id: session_id});
+      const response = await api.post('/chat_completion/', {question: text, session_id: session_id});
       // Replace loading message with chatbot's response
       const chatbotMessage = { text: response.data.message, sender: 'chatbot' };
       setMessages((prevMessages) => {

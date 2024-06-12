@@ -4,6 +4,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import './style.css';
 import FileContext from '../context/FileContext';
 import ChatContext from '../context/ChatContext';
+import api from '../../api';
 
 const FileUploader = () => {
   const [selectedFile, setSelectedFile] = useState(null);
@@ -27,12 +28,12 @@ const FileUploader = () => {
     formData.append('file', selectedFile);
 
     try {
-      const response = await axios.post('http://localhost:8000/upload/', formData, {
+      const response = await api.post('/upload/', formData, {
         headers: {
           'Content-Type': 'multipart/form-data'
         }
       });
-      await axios.post('http://localhost:8000/model_activation/', { session_id: response.data.file_id });
+      await api.post('/model_activation/', { session_id: response.data.file_id });
       console.log('File ID:', response.data.file_id);
 
       // Update local storage with new file

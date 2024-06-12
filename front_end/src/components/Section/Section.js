@@ -4,6 +4,7 @@ import FileContext from '../context/FileContext';
 import axios from 'axios';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './style.css';
+import api from '../../api';
 
 const SectionSwitchBar = () => {
   const [files, setFiles] = useState([]);
@@ -19,7 +20,7 @@ const SectionSwitchBar = () => {
     try {
       changeSession(fileId);
       console.log('Change section to: ', fileId);
-      await axios.post('http://localhost:8000/model_activation/', { session_id: fileId });
+      await api.post('/model_activation/', { session_id: fileId });
       console.log('Finish: ', fileId);
     } catch (error) {
       console.error('Error changing section:', error);
