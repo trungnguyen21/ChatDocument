@@ -20,7 +20,7 @@ const Chat = () => {
     const fetchChatHistory = async () => {
       if (state.sessionId) {
         try {
-          const response = await axios.get(baseURL+'/chat_history/', { params: { session_id: state.sessionId } });
+          const response = await axios.get(baseURL+'/chat_history', { params: { session_id: state.sessionId } });
           const chatHistory = await response.data.message.map((message) => ({
             text: message.content,
             sender: message.type === 'human' ? 'user' : 'chatbot',

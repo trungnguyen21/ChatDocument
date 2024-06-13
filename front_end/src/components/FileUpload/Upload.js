@@ -1,5 +1,4 @@
 import React, { useState, useContext } from 'react';
-import axios from 'axios';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './style.css';
 import FileContext from '../context/FileContext';
@@ -29,7 +28,7 @@ const FileUploader = () => {
     formData.append('file', selectedFile);
 
     try {
-      const response = await fetch(baseURL+'/upload/', {
+      const response = await fetch(baseURL+'/upload', {
         method: 'POST',
         body: formData
       });
