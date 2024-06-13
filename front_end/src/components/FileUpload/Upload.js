@@ -1,10 +1,9 @@
 import React, { useState, useContext } from 'react';
-import axios from 'axios';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './style.css';
 import FileContext from '../context/FileContext';
 import ChatContext from '../context/ChatContext';
-import api from '../../api';
+import config from '../../config';
 
 const FileUploader = () => {
   const [selectedFile, setSelectedFile] = useState(null);
@@ -12,6 +11,7 @@ const FileUploader = () => {
   const [done, setDone] = useState(false);
   const { notifyFileUploaded } = useContext(FileContext);
   const { dispatch } = useContext(ChatContext);
+  const baseURL = config.baseURL;
 
   const handleFileChange = (e) => {
     setSelectedFile(e.target.files[0]);
@@ -28,21 +28,27 @@ const FileUploader = () => {
     formData.append('file', selectedFile);
 
     try {
-      const response = await api.post('/upload/', formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data'
-        }
+      const response = await fetch(baseURL+'/upload', {
+        method: 'POST',
+        body: formData
       });
-      await api.post('/model_activation/', { session_id: response.data.file_id });
-      console.log('File ID:', response.data.file_id);
+      const data = await response.json();
+      await fetch(baseURL+'/model_activation', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ session_id: data.file_id })
+      });
+      console.log('File ID:', data.file_id);
 
       // Update local storage with new file
       const fileMap = JSON.parse(localStorage.getItem('fileMap')) || {};
-      fileMap[response.data.file_id] = selectedFile.name;
+      fileMap[data.file_id] = selectedFile.name;
       localStorage.setItem('fileMap', JSON.stringify(fileMap));
 
       notifyFileUploaded();
-      changeSession(response.data.file_id);
+      changeSession(data.file_id);
       setDone(true);
     } catch (error) {
       console.error('Error uploading file:', error);

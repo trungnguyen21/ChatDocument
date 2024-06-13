@@ -4,12 +4,13 @@ import FileContext from '../context/FileContext';
 import axios from 'axios';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './style.css';
-import api from '../../api';
+import config from '../../config';
 
 const SectionSwitchBar = () => {
   const [files, setFiles] = useState([]);
   const { state, dispatch } = useContext(ChatContext);
   const { fileUploaded } = useContext(FileContext);
+  const baseURL = config.baseURL;
 
   const changeSession = (sessionID) => {
     dispatch({ type: 'UPDATE_SESSION_ID', payload: sessionID });
@@ -20,7 +21,7 @@ const SectionSwitchBar = () => {
     try {
       changeSession(fileId);
       console.log('Change section to: ', fileId);
-      await api.post('/model_activation/', { session_id: fileId });
+      await axios.post(baseURL+'/model_activation', { session_id: fileId });
       console.log('Finish: ', fileId);
     } catch (error) {
       console.error('Error changing section:', error);
