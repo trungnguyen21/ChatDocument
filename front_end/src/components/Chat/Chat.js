@@ -3,13 +3,14 @@ import Message from './Message.js';
 import axios from 'axios';
 import ChatContext from '../context/ChatContext.js';
 import './style.css';
-import api from '../../api.js';
+import config from '../../config';
 
 const Chat = () => {
   const [messages, setMessages] = useState([]);
   const messagesEndRef = useRef(null);
   const { state } = useContext(ChatContext);
   const session_id = state.sessionId
+  const baseURL = config.baseURL;
 
   const scrollToBottom = () => {
     messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
@@ -19,7 +20,7 @@ const Chat = () => {
     const fetchChatHistory = async () => {
       if (state.sessionId) {
         try {
-          const response = await api.get('/chat_history/', { params: { session_id: state.sessionId } });
+          const response = await axios.get(baseURL+'/chat_history/', { params: { session_id: state.sessionId } });
           const chatHistory = await response.data.message.map((message) => ({
             text: message.content,
             sender: message.type === 'human' ? 'user' : 'chatbot',
@@ -49,7 +50,7 @@ const Chat = () => {
   
     try {
       console.log('Session ID at Chat.js:', session_id);
-      const response = await api.post('/chat_completion/', {question: text, session_id: session_id});
+      const response = await axios.post(baseURL+'/chat_completion/', {question: text, session_id: session_id});
       // Replace loading message with chatbot's response
       const chatbotMessage = { text: response.data.message, sender: 'chatbot' };
       setMessages((prevMessages) => {

@@ -6,9 +6,13 @@ import FileUploader from './components/FileUpload/Upload';
 import SectionSwitchBar from './components/Section/Section';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './App.css';
-import api from './api';
+import config from './config';
+import axios from 'axios';
 
 function App() {
+  const baseURL = config.baseURL;
+  console.log('Base URL:', baseURL);
+
   const [darkMode, setDarkMode] = useState(() => {
     // Retrieve the theme from localStorage if it exists, otherwise default to true
     const savedTheme = localStorage.getItem('darkMode');
@@ -30,7 +34,7 @@ function App() {
   };
 
   const flushRedis = async () => {
-    await api.delete("/flush/")
+    await axios.delete(baseURL+"/flush")
     // clear local storage file_map
     localStorage.removeItem('fileMap');
     window.location.reload();
