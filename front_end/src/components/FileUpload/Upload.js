@@ -28,18 +28,11 @@ const FileUploader = () => {
     formData.append('file', selectedFile);
 
     try {
-      const response = await fetch(baseURL+'/upload', {
+      const response = await fetch(baseURL+'/upload/', {
         method: 'POST',
         body: formData
       });
       const data = await response.json();
-      await fetch(baseURL+'/model_activation', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ session_id: data.file_id })
-      });
       console.log('File ID:', data.file_id);
 
       // Update local storage with new file
