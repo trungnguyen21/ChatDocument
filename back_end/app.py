@@ -41,7 +41,7 @@ def load_file_map() -> Dict[str, str]:
     if os.path.exists(file_map_path):
         with open(file_map_path, "r") as f:
             return json.load(f)
-    return {}
+    return {} 
 
 # Function to save the file map to the JSON file
 def save_file_map(file_map: Dict[str, str]):
@@ -63,12 +63,12 @@ async def root():
 
 
 @app.get("/files")
-def files():
+def files(file_id: SectionIDBody):
     """
     Get the list of files
     """
     # TODO: implement with external db
-    return {"message": "None"}
+    return {"message": file_map.get(file_id.session_id)}
 
 @app.post("/upload/")
 async def upload(file: UploadFile):
@@ -88,14 +88,41 @@ async def upload(file: UploadFile):
     # Store the mapping from unique_id to file path
     file_map[file_id] = file_path
     save_file_map(file_map)
+    nmodel_activation(file_id)
 
     return {"Result": "OK", "file_id": file_id}
 
+def nmodel_activation(session_id: str):
+    """
+    Initialize the model
+    """
+
+    # Retrieve the file path using the provided file_id
+    file_id = session_id
+    print(file_id)
+    file_path = file_map.get(file_id)
+    print("Looking at file path: " + str(file_path))
+
+    if not file_path or not os.path.exists(file_path):
+        raise 
+
+    print("Initializing retriever and rag_chain...")
+    try:
+        if retrievers.get(file_id) is None:
+            retrievers[file_id] = model.vector_document(file_path)
+
+        if rag_chains.get(file_id) is None:
+            rag_chains[file_id] = model.init_chain_with_history(retrievers[file_id])
+    except Exception as e:
+        print(f"Error in initializing model: {e}")
+        raise
+
+    return {"message": "Retriever and rag_chain initialized successfully."}
 
 @app.post("/model_activation")
 async def model_activation(session_body: SectionIDBody):
     """
-    Initialize the model
+    Initialize the model without async
     """
 
     # Retrieve the file path using the provided file_id

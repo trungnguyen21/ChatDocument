@@ -1,3 +1,3 @@
-const baseURL = "https://stingray-app-puj9w.ondigitalocean.app"
+const baseURL = "http://localhost:8000"
 
 module.exports = { baseURL }
