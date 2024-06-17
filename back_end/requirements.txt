@@ -6,3 +6,4 @@ redis
 aiofiles
 langchain_experimental
 pypdf
+gunicorn
