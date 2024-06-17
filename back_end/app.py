@@ -57,12 +57,12 @@ class RequestBody(BaseModel):
 class SectionIDBody(BaseModel):
     session_id: str
 
-@app.get("/")
+@app.get("/api")
 async def root():
     return {"message": "Hello World"}
 
 
-@app.get("/files")
+@app.get("/api/files")
 def files(file_id: SectionIDBody):
     """
     Get the list of files
@@ -70,7 +70,7 @@ def files(file_id: SectionIDBody):
     # TODO: implement with external db
     return {"message": file_map.get(file_id.session_id)}
 
-@app.post("/upload/")
+@app.post("/api/upload/")
 async def upload(file: UploadFile):
     """
     File upload
@@ -119,7 +119,7 @@ def nmodel_activation(session_id: str):
 
     return {"message": "Retriever and rag_chain initialized successfully."}
 
-@app.post("/model_activation")
+@app.post("/api/model_activation")
 async def model_activation(session_body: SectionIDBody):
     """
     Initialize the model without async
@@ -148,7 +148,7 @@ async def model_activation(session_body: SectionIDBody):
     return {"message": "Retriever and rag_chain initialized successfully."}
 
 
-@app.post("/chat_completion/")
+@app.post("/api/chat_completion/")
 async def chat_completion(body: RequestBody):
     """
     Get response
@@ -164,7 +164,7 @@ async def chat_completion(body: RequestBody):
     response = model.output_generation(body.question, file_id, rag_chain)
     return {"message": response}
 
-@app.get("/chat_history")
+@app.get("/api/chat_history")
 async def chat_history(session_id: str):
     """
     Get chat history
@@ -172,7 +172,7 @@ async def chat_history(session_id: str):
     chat_history = model.get_session_history(session_id).messages
     return {"message": chat_history}
 
-@app.delete("/flush")
+@app.delete("/api/flush")
 async def flush():
     """
     Flush all data
@@ -192,7 +192,7 @@ async def flush():
         raise
     return {"message": "Data flushed successfully."}
 
-@app.delete("/delete/{file_id}")
+@app.delete("/api/delete/{file_id}")
 async def delete(file_id: str):
     """
     Delete a file
