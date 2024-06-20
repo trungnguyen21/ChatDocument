@@ -45,7 +45,7 @@ function App() {
       <FileProvider>
         <div>
           <div className="row">
-            <div className="col-4 d-flex justify-content-center ps-5">
+            <div className="col-md-4 col-sm-0 d-flex justify-content-center ps-5">
               <button className='toggle' onClick={toggleDarkMode}>
                 {darkMode ? <i class="bi bi-moon"></i> : <i class="bi bi-moon-fill"></i>}
               </button>
@@ -53,18 +53,18 @@ function App() {
                 {darkMode ? <i class="bi bi-trash"></i> : <i class="bi bi-trash-fill"></i>}
               </button>
             </div>
-            <h1 className="text-center text-logo col-8"> Chat with your Document </h1>
+            <h1 className="text-center text-logo col-md-8 col-sm-12"> Chat with your Document </h1>
           </div>
           
           <div className="row">
-            <div className="col-4">
+            <div className="col-md-4 col-sm-0">
               <div className="uploader">
                 <FileUploader />
                 <SectionSwitchBar />
               </div>
             </div>
 
-            <div className="col-8">
+            <div className="col-md-8 col-sm-12">
               <div className="bg-1">
                 <Chat />
               </div>
