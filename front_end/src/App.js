@@ -8,13 +8,13 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import './App.css';
 import config from './config';
 import axios from 'axios';
+import Navbar from './components/Navbar/Navbar.js';
 
 function App() {
   const baseURL = config.baseURL;
   console.log('Base URL:', baseURL);
 
   const [darkMode, setDarkMode] = useState(() => {
-    // Retrieve the theme from localStorage if it exists, otherwise default to true
     const savedTheme = localStorage.getItem('darkMode');
     return savedTheme !== null ? JSON.parse(savedTheme) : true;
   });
@@ -25,7 +25,6 @@ function App() {
     } else {
       document.body.classList.remove('dark-mode');
     }
-    // Save the theme preference to localStorage
     localStorage.setItem('darkMode', JSON.stringify(darkMode));
   }, [darkMode]);
 
@@ -34,42 +33,38 @@ function App() {
   };
 
   const flushRedis = async () => {
-    await axios.delete(baseURL+"/flush")
-    // clear local storage file_map
-    localStorage.removeItem('fileMap');
-    window.location.reload();
-  }
+    try {
+      await axios.delete(`${baseURL}/flush`);
+      localStorage.removeItem('fileMap');
+      window.location.reload();
+    } catch (error) {
+      console.error('Error flushing Redis:', error);
+      // Handle error gracefully, e.g., show a toast or alert
+    }
+  };
 
   return (
     <ChatProvider>
       <FileProvider>
         <div>
-          <div className="row">
-            <div className="col-md-4 col-sm-0 d-flex justify-content-center ps-5">
-              <button className='toggle' onClick={toggleDarkMode}>
-                {darkMode ? <i class="bi bi-moon"></i> : <i class="bi bi-moon-fill"></i>}
-              </button>
-              <button className='toggle' onClick={flushRedis}>
-                {darkMode ? <i class="bi bi-trash"></i> : <i class="bi bi-trash-fill"></i>}
-              </button>
-            </div>
-            <h1 className="text-center text-logo col-md-8 col-sm-12"> Chat with your Document </h1>
-          </div>
+          <Navbar darkMode={darkMode} toggleDarkMode={toggleDarkMode} flushRedis={flushRedis} />
           
-          <div className="row">
-            <div className="col-md-4 col-sm-0">
-              <div className="uploader">
-                <FileUploader />
-                <SectionSwitchBar />
+          {/* Container with added space */}
+          <div className="container mt-4">
+            <div className="row">
+              <div className="col-md-4">
+                <div className="uploader">
+                  <FileUploader />
+                  <SectionSwitchBar />
+                </div>
+              </div>
+
+              <div className="col-md-8 col-sm-12">
+                <div className="bg-1">
+                  <Chat />
+                </div>
               </div>
             </div>
-
-            <div className="col-md-8 col-sm-12">
-              <div className="bg-1">
-                <Chat />
-              </div>
-            </div>
-
           </div>
         </div>
       </FileProvider>
