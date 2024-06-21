@@ -17,7 +17,7 @@ const CustomNavbar = ({ darkMode, toggleDarkMode, flushRedis, fileUploader, sect
               {darkMode ? <><i className="bi bi-trash"></i> Flush</> : <><i className="bi bi-trash-fill"></i> Flush</>}
             </Nav.Link>
 
-            <div className="container d-md-none mt-2">
+            <div className="container d-md-none mt-2 mb-2">
               {fileUploader && (
                 <>{fileUploader}</>
               )}
