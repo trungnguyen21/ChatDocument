@@ -18,16 +18,8 @@ const CustomNavbar = ({ darkMode, toggleDarkMode, flushRedis, fileUploader, sect
             </Nav.Link>
 
             <Nav.Link className="d-md-none container">
-              {fileUploader && (
-                <NavDropdown.Item>
-                  {fileUploader}
-                </NavDropdown.Item>
-              )}
-              {sectionSwitchBar && (
-                <NavDropdown.Item>
-                  {sectionSwitchBar}
-                </NavDropdown.Item>
-              )}
+              {fileUploader}
+              {sectionSwitchBar}
             </Nav.Link>
           </Nav>
         </Navbar.Collapse>

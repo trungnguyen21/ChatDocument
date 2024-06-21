@@ -54,7 +54,8 @@ function App() {
 
           <div className="mt-4">
             <div className="row">
-              <div className="col-md-4 d-none d-md-block">
+              <div className="d-none d-md-block"></div>
+              <div className="col-md-4">
                 <div className="uploader">
                   <FileUploader />
                   <SectionSwitchBar />
