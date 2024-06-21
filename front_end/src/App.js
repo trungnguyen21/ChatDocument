@@ -47,12 +47,11 @@ function App() {
     <ChatProvider>
       <FileProvider>
         <div>
-          <Navbar darkMode={darkMode} toggleDarkMode={toggleDarkMode} flushRedis={flushRedis} />
-          
-          {/* Container with added space */}
-          <div className="container mt-4">
+          <Navbar darkMode={darkMode} toggleDarkMode={toggleDarkMode} flushRedis={flushRedis} className="navbar"/>
+
+          <div className="mt-4">
             <div className="row">
-              <div className="col-md-4">
+              <div className="col-md-4 d-none d-md-block">
                 <div className="uploader">
                   <FileUploader />
                   <SectionSwitchBar />
