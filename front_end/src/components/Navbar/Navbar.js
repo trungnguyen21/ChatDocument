@@ -1,5 +1,5 @@
 import React from 'react';
-import { Navbar, Container, Nav, NavDropdown } from 'react-bootstrap';
+import { Navbar, Container, Nav } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 const CustomNavbar = ({ darkMode, toggleDarkMode, flushRedis, fileUploader, sectionSwitchBar }) => {
@@ -17,10 +17,14 @@ const CustomNavbar = ({ darkMode, toggleDarkMode, flushRedis, fileUploader, sect
               {darkMode ? <><i className="bi bi-trash"></i> Flush</> : <><i className="bi bi-trash-fill"></i> Flush</>}
             </Nav.Link>
 
-            <Nav.Link className="d-md-none container">
-              {fileUploader}
-              {sectionSwitchBar}
-            </Nav.Link>
+            <div className="container d-md-none mt-2">
+              {fileUploader && (
+                <>{fileUploader}</>
+              )}
+              {sectionSwitchBar && (
+                <>{sectionSwitchBar}</>
+              )}
+            </div>
           </Nav>
         </Navbar.Collapse>
       </Container>
