@@ -60,7 +60,6 @@ const FileUploader = () => {
             onChange={handleFileChange}
             className="form-control-file mb-3"
             accept=".pdf,.doc,.docx,.xls,.xlsx"
-            capture
           />
           <div className="text-center">
             <button
