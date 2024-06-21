@@ -47,7 +47,10 @@ function App() {
     <ChatProvider>
       <FileProvider>
         <div>
-          <Navbar darkMode={darkMode} toggleDarkMode={toggleDarkMode} flushRedis={flushRedis} className="navbar"/>
+          <Navbar darkMode={darkMode} toggleDarkMode={toggleDarkMode}
+           flushRedis={flushRedis} className="navbar"
+           fileUploader={<FileUploader />}
+            sectionSwitchBar={<SectionSwitchBar />} />
 
           <div className="mt-4">
             <div className="row">
