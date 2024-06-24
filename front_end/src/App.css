@@ -74,6 +74,6 @@ body.dark-mode .toggle-dark-mode {
     color: #ffffff;
 }
 
-body.dark-mode .btn {
+body .btn {
     color: white;
 }

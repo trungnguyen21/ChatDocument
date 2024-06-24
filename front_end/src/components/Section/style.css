@@ -21,3 +21,23 @@
 ::-webkit-scrollbar {
     display: none;
 }
+
+.custom-btn-active {
+    background-color: #4CAF50;
+    color: white;
+    border-color: #4CAF50;
+  }
+  
+  .custom-btn-inactive {
+    background-color: transparent;
+    color: #4CAF50; /* Custom inactive color */
+    border: 1px solid #4CAF50; /* Border color */
+  }
+  
+  .custom-btn-active:hover,
+  .custom-btn-inactive:hover {
+    background-color: #45a049; /* Custom hover color */
+    color: white;
+    border-color: #45a049;
+  }
+  
