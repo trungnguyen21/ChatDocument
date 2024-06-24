@@ -1,12 +1,41 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Navbar, Container, Nav } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import logo from '../../logo.png';
 import './style.css';
 
 const CustomNavbar = ({ darkMode, toggleDarkMode, flushRedis, fileUploader, sectionSwitchBar }) => {
+  const [isMobile, setIsMobile] = useState(false);
+  const [expanded, setExpanded] = useState(false);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth <= 768);
+    };
+
+    handleResize();
+    window.addEventListener('resize', handleResize);
+
+    return () => {
+      window.removeEventListener('resize', handleResize);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (isMobile) {
+      setExpanded(true);
+    }
+  }, [isMobile]);
+
   return (
-    <Navbar bg={darkMode ? 'dark' : 'light'} variant={darkMode ? 'dark' : 'light'} expand="lg" fixed="top">
+    <Navbar
+      bg={darkMode ? 'dark' : 'light'}
+      variant={darkMode ? 'dark' : 'light'}
+      expand="lg"
+      fixed="top"
+      expanded={expanded}
+      onToggle={(expanded) => setExpanded(expanded)}
+    >
       <Container>
         <Navbar.Brand className="d-flex align-items-center">
           <img src={logo} width={24} height={24} alt='website logo' className="mx-2"></img>

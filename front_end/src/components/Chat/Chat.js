@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect, useContext } from 'react';
 import Message from './Message.js';
 import axios from 'axios';
-import ChatContext from '../context/ChatContext.js';
+import ChatContext from '../Context/ChatContext.js';
 import './style.css';
 import config from '../../config';
 
