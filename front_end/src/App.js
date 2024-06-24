@@ -12,7 +12,6 @@ import Navbar from './components/Navbar/Navbar.js';
 
 function App() {
   const baseURL = config.baseURL;
-  console.log('Base URL:', baseURL);
 
   const [darkMode, setDarkMode] = useState(() => {
     const savedTheme = localStorage.getItem('darkMode');

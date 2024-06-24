@@ -1,11 +1,9 @@
 .container {
   max-width: 90%;
-  margin-left:4vw;
 }
 
 .uploader {
   padding-bottom: 5vh;
-  /* max-height: 100vh; */
 }
   
 .card {
