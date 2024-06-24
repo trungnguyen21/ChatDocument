@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { ChatProvider } from './components/context/ChatContext';
-import { FileProvider } from './components/context/FileContext';
+import { ChatProvider } from './components/Context/ChatContext.js';
+import { FileProvider } from './components/Context/FileContext.js';
 import Chat from './components/Chat/Chat';
 import FileUploader from './components/FileUpload/Upload';
 import SectionSwitchBar from './components/Section/Section';

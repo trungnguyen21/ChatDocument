@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useContext } from 'react';
-import ChatContext from '../context/ChatContext';
-import FileContext from '../context/FileContext';
+import ChatContext from '../Context/ChatContext';
+import FileContext from '../Context/FileContext';
 import axios from 'axios';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './style.css';
