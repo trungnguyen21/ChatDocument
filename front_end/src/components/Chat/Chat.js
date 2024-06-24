@@ -7,9 +7,10 @@ import config from '../../config';
 
 const Chat = () => {
   const [messages, setMessages] = useState([]);
+  const [isActive, setActive] = useState(false);
   const messagesEndRef = useRef(null);
   const { state } = useContext(ChatContext);
-  const session_id = state.sessionId
+  const session_id = state.sessionId;
   const baseURL = config.baseURL;
 
   const scrollToBottom = () => {
@@ -17,10 +18,18 @@ const Chat = () => {
   };
 
   useEffect(() => {
+    if (session_id === null) {
+      setActive(false);
+    } else {
+      setActive(true);
+    }
+  }, [session_id]);
+
+  useEffect(() => {
     const fetchChatHistory = async () => {
       if (state.sessionId) {
         try {
-          const response = await axios.get(baseURL+'/chat_history', { params: { session_id: state.sessionId } });
+          const response = await axios.get(baseURL + '/chat_history', { params: { session_id: state.sessionId } });
           const chatHistory = await response.data.message.map((message) => ({
             text: message.content,
             sender: message.type === 'human' ? 'user' : 'chatbot',
@@ -40,22 +49,18 @@ const Chat = () => {
   }, [messages]);
 
   const sendMessage = async (text) => {
-    // Add user's message first
     const userMessage = { text: text, sender: 'user' };
     setMessages((prevMessages) => [...prevMessages, userMessage]);
-  
-    // Add loading message
+
     const loadingMessage = { text: 'Generating a response...', sender: 'chatbot' };
     setMessages((prevMessages) => [...prevMessages, loadingMessage]);
-  
+
     try {
       console.log('Session ID at Chat.js:', session_id);
-      const response = await axios.post(baseURL+'/chat_completion/', {question: text, session_id: session_id});
-      // Replace loading message with chatbot's response
+      const response = await axios.post(baseURL + '/chat_completion/', { question: text, session_id: session_id });
       const chatbotMessage = { text: response.data.message, sender: 'chatbot' };
       setMessages((prevMessages) => {
         const updatedMessages = [...prevMessages];
-        // Find index of loading message and replace it with chatbot's response
         const loadingMessageIndex = updatedMessages.findIndex(
           (message) => message.sender === 'chatbot' && message.text === 'Generating a response...'
         );
@@ -66,7 +71,6 @@ const Chat = () => {
       });
     } catch (error) {
       console.error('Error getting response:', error);
-      // Optionally, handle error here
     }
   };
 
@@ -81,14 +85,15 @@ const Chat = () => {
       <div className="card-footer input-container">
         <input
           type="text"
-          placeholder="Type a message..."
+          placeholder={isActive ? "Type a message..." : "Please upload a file or select a section"}
           onKeyDown={(e) => {
-            if (e.key === 'Enter' && e.target.value.trim() !== '') {
+            if (isActive && e.key === 'Enter' && e.target.value.trim() !== '') {
               sendMessage(e.target.value);
               e.target.value = '';
             }
           }}
           className="form-control shadow-none"
+          disabled={!isActive}
         />
       </div>
     </div>
