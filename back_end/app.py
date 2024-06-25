@@ -192,7 +192,7 @@ async def flush():
         raise
     return {"message": "Data flushed successfully."}
 
-@app.delete("/api/delete/{file_id}")
+@app.delete("/api/delete")
 async def delete(file_id: str):
     """
     Delete a file
@@ -206,9 +206,6 @@ async def delete(file_id: str):
         except Exception as e:
             print(f"Error in deleting file: {e}")
             raise
-    # delete the file from the file_map
-    file_map.pop(file_id)
-    save_file_map(file_map)
 
     retrievers.pop(file_id)
     rag_chains.pop(file_id)
