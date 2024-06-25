@@ -74,6 +74,15 @@ const Chat = () => {
     }
   };
 
+  const handleSendClick = (inputRef) => {
+    if (isActive && inputRef.current.value.trim() !== '') {
+      sendMessage(inputRef.current.value);
+      inputRef.current.value = '';
+    }
+  };
+
+  const inputRef = useRef(null);
+
   return (
     <div className="card chat-container">
       <div className="card-body d-flex flex-column messages-container">
@@ -82,8 +91,9 @@ const Chat = () => {
         ))}
         <div ref={messagesEndRef} />
       </div>
-      <div className="card-footer input-container">
+      <div className="card-footer input-container d-flex">
         <input
+          ref={inputRef}
           type="text"
           placeholder={isActive ? "Type a message..." : "Please upload a file or select a file."}
           onKeyDown={(e) => {
@@ -95,6 +105,13 @@ const Chat = () => {
           className="form-control shadow-none"
           disabled={!isActive}
         />
+        <button
+          onClick={() => handleSendClick(inputRef)}
+          className="btn btn-primary ml-2"
+          disabled={!isActive}
+        >
+          Enter
+        </button>
       </div>
     </div>
   );
