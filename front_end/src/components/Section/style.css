@@ -18,6 +18,19 @@
     padding-inline: 0.5rem;
 }
 
+.delete-btn {
+    max-width: 2.5rem;
+    margin-inline: 0.25rem;
+    background-color: #fd6e6e;
+    color: white;
+    border: none;
+}
+
+.delete-btn:hover {
+    background-color: #ff4848;
+    transform: scale(1.05);
+  }
+
 ::-webkit-scrollbar {
     display: none;
 }
@@ -29,3 +42,4 @@
 .btn-secondary {
     color: white;
 }
+

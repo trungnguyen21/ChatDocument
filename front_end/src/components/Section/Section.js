@@ -65,14 +65,14 @@ const SectionSwitchBar = () => {
                 <div key={fileId} className="d-flex justify-content-between align-items-center">
                   <button
                     type="button"
-                    className={`btn ${fileId === state.sessionId ? 'btn-secondary' : 'btn-outline-secondary'}`}
+                    className={`btn btn-label ${fileId === state.sessionId ? 'btn-secondary' : 'btn-outline-secondary'}`}
                     onClick={() => handleClick(fileId)}
                   >
                     {fileName}
                   </button>
                   <button
                     type="button"
-                    className="btn btn-outline-primary"
+                    className="btn btn-outline delete-btn"
                     onClick={() => deleteSection(fileId)}
                   >
                     x
