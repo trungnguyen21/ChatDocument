@@ -72,7 +72,7 @@ const SectionSwitchBar = () => {
                   </button>
                   <button
                     type="button"
-                    className="btn btn-outline-primary btn-sm"
+                    className="btn btn-outline-primary"
                     onClick={() => deleteSection(fileId)}
                   >
                     x
