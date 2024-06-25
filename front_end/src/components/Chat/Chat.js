@@ -107,10 +107,10 @@ const Chat = () => {
         />
         <button
           onClick={() => handleSendClick(inputRef)}
-          className="btn btn-primary ml-2"
+          className="btn btn-send"
           disabled={!isActive}
         >
-          Enter
+          <i class="bi bi-send"></i>
         </button>
       </div>
     </div>

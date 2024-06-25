@@ -64,7 +64,7 @@ const SectionSwitchBar = () => {
       <div className='card'>
         <div className='card-body'>
           <h1 className='card-title'>Files</h1>
-          {isEmpty && <h6 className='text-center'>No files uploaded yet.</h6>}
+          {isEmpty && <p className='text-center'>No files uploaded yet.</p>}
           <div className='contained'>
             <div className="d-flex flex-column gap-2 mx-auto w-100">
               {files.map(({ fileName, fileId }) => (

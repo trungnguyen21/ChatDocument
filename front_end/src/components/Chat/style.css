@@ -79,3 +79,18 @@
 .card-body {
   padding: 1.5rem;
 }
+
+.btn.btn-send {
+  margin-inline-start: 0.5rem;
+  max-width: 5%;
+  background-color: #ff4848 !important;
+  border: none !important;
+  color: white !important;
+  font-size: 1rem;
+}
+
+@media only screen and (max-width: 600px) {
+  .btn.btn-send {
+    max-width: 10%;
+  }
+}
