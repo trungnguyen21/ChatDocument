@@ -41,7 +41,7 @@ const CustomNavbar = ({ darkMode, toggleDarkMode, flushRedis, fileUploader, sect
           <img src={logo} width={24} height={24} alt='website logo' className="mx-2"></img>
           <div>ChatDoc</div>
         </Navbar.Brand>
-        <Navbar.Toggle aria-controls="basic-navbar-nav" />
+        <Navbar.Toggle data-bs-toggle="collapse" href="#basic-navbar-nav" aria-controls="basic-navbar-nav" />
         <Navbar.Collapse id="basic-navbar-nav" className="collapse">
           <Nav className="ms-auto">
             <Nav.Link onClick={toggleDarkMode} className="me-3">
