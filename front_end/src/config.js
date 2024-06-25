@@ -1,3 +1,3 @@
-const baseURL = "https://theforevercanvas.com/api"
+const baseURL = "http://localhost:8000/api"
 
 module.exports = { baseURL }
