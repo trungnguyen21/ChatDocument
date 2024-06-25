@@ -40,6 +40,18 @@ const SectionSwitchBar = () => {
       fetchFiles();
     }, [fileUploaded]);
 
+    const delete_section = async (fileId) => {
+      console.log("delete ", fileId);
+      try {
+        changeSession(fileId);
+        console.log('Change section to: ', fileId);
+        await axios.post(baseURL+'/delete', { session_id: fileId });
+        console.log('Finish deleting: ', fileId);
+      } catch (error) {
+        console.error('Error delete section:', error);
+      }
+    };
+
     return (
       <div className='container mt-3'>
         <div className='card'>
@@ -58,6 +70,9 @@ const SectionSwitchBar = () => {
                     >
                       {fileName}
                     </button>
+
+                    <button onClick={() => delete_section(fileId)} key={fileId}
+                      type="button"> x </button>
                   </div>
                 ))}
               </div>
