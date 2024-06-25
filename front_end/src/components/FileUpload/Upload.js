@@ -63,7 +63,7 @@ const FileUploader = () => {
           />
           <div className="text-center">
             <button
-              className="btn btn-primary"
+              className="btn btn-primary always-white"
               onClick={handleUpload}
               disabled={!selectedFile || loading}
             >
