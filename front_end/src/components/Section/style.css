@@ -29,6 +29,7 @@
 .delete-btn:hover {
     background-color: #ff4848;
     transform: scale(1.05);
+    color: white;
   }
 
 ::-webkit-scrollbar {
