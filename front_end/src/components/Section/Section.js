@@ -44,10 +44,15 @@ const SectionSwitchBar = () => {
     console.log("Delete ", fileId);
     try {
       await axios.delete(`${baseURL}/delete?file_id=${fileId}`);
+
+      const fileMap = JSON.parse(localStorage.getItem('fileMap')) || {};  
+      delete fileMap[fileId];
+      localStorage.setItem('fileMap', JSON.stringify(fileMap));
+
+      changeSession(null);
+      fileId = null;
+      
       console.log('Finish deleting: ', fileId);
-      const updatedFiles = files.filter(file => file.fileId !== fileId);
-      setFiles(updatedFiles);
-      setIsEmpty(updatedFiles.length === 0);
     } catch (error) {
       console.error('Error deleting section:', error);
     }
