@@ -29,14 +29,14 @@ const SectionSwitchBar = () => {
     }
   };
 
-  useEffect(() => {
-    const fetchFiles = () => {
-      const fileMap = JSON.parse(localStorage.getItem('fileMap')) || {};
-      const fileNames = Object.entries(fileMap).map(([fileId, fileName]) => ({ fileId, fileName }));
-      setFiles(fileNames);
-      setIsEmpty(Object.keys(fileMap).length === 0);
-    };
+  const fetchFiles = () => {
+    const fileMap = JSON.parse(localStorage.getItem('fileMap')) || {};
+    const fileNames = Object.entries(fileMap).map(([fileId, fileName]) => ({ fileId, fileName }));
+    setFiles(fileNames);
+    setIsEmpty(Object.keys(fileMap).length === 0);
+  };
 
+  useEffect(() => {
     fetchFiles();
   }, [fileUploaded]);
 
@@ -52,6 +52,7 @@ const SectionSwitchBar = () => {
       changeSession(null);
       fileId = null;
       
+      fetchFiles();
       console.log('Finish deleting: ', fileId);
     } catch (error) {
       console.error('Error deleting section:', error);
