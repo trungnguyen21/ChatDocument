@@ -1,7 +1,26 @@
-.collapse {
-    width: 100%;
-}
-
-.navbar-expanded .navbar-collapse-overlay {
+.navbar-collapse-overlay {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+    background-color: inherit;
+    display: none;
+  }
+  
+  .navbar-expanded .navbar-collapse-overlay {
     display: block !important;
-}
+  }
+  
+  .navbar-dark .navbar-collapse-overlay {
+    background-color: #212529;
+  }
+  
+  .navbar-light .navbar-collapse-overlay {
+    background-color: #F8F9FA;
+  }
+  
+  size-upload {
+    width: 70%;
+    margin: 0 auto;
+  }
