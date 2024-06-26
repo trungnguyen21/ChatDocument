@@ -78,10 +78,6 @@ body.dark-mode .toggle-dark-mode {
     --bs-gutter-x: 0;
     height: 100%;
 }
- 
-.responsive-margin {
-    margin-top: 3vh;
-}
 
 @media (max-width: 992px) {
     .bg-1 {
@@ -95,4 +91,5 @@ body.dark-mode .toggle-dark-mode {
     body {
         overflow-y: hidden;
     }
+    
 }
