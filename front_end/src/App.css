@@ -76,6 +76,7 @@ body.dark-mode .toggle-dark-mode {
 
 .row.no-gutter{
     --bs-gutter-x: 0;
+    height: 0;
 }
 
 .responsive-margin {
