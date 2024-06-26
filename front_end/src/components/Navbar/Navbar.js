@@ -1,5 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Navbar, Container, Nav } from 'react-bootstrap';
+import { useContext } from 'react';
+import FileContext from '../Context/FileContext';
+import ChatContext from '../Context/ChatContext';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import logo from '../../logo.png';
 import './style.css';
@@ -7,6 +10,8 @@ import './style.css';
 const CustomNavbar = ({ darkMode, toggleDarkMode, flushRedis, fileUploader, sectionSwitchBar }) => {
   const [isMobile, setIsMobile] = useState(false);
   const [expanded, setExpanded] = useState(false);
+  const { fileUploaded } = useContext(FileContext);
+  const { dispatch } = useContext(ChatContext);
 
   useEffect(() => {
     const handleResize = () => {
@@ -20,6 +25,10 @@ const CustomNavbar = ({ darkMode, toggleDarkMode, flushRedis, fileUploader, sect
       window.removeEventListener('resize', handleResize);
     };
   }, []);
+
+  useEffect(() => {
+    setExpanded(false);
+  }, [fileUploaded, dispatch]);
 
   useEffect(() => {
     if (isMobile) {
@@ -40,7 +49,7 @@ const CustomNavbar = ({ darkMode, toggleDarkMode, flushRedis, fileUploader, sect
       <Container>
         <Navbar.Brand className="d-flex align-items-center">
           <img src={logo} width={24} height={24} alt='website logo' className="mx-2"></img>
-          <div>ChatDoc</div>
+          <div>ChatDocument</div>
         </Navbar.Brand>
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
         <Navbar.Collapse id="basic-navbar-nav" className="navbar-collapse-overlay">

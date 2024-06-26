@@ -42,6 +42,7 @@ const Chat = () => {
     };
 
     fetchChatHistory();
+    // eslint-disable-next-line
   }, [state.sessionId]);
 
   useEffect(() => {

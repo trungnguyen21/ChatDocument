@@ -100,4 +100,8 @@
   .message-text {
     max-width: 80%;
   }
+
+  .chat-container {
+    max-height: 78vh;
+  }
 }
