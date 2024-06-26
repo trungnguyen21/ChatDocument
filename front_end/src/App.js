@@ -51,7 +51,7 @@ function App() {
            fileUploader={<FileUploader />}
             sectionSwitchBar={<SectionSwitchBar />} />
 
-          <div className="mt-4">
+          <div className="responsive-margin">
             <div className="row no-gutter">
               <div className="col-md-4 d-none d-md-block">
                 <div className="uploader">

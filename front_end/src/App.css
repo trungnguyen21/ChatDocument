@@ -78,6 +78,12 @@ body.dark-mode .toggle-dark-mode {
     --bs-gutter-x: 0;
 }
 
-.nav-template {
-    z-index: 1000;
-}
+.responsive-margin {
+    margin-top: 3vh;
+  }
+  
+  @media (max-width: 992px) {
+    .responsive-margin {
+      margin-top: 2vh;
+    }
+  }
