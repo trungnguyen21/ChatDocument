@@ -35,14 +35,15 @@ const CustomNavbar = ({ darkMode, toggleDarkMode, flushRedis, fileUploader, sect
       fixed="top"
       expanded={expanded}
       onToggle={(expanded) => setExpanded(expanded)}
+      className={expanded ? 'navbar-expanded' : ''}
     >
       <Container>
         <Navbar.Brand className="d-flex align-items-center">
           <img src={logo} width={24} height={24} alt='website logo' className="mx-2"></img>
           <div>ChatDoc</div>
         </Navbar.Brand>
-        <Navbar.Toggle data-bs-toggle="collapse" href="#basic-navbar-nav" aria-controls="basic-navbar-nav" />
-        <Navbar.Collapse id="basic-navbar-nav" className="collapse">
+        <Navbar.Toggle aria-controls="basic-navbar-nav" />
+        <Navbar.Collapse id="basic-navbar-nav" className="navbar-collapse-overlay">
           <Nav className="ms-auto">
             <Nav.Link onClick={toggleDarkMode} className="me-3">
               {darkMode ? <><i className="bi bi-moon"></i> Light</> : <><i className="bi bi-moon-fill"></i> Dark</>}

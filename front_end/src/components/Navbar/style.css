@@ -1,3 +1,7 @@
 .collapse {
     width: 100%;
 }
+
+.navbar-expanded .navbar-collapse-overlay {
+    display: block !important;
+}

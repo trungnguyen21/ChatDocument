@@ -73,3 +73,11 @@ body.dark-mode .input-container {
 body.dark-mode .toggle-dark-mode {
     color: #ffffff;
 }
+
+.row.no-gutter{
+    --bs-gutter-x: 0;
+}
+
+.nav-template {
+    z-index: 1000;
+}
