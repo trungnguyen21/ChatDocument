@@ -1,16 +1,15 @@
 .message {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   margin-bottom: 1vh;
 }
   
 .avatar {
-  width: 4vh;
-  height: 4vh;
+  width: 2rem;
+  height: 2rem;
   border-radius: 50%;
   background-color: #ccc;
   margin-inline: 0.5vw;
-  margin-top: 0.5vh;
 }
   
 .message-content {
@@ -18,12 +17,10 @@
   display: flex;
   flex-direction: column;
   width: 100%;
-  margin-bottom: 0.75rem;
 }
   
 .message-text {
   background-color: #f0f0f0;
-  padding: 1vh;
   border-radius: 1.5vh;
   margin-inline: 0.5vw;
   overflow-wrap: break-word;
@@ -43,6 +40,7 @@
 .user .message-text {
   background-color: #007bff;
   color: white;
+  margin-right: 2px;
 }
 
 .user .message-content {
@@ -59,6 +57,7 @@
 
 .chatbot .message-text {
   color: #000;
+  margin-left: 2px;
 }
 
 .input-container {
@@ -91,6 +90,14 @@
 
 @media only screen and (max-width: 600px) {
   .btn.btn-send {
-    max-width: 10%;
+    min-width: 2.5rem;
+  }
+
+  .card-body {
+    padding: 1rem !important;
+  }
+
+  .message-text {
+    max-width: 80%;
   }
 }

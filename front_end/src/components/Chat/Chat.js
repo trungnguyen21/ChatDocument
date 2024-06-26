@@ -95,7 +95,7 @@ const Chat = () => {
         <input
           ref={inputRef}
           type="text"
-          placeholder={isActive ? "Type a message..." : "Please upload a file or select a file."}
+          placeholder={isActive ? "Type a message..." : "Please upload or select a file."}
           onKeyDown={(e) => {
             if (isActive && e.key === 'Enter' && e.target.value.trim() !== '') {
               sendMessage(e.target.value);

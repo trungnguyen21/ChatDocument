@@ -9,7 +9,7 @@ const Message = ({ message }) => {
     <div className={`message ${isUser ? 'user' : 'chatbot'}`}>
       {!isUser && <div className="avatar" />}
       <div className="message-content">
-        <div className="message-text" style={{ paddingRight: '1vw' }}> {text} </div>
+        <div className="message-text"> {text} </div>
       </div>
       {isUser && <div className="avatar" />}
     </div>
