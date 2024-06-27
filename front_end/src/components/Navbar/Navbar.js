@@ -31,7 +31,6 @@ const CustomNavbar = ({ darkMode, toggleDarkMode, flushRedis, fileUploader, sect
   }, [isMobile]);
 
 
-// Work in progress
   useEffect(() => {
     if (session_id === state.sessionId) {
       setExpanded(false);
@@ -40,13 +39,13 @@ const CustomNavbar = ({ darkMode, toggleDarkMode, flushRedis, fileUploader, sect
 
   return (
     <Navbar
-      bg={darkMode ? 'dark' : 'light'}
       variant={darkMode ? 'dark' : 'light'}
-      expand="lg"
+      expand="md"
       fixed="top"
       expanded={expanded}
       onToggle={(expanded) => setExpanded(expanded)}
-      className={expanded ? 'navbar-expanded' : ''}
+      className={`${expanded ? 'navbar-expanded ' : ''}
+                  ${darkMode ? 'dark-mode-navbar' : 'light-mode-navbar'}`}
     >
       <Container className="d-flex justify-content-between align-items-center">
         <Navbar.Brand className="d-flex align-items-center">
@@ -54,7 +53,7 @@ const CustomNavbar = ({ darkMode, toggleDarkMode, flushRedis, fileUploader, sect
           <div>Chat Document</div>
         </Navbar.Brand>
 
-        <Nav className="d-flex align-items-center d-none d-lg-flex">
+        <Nav className="d-flex align-items-center d-none d-md-flex">
           <Nav.Link onClick={toggleDarkMode} className="me-3">
             {darkMode ? <><i className="bi bi-moon"></i> Light</> : <><i className="bi bi-moon-fill"></i> Dark</>}
           </Nav.Link>
@@ -65,7 +64,7 @@ const CustomNavbar = ({ darkMode, toggleDarkMode, flushRedis, fileUploader, sect
 
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
         <Navbar.Collapse id="basic-navbar-nav" className="navbar-collapse-overlay">
-          <Nav className="ms-auto d-lg-none mt-2 mb-3 container">
+          <Nav className="ms-auto d-md-none mt-2 mb-3 container">
             <Nav.Link onClick={toggleDarkMode} className="me-3">
               {darkMode ? <><i className="bi bi-moon"></i> Light</> : <><i className="bi bi-moon-fill"></i> Dark</>}
             </Nav.Link>
