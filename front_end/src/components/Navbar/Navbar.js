@@ -1,8 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { Navbar, Container, Nav } from 'react-bootstrap';
-import { useContext } from 'react';
-import FileContext from '../Context/FileContext';
-import ChatContext from '../Context/ChatContext';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import logo from '../../logo.png';
 import './style.css';
@@ -10,8 +7,6 @@ import './style.css';
 const CustomNavbar = ({ darkMode, toggleDarkMode, flushRedis, fileUploader, sectionSwitchBar }) => {
   const [isMobile, setIsMobile] = useState(false);
   const [expanded, setExpanded] = useState(false);
-  const { fileUploaded } = useContext(FileContext);
-  const { dispatch } = useContext(ChatContext);
 
   useEffect(() => {
     const handleResize = () => {
@@ -25,10 +20,6 @@ const CustomNavbar = ({ darkMode, toggleDarkMode, flushRedis, fileUploader, sect
       window.removeEventListener('resize', handleResize);
     };
   }, []);
-
-  useEffect(() => {
-    setExpanded(false);
-  }, [fileUploaded, dispatch]);
 
   useEffect(() => {
     if (isMobile) {
@@ -46,32 +37,29 @@ const CustomNavbar = ({ darkMode, toggleDarkMode, flushRedis, fileUploader, sect
       onToggle={(expanded) => setExpanded(expanded)}
       className={expanded ? 'navbar-expanded' : ''}
     >
-      <Container>
+      <Container className="d-flex justify-content-between align-items-center">
         <Navbar.Brand className="d-flex align-items-center">
-          <img src={logo} width={24} height={24} alt='website logo' className="mx-2"></img>
-          <div>ChatDocument</div>
+          <img src={logo} width={24} height={24} alt='website logo' className="mx-2" />
+          <div>ChatDoc</div>
         </Navbar.Brand>
+        <Nav className="d-flex align-items-center">
+          <Nav.Link onClick={toggleDarkMode} className="me-3">
+            {darkMode ? <><i className="bi bi-moon"></i> Light</> : <><i className="bi bi-moon-fill"></i> Dark</>}
+          </Nav.Link>
+          <Nav.Link onClick={flushRedis} className="me-3">
+            {darkMode ? <><i className="bi bi-trash"></i> Flush</> : <><i className="bi bi-trash-fill"></i> Flush</>}
+          </Nav.Link>
+        </Nav>
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
         <Navbar.Collapse id="basic-navbar-nav" className="navbar-collapse-overlay">
-          <div className="container">
-          <Nav className="ms-auto">
-              <Nav.Link onClick={toggleDarkMode} className="me-3">
-                {darkMode ? <><i className="bi bi-moon"></i> Light</> : <><i className="bi bi-moon-fill"></i> Dark</>}
-              </Nav.Link>
-              <Nav.Link onClick={flushRedis} className="me-3">
-                {darkMode ? <><i className="bi bi-trash"></i> Flush</> : <><i className="bi bi-trash-fill"></i> Flush</>}
-              </Nav.Link>
-
-              <div className="container d-md-none mt-2 mb-3 size-upload">
-                {fileUploader && (
-                  <>{fileUploader}</>
-                )}
-                {sectionSwitchBar && (
-                  <>{sectionSwitchBar}</>
-                )}
-              </div>
-            </Nav>
-          </div>
+          <Nav className="ms-auto d-md-none mt-2 mb-3 size-upload">
+            {fileUploader && (
+              <>{fileUploader}</>
+            )}
+            {sectionSwitchBar && (
+              <>{sectionSwitchBar}</>
+            )}
+          </Nav>
         </Navbar.Collapse>
       </Container>
     </Navbar>
