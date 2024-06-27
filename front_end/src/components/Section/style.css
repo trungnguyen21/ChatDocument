@@ -43,3 +43,23 @@
     color: white;
 }
 
+.btn-custom-darkmode {
+    background-color: #626262;
+    color: #e7e7e7;
+}
+
+.btn-custom-lightmode {
+    background-color: #d8d8d8;
+    color: #303030;
+}
+
+.btn-outline-custom-darkmode {
+    border-color: #626262;
+    color: #e7e7e7;
+}
+
+.btn-outline-custom-lightmode {
+    border-color: #d8d8d8;
+    color: #303030;
+}
+
