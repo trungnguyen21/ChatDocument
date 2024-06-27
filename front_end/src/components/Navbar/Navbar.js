@@ -1,12 +1,15 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { Navbar, Container, Nav } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import logo from '../../logo.png';
 import './style.css';
+import ChatContext from '../Context/ChatContext';
 
 const CustomNavbar = ({ darkMode, toggleDarkMode, flushRedis, fileUploader, sectionSwitchBar }) => {
   const [isMobile, setIsMobile] = useState(false);
   const [expanded, setExpanded] = useState(false);
+  const { state } = useContext(ChatContext);
+  const session_id = state.sessionId;
 
   useEffect(() => {
     const handleResize = () => {
@@ -26,6 +29,14 @@ const CustomNavbar = ({ darkMode, toggleDarkMode, flushRedis, fileUploader, sect
       setExpanded(true);
     }
   }, [isMobile]);
+
+
+// Work in progress
+  useEffect(() => {
+    if (session_id === state.sessionId) {
+      setExpanded(false);
+    }
+  }, [session_id]);
 
   return (
     <Navbar
