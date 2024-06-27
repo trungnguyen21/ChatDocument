@@ -42,7 +42,8 @@ const CustomNavbar = ({ darkMode, toggleDarkMode, flushRedis, fileUploader, sect
           <img src={logo} width={24} height={24} alt='website logo' className="mx-2" />
           <div>Chat Document</div>
         </Navbar.Brand>
-        <Nav className="d-flex align-items-center">
+
+        <Nav className="d-flex align-items-center d-none d-lg-flex">
           <Nav.Link onClick={toggleDarkMode} className="me-3">
             {darkMode ? <><i className="bi bi-moon"></i> Light</> : <><i className="bi bi-moon-fill"></i> Dark</>}
           </Nav.Link>
@@ -50,9 +51,18 @@ const CustomNavbar = ({ darkMode, toggleDarkMode, flushRedis, fileUploader, sect
             {darkMode ? <><i className="bi bi-trash"></i> Flush</> : <><i className="bi bi-trash-fill"></i> Flush</>}
           </Nav.Link>
         </Nav>
+
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
         <Navbar.Collapse id="basic-navbar-nav" className="navbar-collapse-overlay">
-          <Nav className="ms-auto d-md-none mt-2 mb-3 size-upload">
+          <Nav className="ms-auto d-lg-none mt-2 mb-3 container">
+            <Nav.Link onClick={toggleDarkMode} className="me-3">
+              {darkMode ? <><i className="bi bi-moon"></i> Light</> : <><i className="bi bi-moon-fill"></i> Dark</>}
+            </Nav.Link>
+            <Nav.Link onClick={flushRedis} className="me-3">
+              {darkMode ? <><i className="bi bi-trash"></i> Flush</> : <><i className="bi bi-trash-fill"></i> Flush</>}
+            </Nav.Link>
+          </Nav>
+          <Nav className="ms-auto d-md-none mt-2 mb-3">
             {fileUploader && (
               <>{fileUploader}</>
             )}

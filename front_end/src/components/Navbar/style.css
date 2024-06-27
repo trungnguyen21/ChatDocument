@@ -24,3 +24,13 @@
     width: 70%;
     margin: 0 auto;
   }
+
+  .navbar-collapse-overlay .nav-link {
+    margin-left: 20px;
+    margin-right: 20px;
+  }
+  
+  .navbar-collapse-overlay {
+    padding-left: 20px;
+    padding-right: 20px;
+  }
