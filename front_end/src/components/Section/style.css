@@ -21,12 +21,12 @@
 .delete-btn {
     max-width: 2.5rem;
     margin-inline: 0.25rem;
-    background-color: #fd6e6e;
+    background-color: #ff5555;
     color: white;
 }
 
 .delete-btn:hover {
-    background-color: #ff4848;
+    background-color: #eb4f4f;
     transform: scale(1.05);
     color: white;
   }

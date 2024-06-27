@@ -84,7 +84,7 @@ const SectionSwitchBar = ({ darkMode }) => {
                     className="btn btn-outline delete-btn"
                     onClick={() => deleteSection(fileId)}
                   >
-                    x
+                    <i class="bi bi-x"></i>
                   </button>
                 </div>
               ))}
