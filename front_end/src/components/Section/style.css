@@ -63,3 +63,10 @@
     color: #303030;
 }
 
+.btn-custom-darkmode:hover,
+.btn-outline-custom-darkmode:hover,
+.btn-custom-lightmode:hover,
+.btn-outline-custom-lightmode:hover  {
+    background-color: #8d8e8e;
+    color: #e7e7e7;
+}
