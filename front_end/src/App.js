@@ -51,14 +51,14 @@ function App() {
           <Navbar classname="nav-template" darkMode={darkMode} toggleDarkMode={toggleDarkMode}
            flushRedis={flushRedis} className="navbar"
            fileUploader={<FileUploader />}
-            sectionSwitchBar={<SectionSwitchBar />} />
+            sectionSwitchBar={<SectionSwitchBar darkMode={darkMode}/>} />
 
-          <div className="responsive-margin">
+          <div className="mt-3">
             <div className="row no-gutter">
               <div className="col-md-4 d-none d-md-block">
                 <div className="uploader">
                   <FileUploader />
-                  <SectionSwitchBar />
+                  <SectionSwitchBar darkMode={darkMode}/>
                 </div>
               </div>
 

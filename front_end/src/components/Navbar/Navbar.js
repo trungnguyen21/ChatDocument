@@ -1,17 +1,15 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { Navbar, Container, Nav } from 'react-bootstrap';
-import { useContext } from 'react';
-import FileContext from '../Context/FileContext';
-import ChatContext from '../Context/ChatContext';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import logo from '../../logo.png';
 import './style.css';
+import ChatContext from '../Context/ChatContext';
 
 const CustomNavbar = ({ darkMode, toggleDarkMode, flushRedis, fileUploader, sectionSwitchBar }) => {
   const [isMobile, setIsMobile] = useState(false);
   const [expanded, setExpanded] = useState(false);
-  const { fileUploaded } = useContext(FileContext);
   const { state } = useContext(ChatContext);
+  const session_id = state.sessionId;
 
   useEffect(() => {
     const handleResize = () => {
@@ -27,51 +25,61 @@ const CustomNavbar = ({ darkMode, toggleDarkMode, flushRedis, fileUploader, sect
   }, []);
 
   useEffect(() => {
-    setExpanded(false);
-  }, [fileUploaded, state]);
-
-  useEffect(() => {
     if (isMobile) {
       setExpanded(true);
     }
   }, [isMobile]);
 
+
+  useEffect(() => {
+    if (session_id === state.sessionId) {
+      setExpanded(false);
+    }
+  }, [session_id]);
+
   return (
     <Navbar
-      bg={darkMode ? 'dark' : 'light'}
       variant={darkMode ? 'dark' : 'light'}
-      expand="lg"
+      expand="md"
       fixed="top"
       expanded={expanded}
       onToggle={(expanded) => setExpanded(expanded)}
-      className={expanded ? 'navbar-expanded' : ''}
+      className={`${expanded ? 'navbar-expanded ' : ''}
+                  ${darkMode ? 'dark-mode-navbar' : 'light-mode-navbar'}`}
     >
-      <Container>
+      <Container className="d-flex justify-content-between align-items-center">
         <Navbar.Brand className="d-flex align-items-center">
-          <img src={logo} width={24} height={24} alt='website logo' className="mx-2"></img>
-          <div>ChatDocument</div>
+          <img src={logo} width={24} height={24} alt='website logo' className="mx-2" />
+          <div>Chat Document</div>
         </Navbar.Brand>
+
+        <Nav className="d-flex align-items-center d-none d-md-flex">
+          <Nav.Link onClick={toggleDarkMode} className="me-3">
+            {darkMode ? <><i className="bi bi-moon"></i> Light</> : <><i className="bi bi-moon-fill"></i> Dark</>}
+          </Nav.Link>
+          <Nav.Link onClick={flushRedis} className="me-3">
+            {darkMode ? <><i className="bi bi-trash"></i> Flush</> : <><i className="bi bi-trash-fill"></i> Flush</>}
+          </Nav.Link>
+        </Nav>
+
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
         <Navbar.Collapse id="basic-navbar-nav" className="navbar-collapse-overlay">
-          <div className="container">
-          <Nav className="ms-auto">
-              <Nav.Link onClick={toggleDarkMode} className="me-3">
-                {darkMode ? <><i className="bi bi-moon"></i> Light</> : <><i className="bi bi-moon-fill"></i> Dark</>}
-              </Nav.Link>
-              <Nav.Link onClick={flushRedis} className="me-3">
-                {darkMode ? <><i className="bi bi-trash"></i> Flush</> : <><i className="bi bi-trash-fill"></i> Flush</>}
-              </Nav.Link>
-
-              <div className="container d-md-none mt-2 mb-3 size-upload">
-                {fileUploader && (
-                  <>{fileUploader}</>
-                )}
-                {sectionSwitchBar && (
-                  <>{sectionSwitchBar}</>
-                )}
-              </div>
-            </Nav>
-          </div>
+          <Nav className="ms-auto d-md-none mt-2 mb-3 container">
+            <Nav.Link onClick={toggleDarkMode} className="me-3">
+              {darkMode ? <><i className="bi bi-moon"></i> Light</> : <><i className="bi bi-moon-fill"></i> Dark</>}
+            </Nav.Link>
+            <Nav.Link onClick={flushRedis} className="me-3">
+              {darkMode ? <><i className="bi bi-trash"></i> Flush</> : <><i className="bi bi-trash-fill"></i> Flush</>}
+            </Nav.Link>
+          </Nav>
+          <Nav className="ms-auto d-md-none mt-2 mb-3">
+            {fileUploader && (
+              <>{fileUploader}</>
+            )}
+            {sectionSwitchBar && (
+              <>{sectionSwitchBar}</>
+            )}
+          </Nav>
         </Navbar.Collapse>
       </Container>
     </Navbar>

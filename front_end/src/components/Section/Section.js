@@ -6,7 +6,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import './style.css';
 import config from '../../config';
 
-const SectionSwitchBar = () => {
+const SectionSwitchBar = ({ darkMode }) => {
   const [files, setFiles] = useState([]);
   const [isEmpty, setIsEmpty] = useState(true);
   const { state, dispatch } = useContext(ChatContext);
@@ -71,7 +71,10 @@ const SectionSwitchBar = () => {
                 <div key={fileId} className="d-flex justify-content-between align-items-center">
                   <button
                     type="button"
-                    className={`btn btn-label ${fileId === state.sessionId ? 'btn-secondary' : 'btn-outline-secondary'}`}
+                    className={`btn btn-label ${fileId === state.sessionId ? 
+                      (darkMode ? 'btn-custom-darkmode' : 'btn-custom-lightmode') : 
+                      (darkMode ? 'btn-outline-custom-darkmode' : 'btn-outline-custom-lightmode')}`}
+
                     onClick={() => handleClick(fileId)}
                   >
                     {fileName}
@@ -81,7 +84,7 @@ const SectionSwitchBar = () => {
                     className="btn btn-outline delete-btn"
                     onClick={() => deleteSection(fileId)}
                   >
-                    x
+                    <i class="bi bi-x"></i>
                   </button>
                 </div>
               ))}
