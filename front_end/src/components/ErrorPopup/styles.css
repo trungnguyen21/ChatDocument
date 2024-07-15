@@ -36,3 +36,10 @@
     padding-block: 1rem;
 }
 
+@media only screen and (max-width: 600px) {
+    .error-popup {
+        max-width: 80%;
+        width: inherit;
+    }
+}
+

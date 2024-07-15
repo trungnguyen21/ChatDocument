@@ -23,7 +23,7 @@ const handleClose = () => {
     <div className='error-background'>
         <div className='error-popup'>
             <div className="card text-center">
-                <div className="card-header">
+                <div className="card-header mt-1">
                     <h3>An error occured 😢</h3>
                 </div>
                 <div className="card-body">{errorTypes[message]}</div>
