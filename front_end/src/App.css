@@ -84,10 +84,6 @@ body.dark-mode .toggle-dark-mode {
 }
 
 @media (max-width: 992px) {
-    .bg-1 {
-        height: 20vh;
-    }
-
     .responsive-margin {
         margin-top: 2vh;
     }

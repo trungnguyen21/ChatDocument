@@ -11,7 +11,7 @@ const CustomNavbar = ({ darkMode, toggleDarkMode, flushRedis, fileUploader, sect
   const [isMobile, setIsMobile] = useState(false);
   const [expanded, setExpanded] = useState(false);
   const { fileUploaded } = useContext(FileContext);
-  const { dispatch } = useContext(ChatContext);
+  const { state } = useContext(ChatContext);
 
   useEffect(() => {
     const handleResize = () => {
@@ -28,7 +28,7 @@ const CustomNavbar = ({ darkMode, toggleDarkMode, flushRedis, fileUploader, sect
 
   useEffect(() => {
     setExpanded(false);
-  }, [fileUploaded, dispatch]);
+  }, [fileUploaded, state]);
 
   useEffect(() => {
     if (isMobile) {

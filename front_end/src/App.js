@@ -9,6 +9,7 @@ import './App.css';
 import config from './config';
 import axios from 'axios';
 import Navbar from './components/Navbar/Navbar.js';
+import ErrorPopup from './components/ErrorPopup/ErrorPopup.js';
 
 function App() {
   const baseURL = config.baseURL;
@@ -44,6 +45,7 @@ function App() {
 
   return (
     <ChatProvider>
+      <ErrorPopup message="CONNECTION_ERROR" showReloadButton={true} />
       <FileProvider>
         <div>
           <Navbar classname="nav-template" darkMode={darkMode} toggleDarkMode={toggleDarkMode}
