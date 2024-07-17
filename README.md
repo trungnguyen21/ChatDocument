@@ -1,5 +1,4 @@
-# Project Name
-
+# ChatDocument
 ## Description
 
 This project is designed to facilitate document upload and interaction via a chat bot, focused on extracting and discussing information from uploaded PDF files.
@@ -52,6 +51,5 @@ This project is designed to facilitate document upload and interaction via a cha
 
 ## Contributing
 
-Contributions are welcome. Please fork the repository and submit a pull request with your changes. Contributors:
 - Phong Pham
 - Trung Nguyen
