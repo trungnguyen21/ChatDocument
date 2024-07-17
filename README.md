@@ -1,4 +1,4 @@
-# Chat Document
+# Project Name
 
 ## Description
 
@@ -16,8 +16,19 @@ This project is designed to facilitate document upload and interaction via a cha
    - Clone the repository:
      git clone https://github.com/your/repository.git
      cd repository
-     
-2. **Frontend Setup**
+
+2. **Backend Setup**
+   - Navigate to the backend directory:
+     cd back_end
+   - Install dependencies:
+     pip install -r requirements.txt
+   - Set environment variables:
+     export GEMINI_API_KEY="your_gemini_api_key"
+     export REDIS_URL="your_redis_url"
+   - Run the backend server:
+     uvicorn app:app --reload
+
+3. **Frontend Setup**
    - Navigate to the frontend directory:
      cd front_end
    - Install dependencies:
@@ -44,4 +55,3 @@ This project is designed to facilitate document upload and interaction via a cha
 Contributions are welcome. Please fork the repository and submit a pull request with your changes. Contributors:
 - Phong Pham
 - Trung Nguyen
-
