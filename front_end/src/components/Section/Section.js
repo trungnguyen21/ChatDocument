@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useContext } from 'react';
 import ChatContext from '../Context/ChatContext';
 import FileContext from '../Context/FileContext';
+import ErrorContext from '../Context/ErrorContext';
 import axios from 'axios';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './style.css';
@@ -11,6 +12,7 @@ const SectionSwitchBar = ({ darkMode }) => {
   const [isEmpty, setIsEmpty] = useState(true);
   const { state, dispatch } = useContext(ChatContext);
   const { fileUploaded } = useContext(FileContext);
+  const { notify } = useContext(ErrorContext);
   const baseURL = config.baseURL;
 
   const changeSession = (sessionID) => {
@@ -26,6 +28,7 @@ const SectionSwitchBar = ({ darkMode }) => {
       console.log('Finish: ', fileId);
     } catch (error) {
       console.error('Error changing section:', error);
+
     }
   };
 
@@ -56,6 +59,7 @@ const SectionSwitchBar = ({ darkMode }) => {
       console.log('Finish deleting: ', fileId);
     } catch (error) {
       console.error('Error deleting section:', error);
+      notify({ type: 'ERROR', payload: 'SERVER_ERROR' });
     }
   };
 
@@ -82,6 +86,8 @@ const SectionSwitchBar = ({ darkMode }) => {
                   <button
                     type="button"
                     className="btn btn-outline delete-btn"
+                    data-toggle="tooltip"
+                    title="Delete this file"
                     onClick={() => deleteSection(fileId)}
                   >
                     <i class="bi bi-x"></i>

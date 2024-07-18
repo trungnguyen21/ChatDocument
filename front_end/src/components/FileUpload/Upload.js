@@ -3,14 +3,18 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import './style.css';
 import FileContext from '../Context/FileContext';
 import ChatContext from '../Context/ChatContext';
+import ErrorContext from '../Context/ErrorContext';
 import config from '../../config';
 
 const FileUploader = () => {
+  const MAX_FILE_SIZE = 3 * 1024 * 1024; // 3MB
+
   const [selectedFile, setSelectedFile] = useState(null);
   const [loading, setLoading] = useState(false);
   const [done, setDone] = useState(false);
   const { notifyFileUploaded } = useContext(FileContext);
   const { dispatch } = useContext(ChatContext);
+  const { notify } = useContext(ErrorContext);
   const baseURL = config.baseURL;
 
   const handleFileChange = (e) => {
@@ -23,6 +27,12 @@ const FileUploader = () => {
   }
 
   const handleUpload = async () => {
+    if (selectedFile.size > MAX_FILE_SIZE) {
+      notify({ type: 'ERROR', payload: 'FILE_TOO_LARGE' });
+      setSelectedFile(null);
+      return;
+    }
+
     setLoading(true);
     const formData = new FormData();
     formData.append('file', selectedFile);
@@ -45,6 +55,7 @@ const FileUploader = () => {
       setDone(true);
     } catch (error) {
       console.error('Error uploading file:', error);
+      notify({ type: 'ERROR', payload: 'CONNECTION_ERROR' });
     } finally {
       setLoading(false);
     }
@@ -59,11 +70,15 @@ const FileUploader = () => {
             type="file"
             onChange={handleFileChange}
             className="form-control-file mb-3"
-            accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx"
+            accept="application/pdf"
           />
           <div className="text-center">
             <button
+              type='button'
               className="btn btn-primary always-white"
+              data-toggle="tooltip"
+              data-placement="top"
+              title="Upload your file to start, max 3MB."
               onClick={handleUpload}
               disabled={!selectedFile || loading}
             >

@@ -1,0 +1,46 @@
+.error-background {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 9999;
+}
+
+.error-popup {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    max-width: 30%;
+    border-radius: 0.25rem;
+    z-index: 10000;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+}
+
+.btn-error {
+    width: fit-content;
+    height: auto;
+    padding-inline: 1.25rem;
+    padding-block: 0.5rem;
+    font-size: 1rem;
+    margin-top: 0rem !important;
+}
+
+.card-buttons {
+    display: flex;
+    justify-content: center;
+    align-content: center;
+    gap: 1rem;
+    padding-block: 1rem;
+}
+
+@media only screen and (max-width: 600px) {
+    .error-popup {
+        max-width: 80%;
+        width: inherit;
+    }
+}
+
