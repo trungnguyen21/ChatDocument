@@ -26,7 +26,7 @@ This is a simple Retrieval Augmented Generation app (RAG) with a full-fledged us
 ## System structure (feedback appreciated!)
 <img width="590" alt="image" src="https://github.com/user-attachments/assets/ea5b213f-5942-4633-bc36-f1e7b87ca71f">
 
-## TODO list:
+## TODOs:
 - [x] Create the app itself :D
    - [x] PDF reader
    - [x] RAG chain with context and chat history
