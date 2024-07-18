@@ -1,55 +1,46 @@
 # ChatDocument
 ## Description
 
-This project is designed to facilitate document upload and interaction via a chat bot, focused on extracting and discussing information from uploaded PDF files.
+This is a simple Retrieval Augmented Generation app (RAG) with a full-fledged user interface and a RESTApi server!
 
 ## Features
 
-- **Document Upload**: Users can upload PDF files containing information for analysis.
-- **Chat Bot Interaction**: Utilizes a chat bot to discuss and extract key information from uploaded PDFs.
-- **Secure Environment**: Implements environment variables for sensitive data (e.g., API keys, URLs).
+- **Document Upload**: Users can upload PDF files up to 3145728B (~3MB) containing information for analysis.
+- **Google Gemini Pro**: Leveraging Google's latest LLM with 3 million token contexts to craft responses and embeddings.
+- **State-of-the-art UI**: Can't go wrong with React + Bootstrap
+- **HTTPS**: Deployed on a VPS with a valid SSL certificate 
+
+## Technology behind the scene
+- Server: Langchain, FastAPI, Redis
+- Client: React, Bootstrap
 
 ## Installation
+1. Clone the repository
+2. Make sure you are on the branch `main`
+3. cd into it
+4. Add GOOGLE_API_KEY and REDIS_URL as variables in the `back_end/.env`
+  - Google Gemini: https://ai.google.dev/gemini-api
+  - Redis: https://redis.io/
+5. `docker compose up` 
 
-1. **Clone Repository**
-   - Clone the repository:
-     git clone https://github.com/your/repository.git
-     cd repository
+## System structure (feedback appreciated!)
+<img width="590" alt="image" src="https://github.com/user-attachments/assets/ea5b213f-5942-4633-bc36-f1e7b87ca71f">
 
-2. **Backend Setup**
-   - Navigate to the backend directory:
-     cd back_end
-   - Install dependencies:
-     pip install -r requirements.txt
-   - Set environment variables:
-     export GEMINI_API_KEY="your_gemini_api_key"
-     export REDIS_URL="your_redis_url"
-   - Run the backend server:
-     uvicorn app:app --reload
+## TODO list:
+- [x] Create the app itself :D
+   - [x] PDF reader
+   - [x] RAG chain with context and chat history
+   - [x] REST api endpoints
+   - [x] React app client
+   - [ ] Better PDF parser
+   - [ ] Scale vectorstore
+   - [ ] Agents with self-evaluating mechanism instead of current chain
+   - [ ] Improve processing time + Add support for larger file
+- [ ] ~~Deploy on Vercel~~ File too large
+- [x] Deploy on a VPS with `nginx` and `pm2`
+- [ ] Use `WebSocket` for faster conversation response rate
+- [ ] Site reliability engineering (eta soon)
 
-3. **Frontend Setup**
-   - Navigate to the frontend directory:
-     cd front_end
-   - Install dependencies:
-     npm install
-   - Start the frontend server:
-     npm start
-
-## Usage
-
-1. **Upload a Document**
-   - Access the frontend server (default: http://localhost:3000).
-   - Upload a PDF file containing relevant information.
-
-2. **Interact with the Chat Bot**
-   - Use the chat interface to discuss and analyze the content of the uploaded PDF.
-
-## Environment Variables
-
-- **GEMINI_API_KEY**: API key for Gemini service.
-- **REDIS_URL**: URL for Redis database.
-
-## Contributing
-
+## Contributors
 - Phong Pham
 - Trung Nguyen
