@@ -6,7 +6,7 @@ This is a simple Retrieval Augmented Generation app (RAG) with a full-fledged us
 ## Features
 
 - **Document Upload**: Users can upload PDF files up to 3145728B (~3MB) containing information for analysis.
-- **Google Gemini Pro**: Leveraging Google's latest LLM with 3 million token contexts to craft responses and embeddings.
+- **Google Gemini Pro**: Leveraging Google's latest LLM with 2 million token contexts to craft responses and embeddings.
 - **State-of-the-art UI**: Can't go wrong with React + Bootstrap
 - **HTTPS**: Deployed on a VPS with a valid SSL certificate 
 
