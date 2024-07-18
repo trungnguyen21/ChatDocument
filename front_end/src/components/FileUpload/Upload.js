@@ -55,7 +55,7 @@ const FileUploader = () => {
       setDone(true);
     } catch (error) {
       console.error('Error uploading file:', error);
-      notify({ type: 'ERROR', payload: 'SERVER_ERROR' });
+      notify({ type: 'ERROR', payload: 'CONNECTION_ERROR' });
     } finally {
       setLoading(false);
     }

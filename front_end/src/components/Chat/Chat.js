@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect, useContext } from 'react';
 import Message from './Message.js';
 import axios from 'axios';
 import ChatContext from '../Context/ChatContext.js';
+import ErrorContext from '../Context/ErrorContext.js';
 import './style.css';
 import config from '../../config';
 
@@ -10,6 +11,7 @@ const Chat = () => {
   const [isActive, setActive] = useState(false);
   const messagesEndRef = useRef(null);
   const { state } = useContext(ChatContext);
+  const { notify } = useContext(ErrorContext);
   const session_id = state.sessionId;
   const baseURL = config.baseURL;
 
@@ -37,7 +39,7 @@ const Chat = () => {
           setMessages(chatHistory);
         } catch (error) {
           console.error('Error fetching chat history:', error);
-          // TODO: handle error client-side
+          notify({ type: 'ERROR', payload: 'SERVER_ERROR' });
         }
       }
     };
