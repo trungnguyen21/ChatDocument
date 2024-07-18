@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { ChatProvider } from './components/Context/ChatContext.js';
 import { FileProvider } from './components/Context/FileContext.js';
+import ErrorContext from './components/Context/ErrorContext.js';
 import Chat from './components/Chat/Chat';
 import FileUploader from './components/FileUpload/Upload';
 import SectionSwitchBar from './components/Section/Section';
@@ -13,6 +14,7 @@ import ErrorPopup from './components/ErrorPopup/ErrorPopup.js';
 
 function App() {
   const baseURL = config.baseURL;
+  const { state, notify } = useContext(ErrorContext); 
 
   const [darkMode, setDarkMode] = useState(() => {
     const savedTheme = localStorage.getItem('darkMode');
@@ -38,15 +40,15 @@ function App() {
       localStorage.removeItem('fileMap');
       window.location.reload();
     } catch (error) {
+      notify({ type: 'ERROR', payload: 'SERVER_ERROR' });
       console.error('Error flushing Redis:', error);
-      // Handle error gracefully, e.g., show a toast or alert
     }
   };
 
   return (
     <ChatProvider>
-      <ErrorPopup message="CONNECTION_ERROR" showReloadButton={true} />
       <FileProvider>
+        <ErrorPopup message={state.error_type} showReloadButton={true} />
         <div>
           <Navbar classname="nav-template" darkMode={darkMode} toggleDarkMode={toggleDarkMode}
            flushRedis={flushRedis} className="navbar"

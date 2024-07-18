@@ -37,6 +37,7 @@ const Chat = () => {
           setMessages(chatHistory);
         } catch (error) {
           console.error('Error fetching chat history:', error);
+          // TODO: handle error client-side
         }
       }
     };
@@ -72,6 +73,17 @@ const Chat = () => {
       });
     } catch (error) {
       console.error('Error getting response:', error);
+      const errorMessage = { text: 'Sorry, I encountered an error. Please try again. If the error is persistent, please reload the page.', sender: 'chatbot' };
+      setMessages((prevMessages) => {
+        const updatedMessages = [...prevMessages];
+        const loadingMessageIndex = updatedMessages.findIndex(
+          (message) => message.sender === 'chatbot' && message.text === 'Generating a response...'
+        );
+        if (loadingMessageIndex !== -1) {
+          updatedMessages.splice(loadingMessageIndex, 1, errorMessage);
+        }
+        return updatedMessages;
+      })
     }
   };
 
