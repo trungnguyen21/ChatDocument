@@ -4,12 +4,15 @@ from langchain_experimental.text_splitter import SemanticChunker
 from langchain_community.vectorstores.redis import Redis
 
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
+from langchain_core.output_parsers import StrOutputParser
 
 from langchain.chains.retrieval import create_retrieval_chain
 from langchain.chains.history_aware_retriever import create_history_aware_retriever
 from langchain.chains.combine_documents import create_stuff_documents_chain
 from langchain_community.chat_message_histories import RedisChatMessageHistory
 from langchain_core.runnables import Runnable
+
+from langchain.callbacks.streaming_stdout_final_only import FinalStreamingStdOutCallbackHandler
 
 import os, redis
 import time  # Import time module
@@ -29,7 +32,11 @@ REDIS_URL = os.getenv("REDIS_URL")
 # Testing purposes
 file = "data/files/sample1.pdf"
 
-llm = ChatGoogleGenerativeAI(model="gemini-1.5-pro-latest", streaming=True)
+llm = ChatGoogleGenerativeAI(
+    model="gemini-1.5-pro-latest", 
+    streaming=True, 
+    callbacks=[FinalStreamingStdOutCallbackHandler(answer_prefix_tokens=["answer", ":"])]
+)
 embeddings = GoogleGenerativeAIEmbeddings(model="models/embedding-001")
 
 # Create a redis client
@@ -177,24 +184,43 @@ def init_chain_with_history(retriever):
         raise
 
 @measure_time
-def output_generation(question: str, session_id: str, chain: Runnable):
+async def output_generation(question: str, session_id: str, chain: Runnable):
     """
     Answer the given question.
     """
     try:
-        output = chain.invoke(
+        answer = []
+        async for chunk in chain.astream(
             {
             'input': question,
             'chat_history': get_session_history(session_id).messages
             }
-        )
-        log_chat_history(session_id, question, str(output["answer"]))
-
-        print("Step 4. Successfully generated an output")
-        return str(output["answer"])
+        ):
+            for key in chunk:
+                if key == "answer":
+                    answer.append(chunk[key])
+                    yield chunk[key]
     except Exception as e:
         print(f"Error in output_generation: {e}")
         raise
+    finally:
+        log_chat_history(session_id, question, "".join(answer))
+
+@measure_time
+async def chat_completion(question: str):
+    """
+    Get response.
+    """
+    full = []
+    try:
+        async for chunks in llm.astream(question):
+            full += chunks.content
+            yield chunks
+    except Exception as e:
+        print(f"Error in chat_completion: {e}")
+        raise
+    finally:
+        print("".join(full))
 
 @measure_time
 def log_chat_history(session_id: str, human_message, ai_message):
