@@ -32,7 +32,7 @@ const Chat = () => {
       if (state.sessionId) {
         try {
           const response = await axios.get(baseURL + '/chat_history', { params: { session_id: state.sessionId } });
-          const chatHistory = await response.data.message.map((message) => ({
+          const chatHistory = response.data.message.map((message) => ({
             text: message.content,
             sender: message.type === 'human' ? 'user' : 'chatbot',
           }));
@@ -61,18 +61,37 @@ const Chat = () => {
 
     try {
       console.log('Session ID at Chat.js:', session_id);
-      const response = await axios.post(baseURL + '/chat_completion/', { question: text, session_id: session_id });
-      const chatbotMessage = { text: response.data.message, sender: 'chatbot' };
-      setMessages((prevMessages) => {
-        const updatedMessages = [...prevMessages];
-        const loadingMessageIndex = updatedMessages.findIndex(
-          (message) => message.sender === 'chatbot' && message.text === 'Generating a response...'
-        );
-        if (loadingMessageIndex !== -1) {
-          updatedMessages.splice(loadingMessageIndex, 1, chatbotMessage);
-        }
-        return updatedMessages;
+
+      const response = await fetch(baseURL + '/chat_completion/', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ question: text, session_id: session_id }),
       });
+
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder();
+      let chatbotMessage = { text: '', sender: 'chatbot' };
+      let loadingMessageIndex = messages.length + 1;  // Index of the loading message in the state
+
+      while (true) {
+        const { value, done } = await reader.read();
+        if (done) break;
+        chatbotMessage.text += decoder.decode(value, { stream: true });
+        setMessages((prevMessages) => {
+          const updatedMessages = [...prevMessages];
+          updatedMessages[loadingMessageIndex] = { ...chatbotMessage };
+          return updatedMessages;
+        });
+      }
+
+      // Remove loading message once streaming is complete
+      setMessages((prevMessages) => prevMessages.filter((_, index) => index !== loadingMessageIndex));
+
+      // Add final chatbot message
+      setMessages((prevMessages) => [...prevMessages, chatbotMessage]);
+
     } catch (error) {
       console.error('Error getting response:', error);
       const errorMessage = { text: 'Sorry, I encountered an error. Please try again. If the error is persistent, please reload the page.', sender: 'chatbot' };
@@ -85,7 +104,7 @@ const Chat = () => {
           updatedMessages.splice(loadingMessageIndex, 1, errorMessage);
         }
         return updatedMessages;
-      })
+      });
     }
   };
 
@@ -125,7 +144,7 @@ const Chat = () => {
           className="btn btn-send"
           disabled={!isActive}
         >
-          <i class="bi bi-send"></i>
+          <i className="bi bi-send"></i>
         </button>
       </div>
     </div>

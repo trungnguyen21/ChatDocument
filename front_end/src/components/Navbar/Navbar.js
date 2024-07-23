@@ -57,9 +57,9 @@ const CustomNavbar = ({ darkMode, toggleDarkMode, flushRedis, fileUploader, sect
           <Nav.Link onClick={toggleDarkMode} className="me-3" data-toggle="tooltip" title="Select light/dark mode">
             {darkMode ? <><i className="bi bi-moon"></i> Light</> : <><i className="bi bi-moon-fill"></i> Dark</>}
           </Nav.Link>
-          <Nav.Link onClick={flushRedis} className="me-3" data-toggle="tooltip" title="Clear all uploaded file and chats">
+          {/* <Nav.Link onClick={flushRedis} className="me-3" data-toggle="tooltip" title="Clear all uploaded file and chats">
             {darkMode ? <><i className="bi bi-trash"></i> Flush</> : <><i className="bi bi-trash-fill"></i> Flush</>}
-          </Nav.Link>
+          </Nav.Link> */}
         </Nav>
 
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
@@ -68,9 +68,9 @@ const CustomNavbar = ({ darkMode, toggleDarkMode, flushRedis, fileUploader, sect
             <Nav.Link onClick={toggleDarkMode} className="me-3">
               {darkMode ? <><i className="bi bi-moon"></i> Light</> : <><i className="bi bi-moon-fill"></i> Dark</>}
             </Nav.Link>
-            <Nav.Link onClick={flushRedis} className="me-3">
+            {/* <Nav.Link onClick={flushRedis} className="me-3">
               {darkMode ? <><i className="bi bi-trash"></i> Flush</> : <><i className="bi bi-trash-fill"></i> Flush</>}
-            </Nav.Link>
+            </Nav.Link> */}
           </Nav>
           <Nav className="ms-auto d-md-none mt-2 mb-3">
             {fileUploader && (
