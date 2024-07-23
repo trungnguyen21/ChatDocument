@@ -1,5 +1,6 @@
 from fastapi import FastAPI, UploadFile, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
 from typing import Dict
 
@@ -158,11 +159,30 @@ async def chat_completion(body: RequestBody):
     rag_chain = rag_chains.get(file_id)
     # If retriever and rag_chain are not initialized, initialize them
     if retriever is None or rag_chain is None:
-        raise HTTPException(status_code=500, detail="Retriever and rag_chain are not initialized. Call /initialize_model first.")
+        # raise HTTPException(status_code=500, detail="Retriever and rag_chain are not initialized. Call /initialize_model first.")
+        async def generate():
+            async for token in model.chat_completion(body.question):
+                yield token.content + " "
+        return StreamingResponse(generate(), media_type="text/plain")
+    else:
+        async def generate():
+            async for token in model.output_generation(body.question, file_id, rag_chain):
+                yield str(token) + " "
+        return StreamingResponse(generate(), media_type="text/plain")
 
     # Use the file path to answer the question
-    response = model.output_generation(body.question, file_id, rag_chain)
-    return {"message": response}
+    # response = model.output_generation(body.question, file_id, rag_chain)
+    # return {"message": response}
+
+    
+
+@app.get("/api/chat/")
+async def chat(question: str):
+    async def generate():
+        async for token in model.chat_completion(question):
+            yield token.content + " "
+
+    return StreamingResponse(generate(), media_type="text/plain")
 
 @app.get("/api/chat_history")
 async def chat_history(session_id: str):
