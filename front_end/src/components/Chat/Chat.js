@@ -62,12 +62,11 @@ const Chat = () => {
     try {
       console.log('Session ID at Chat.js:', session_id);
 
-      const response = await fetch(baseURL + '/chat_completion/', {
-        method: 'POST',
+      const response = await fetch(baseURL + `/chat_completion/?session_id=${session_id}&question=${text}`, {
+        method: 'GET',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ question: text, session_id: session_id }),
       });
 
       const reader = response.body.getReader();
