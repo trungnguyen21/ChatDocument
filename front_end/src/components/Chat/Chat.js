@@ -32,11 +32,24 @@ const Chat = () => {
       if (state.sessionId) {
         try {
           const response = await axios.get(baseURL + '/chat_history', { params: { session_id: state.sessionId } });
-          const chatHistory = response.data.message.map((message) => ({
-            text: message.content,
-            sender: message.type === 'human' ? 'user' : 'chatbot',
-          }));
-          setMessages(chatHistory);
+          const chatHistory = response.data.message;
+          if (chatHistory.length === 0) {
+            // clear all previous messages
+            setMessages([]);
+            setMessages((prevMessages) => [
+              ...prevMessages,
+              {
+                text: 'Welcome! How can I help you today?',
+                sender: 'chatbot',
+              },
+            ]);
+          } else {
+            const chatHistory = chatHistory.map((message) => ({
+              text: message.content,
+              sender: message.type === 'human' ? 'user' : 'chatbot',
+            }));
+            setMessages(chatHistory);
+          }
         } catch (error) {
           console.error('Error fetching chat history:', error);
           notify({ type: 'ERROR', payload: 'SERVER_ERROR' });

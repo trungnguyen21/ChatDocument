@@ -51,11 +51,14 @@ const SectionSwitchBar = ({ darkMode }) => {
       const fileMap = JSON.parse(localStorage.getItem('fileMap')) || {};  
       delete fileMap[fileId];
       localStorage.setItem('fileMap', JSON.stringify(fileMap));
-
-      changeSession(null);
-      fileId = null;
-      
       fetchFiles();
+
+      if (state.sessionId === fileId) {
+        changeSession(null);
+        fileId = null;
+        window.location.reload();
+      } 
+      
       console.log('Finish deleting: ', fileId);
     } catch (error) {
       console.error('Error deleting section:', error);
