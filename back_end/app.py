@@ -62,6 +62,15 @@ class SectionIDBody(BaseModel):
 async def root():
     return {"message": "Hello World"}
 
+@app.get("/api/db-health")
+async def db_health():
+    try:
+        redis_client.ping()
+    except Exception as e:
+        print(f"Error in pinging redis: {e}")
+        raise
+    return {"message": "Redis is up and running."}
+
 
 @app.get("/api/files")
 def files(file_id: SectionIDBody):
@@ -149,26 +158,26 @@ async def model_activation(session_body: SectionIDBody):
     return {"message": "Retriever and rag_chain initialized successfully."}
 
 
-@app.post("/api/chat_completion/")
-async def chat_completion(body: RequestBody):
+@app.get("/api/chat_completion/")
+async def chat_completion(session_id: str, question: str):
     """
     Get response
     """
-    file_id = body.session_id
+    file_id = session_id
     retriever = retrievers.get(file_id)
     rag_chain = rag_chains.get(file_id)
     # If retriever and rag_chain are not initialized, initialize them
     if retriever is None or rag_chain is None:
         # raise HTTPException(status_code=500, detail="Retriever and rag_chain are not initialized. Call /initialize_model first.")
         async def generate():
-            async for token in model.chat_completion(body.question):
+            async for token in model.chat_completion(question):
                 yield token.content + " "
-        return StreamingResponse(generate(), media_type="text/plain")
+        return StreamingResponse(generate(), media_type="text/event-stream")
     else:
         async def generate():
-            async for token in model.output_generation(body.question, file_id, rag_chain):
+            async for token in model.output_generation(question, file_id, rag_chain):
                 yield str(token) + " "
-        return StreamingResponse(generate(), media_type="text/plain")
+        return StreamingResponse(generate(), media_type="text/event-stream")
 
     # Use the file path to answer the question
     # response = model.output_generation(body.question, file_id, rag_chain)

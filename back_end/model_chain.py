@@ -33,7 +33,7 @@ REDIS_URL = os.getenv("REDIS_URL")
 file = "data/files/sample1.pdf"
 
 llm = ChatGoogleGenerativeAI(
-    model="gemini-1.5-pro-latest", 
+    model="gemini-1.5-flash", 
     streaming=True, 
     callbacks=[FinalStreamingStdOutCallbackHandler(answer_prefix_tokens=["answer", ":"])]
 )
