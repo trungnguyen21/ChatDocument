@@ -44,11 +44,11 @@ const Chat = () => {
               },
             ]);
           } else {
-            const chatHistory = chatHistory.map((message) => ({
+            const message_history = chatHistory.map((message) => ({
               text: message.content,
               sender: message.type === 'human' ? 'user' : 'chatbot',
             }));
-            setMessages(chatHistory);
+            setMessages(message_history);
           }
         } catch (error) {
           console.error('Error fetching chat history:', error);
