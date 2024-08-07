@@ -16,4 +16,4 @@ sample_chain.py
 back_end/.env
 back_end/.DS_Store
 
-back_end/test/
+back_end/draft/

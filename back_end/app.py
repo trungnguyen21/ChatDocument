@@ -69,7 +69,7 @@ async def db_health():
     except Exception as e:
         print(f"Error in pinging redis: {e}")
         raise
-    return {"message": f"Redis is up and running @ {REDIS_URL}."}
+    return {"message": f"Database is healthy"}
 
 
 @app.get("/api/files")
