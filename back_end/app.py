@@ -68,17 +68,17 @@ async def db_health():
         redis_client.ping()
     except Exception as e:
         print(f"Error in pinging redis: {e}")
-        raise
+        raise HTTPException(status_code=500, detail="Database is not correctly configured.")
     return {"message": f"Database is healthy"}
 
 
 @app.get("/api/files")
-def files(file_id: SectionIDBody):
+def files(file_id: str):
     """
     Get the list of files
     """
     # TODO: implement with external db
-    return {"message": file_map.get(file_id.session_id)}
+    return {"message": file_map.get(file_id)}
 
 @app.post("/api/upload/")
 async def upload(file: UploadFile):
@@ -104,7 +104,7 @@ async def upload(file: UploadFile):
 
 def nmodel_activation(session_id: str):
     """
-    Initialize the model
+    Initialize the model with async
     """
 
     # Retrieve the file path using the provided file_id
@@ -125,7 +125,7 @@ def nmodel_activation(session_id: str):
             rag_chains[file_id] = model.init_chain_with_history(retrievers[file_id])
     except Exception as e:
         print(f"Error in initializing model: {e}")
-        raise
+        raise HTTPException(status_code=500, detail="Error in initializing model.")
 
     return {"message": "Retriever and rag_chain initialized successfully."}
 
@@ -153,7 +153,7 @@ async def model_activation(session_body: SectionIDBody):
             rag_chains[file_id] = model.init_chain_with_history(retrievers[file_id])
     except Exception as e:
         print(f"Error in initializing model: {e}")
-        raise
+        raise HTTPException(status_code=500, detail="Error in initializing model.")
 
     return {"message": "Retriever and rag_chain initialized successfully."}
 
@@ -206,6 +206,12 @@ async def flush():
     """
     Flush all data
     """
+    try:
+        redis_client.flushall()
+    except Exception as e:
+        print(f"Error in flushing data: {e}")
+        raise HTTPException(status_code=500, detail="Error in flushing data.")
+    
     retrievers.clear()
     rag_chains.clear()
     
@@ -213,12 +219,9 @@ async def flush():
     file_names = os.listdir(data_path)
     for file in file_names:
         os.remove(os.path.join(data_path, file))
+        file_map.clear()
+        save_file_map(file_map)
 
-    try:
-        redis_client.flushall()
-    except Exception as e:
-        print(f"Error in flushing data: {e}")
-        raise
     return {"message": "Data flushed successfully."}
 
 @app.delete("/api/delete")
@@ -234,7 +237,7 @@ async def delete(file_id: str):
             save_file_map(file_map)
         except Exception as e:
             print(f"Error in deleting file: {e}")
-            raise
+            raise HTTPException(status_code=500, detail="Error in deleting file.")
 
     retrievers.pop(file_id)
     rag_chains.pop(file_id)
