@@ -17,3 +17,4 @@ back_end/.env
 back_end/.DS_Store
 
 back_end/draft/
+.vscode/

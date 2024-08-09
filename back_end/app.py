@@ -161,7 +161,7 @@ async def model_activation(session_body: SectionIDBody):
 @app.get("/api/chat_completion/")
 async def chat_completion(session_id: str, question: str):
     """
-    Get response
+    Get response from model, use LLM if the model is not initialized
     """
     file_id = session_id
     retriever = retrievers.get(file_id)
