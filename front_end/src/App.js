@@ -7,14 +7,12 @@ import FileUploader from './components/FileUpload/Upload';
 import SectionSwitchBar from './components/Section/Section';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './App.css';
-import config from './config';
-import axios from 'axios';
 import Navbar from './components/Navbar/Navbar.js';
 import ErrorPopup from './components/ErrorPopup/ErrorPopup.js';
+import Footer from './components/Footer/Footer.js';
 
 function App() {
-  const baseURL = config.baseURL;
-  const { state, notify } = useContext(ErrorContext); 
+  const { state } = useContext(ErrorContext); 
 
   const [darkMode, setDarkMode] = useState(() => {
     const savedTheme = localStorage.getItem('darkMode');
@@ -34,26 +32,17 @@ function App() {
     setDarkMode(!darkMode);
   };
 
-  const flushRedis = async () => {
-    try {
-      await axios.delete(`${baseURL}/flush`);
-      localStorage.removeItem('fileMap');
-      window.location.reload();
-    } catch (error) {
-      notify({ type: 'ERROR', payload: 'SERVER_ERROR' });
-      console.error('Error flushing Redis:', error);
-    }
-  };
-
   return (
     <ChatProvider>
       <FileProvider>
         <ErrorPopup message={state.error_type} showReloadButton={true} />
         <div>
-          <Navbar classname="nav-template" darkMode={darkMode} toggleDarkMode={toggleDarkMode}
-           flushRedis={flushRedis} className="navbar"
+          <Navbar classname="nav-template" 
+           className="navbar"
+           darkMode={darkMode} toggleDarkMode={toggleDarkMode}
+           footer={<Footer />}
            fileUploader={<FileUploader />}
-            sectionSwitchBar={<SectionSwitchBar darkMode={darkMode}/>} />
+           sectionSwitchBar={<SectionSwitchBar darkMode={darkMode}/>} />
 
           <div className="mt-3">
             <div className="row no-gutter">
@@ -61,6 +50,7 @@ function App() {
                 <div className="uploader">
                   <FileUploader />
                   <SectionSwitchBar darkMode={darkMode}/>
+                  <Footer />
                 </div>
               </div>
 

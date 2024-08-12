@@ -118,3 +118,11 @@ p {
     max-height: 78vh;
   }
 }
+
+
+.form-control {
+  height: 45px;
+  resize: none;
+  overflow-y: auto;
+  padding-block: 0;
+}

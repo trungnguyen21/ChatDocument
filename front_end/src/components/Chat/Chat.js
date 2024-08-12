@@ -138,19 +138,18 @@ const Chat = () => {
         <div ref={messagesEndRef} />
       </div>
       <div className="card-footer input-container d-flex">
-        <input
-          ref={inputRef}
-          type="text"
-          placeholder={isActive ? "Type a message..." : "Please upload or select a file."}
-          onKeyDown={(e) => {
-            if (isActive && e.key === 'Enter' && e.target.value.trim() !== '') {
-              sendMessage(e.target.value);
-              e.target.value = '';
-            }
-          }}
-          className="form-control shadow-none"
-          disabled={!isActive}
-        />
+      <textarea
+        ref={inputRef}
+        placeholder={isActive ? "Type a message..." : "Please upload or select a file."}
+        onKeyDown={(e) => {
+          if (isActive && e.key === 'Enter' && e.target.value.trim() !== '') {
+            sendMessage(e.target.value);
+            e.target.value = '';
+          }
+        }}
+        className="form-control shadow-none"
+        disabled={!isActive}
+      />
         <button
           onClick={() => handleSendClick(inputRef)}
           className="btn btn-send"

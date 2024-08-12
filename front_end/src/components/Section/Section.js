@@ -46,12 +46,12 @@ const SectionSwitchBar = ({ darkMode }) => {
   const deleteSection = async (fileId) => {
     console.log("Delete ", fileId);
     try {
-      await axios.delete(`${baseURL}/delete?file_id=${fileId}`);
-
       const fileMap = JSON.parse(localStorage.getItem('fileMap')) || {};  
       delete fileMap[fileId];
       localStorage.setItem('fileMap', JSON.stringify(fileMap));
       fetchFiles();
+
+      await axios.delete(`${baseURL}/delete?file_id=${fileId}`);
 
       if (state.sessionId === fileId) {
         changeSession(null);
@@ -71,7 +71,7 @@ const SectionSwitchBar = ({ darkMode }) => {
       <div className='card'>
         <div className='card-body'>
           <h1 className='card-title'>Files</h1>
-          {isEmpty && <p className='text-center'>No files uploaded yet.</p>}
+          {isEmpty && <p className='text-center'>No TOS to review yet 🤔.</p>}
           <div className='contained'>
             <div className="d-flex flex-column gap-2 mx-auto w-100">
               {files.map(({ fileName, fileId }) => (

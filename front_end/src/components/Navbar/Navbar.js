@@ -5,7 +5,7 @@ import logo from '../../logo.png';
 import './style.css';
 import ChatContext from '../Context/ChatContext';
 
-const CustomNavbar = ({ darkMode, toggleDarkMode, flushRedis, fileUploader, sectionSwitchBar }) => {
+const CustomNavbar = ({ darkMode, toggleDarkMode, footer, fileUploader, sectionSwitchBar }) => {
   const [isMobile, setIsMobile] = useState(false);
   const [expanded, setExpanded] = useState(false);
   const { state } = useContext(ChatContext);
@@ -50,7 +50,7 @@ const CustomNavbar = ({ darkMode, toggleDarkMode, flushRedis, fileUploader, sect
       <Container className="d-flex justify-content-between align-items-center">
         <Navbar.Brand className="d-flex align-items-center">
           <img src={logo} width={24} height={24} alt='website logo' className="mx-2" />
-          <div>Chat Document</div>
+          <div>TermScout</div>
         </Navbar.Brand>
 
         <Nav className="d-flex align-items-center d-none d-md-flex">
@@ -78,6 +78,9 @@ const CustomNavbar = ({ darkMode, toggleDarkMode, flushRedis, fileUploader, sect
             )}
             {sectionSwitchBar && (
               <>{sectionSwitchBar}</>
+            )}
+            {footer && (
+              <>{footer}</>
             )}
           </Nav>
         </Navbar.Collapse>

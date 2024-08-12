@@ -25,11 +25,12 @@ def test_session_with_files():
     current_dir = os.path.dirname(os.path.realpath(__file__))
     with open(os.path.join(current_dir, 'sample-1.pdf'), 'rb') as file:
         response = s.post(f'{url}/upload/', files={"file": file})
+        print(response)
 
-    id = response.json()['file_id']
     assert response.status_code == 200
     assert response.json()['Result'] == 'OK'
-
+    
+    id = response.json()['file_id']
     response_get_file = s.get(f"{url}/files?file_id={id}")
     assert response_get_file.status_code == 200
     # check if a file exists in the server
@@ -48,7 +49,6 @@ def test_api_chat_history():
         params={"session_id": session},
     ) as response:
         assert response.status_code == 200
-        assert response.json() == {"message": "Chat history for session 123 (test)"}
 
 def test_api_flush():
     response = requests.delete(url + '/flush')

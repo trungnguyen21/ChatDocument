@@ -82,7 +82,7 @@ const FileUploader = () => {
               onClick={handleUpload}
               disabled={!selectedFile || loading}
             >
-              {loading ? 'Uploading...' : (done ? 'Done' : 'Upload')}
+              {loading ? 'Uploading...' : (done ? 'Done' : 'Review!')}
             </button>
           </div>
         </div>
