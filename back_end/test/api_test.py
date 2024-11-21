@@ -52,7 +52,7 @@ def test_api_chat_history():
 
 def test_api_flush():
     response = requests.delete(url + '/flush')
-    assert response.status_code != 200 # should not authorize!
+    assert response.status_code != 200 # should not authorize
 
 def get_parent_dir() -> str:
     # Get the current directory
