@@ -5,7 +5,7 @@ url = 'http://localhost:8000/api' # ran on local server
 def test_db_health():
     response = requests.get(url + '/db-health')
     assert response.status_code == 200
-    assert response.json() == {"message": "Database is healthy!"}
+    assert response.json() == {"message": "Database is healthy"}
 
 def test_session_without_files():
     s = requests.Session()
