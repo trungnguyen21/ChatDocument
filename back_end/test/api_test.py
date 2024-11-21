@@ -1,6 +1,6 @@
 import requests, os
 
-url = 'http://localhost:8000/api'
+url = 'http://localhost:8000/api' # ran on local server
 
 def test_db_health():
     response = requests.get(url + '/db-health')
