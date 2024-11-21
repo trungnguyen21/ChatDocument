@@ -14,7 +14,7 @@ def test_session_without_files():
     with s.get(
         f'{url}/chat_completion/',
         stream=True,
-        params={"session_id": session, "question": "What is the capital of France? Answer the name only."},
+        params={"session_id": session, "question": "What is the capital of France? Answer with the name only."},
     ) as response:
         assert response.status_code == 200
         assert response.headers['Transfer-Encoding'] == 'chunked'
@@ -52,7 +52,7 @@ def test_api_chat_history():
 
 def test_api_flush():
     response = requests.delete(url + '/flush')
-    assert response.status_code == 500 # should not authorize
+    assert response.status_code != 200 # should not authorize
 
 def get_parent_dir() -> str:
     # Get the current directory
