@@ -1,8 +1,8 @@
 import React, { useState, useRef, useEffect, useContext } from 'react';
 import Message from './Message.js';
 import axios from 'axios';
-import ChatContext from '../Context/ChatContext.js';
-import ErrorContext from '../Context/ErrorContext.js';
+import ChatContext from '../context/ChatContext.js';
+import ErrorContext from '../context/ErrorContext.js';
 import './style.css';
 import config from '../../config';
 
@@ -98,10 +98,8 @@ const Chat = () => {
         });
       }
 
-      // Remove loading message once streaming is complete
       setMessages((prevMessages) => prevMessages.filter((_, index) => index !== loadingMessageIndex));
 
-      // Add final chatbot message
       setMessages((prevMessages) => [...prevMessages, chatbotMessage]);
 
     } catch (error) {
@@ -130,33 +128,34 @@ const Chat = () => {
   const inputRef = useRef(null);
 
   return (
-    <div className="card chat-container">
-      <div className="card-body d-flex flex-column messages-container">
+    <div className="chat-wrapper">
+      <div className="messages-container d-flex flex-column">
         {messages.map((message, index) => (
           <Message key={index} message={message} />
         ))}
         <div ref={messagesEndRef} />
-      </div>
-      <div className="card-footer input-container d-flex">
-      <textarea
-        ref={inputRef}
-        placeholder={isActive ? "Type a message..." : "Please upload or select a file."}
-        onKeyDown={(e) => {
-          if (isActive && e.key === 'Enter' && e.target.value.trim() !== '') {
-            sendMessage(e.target.value);
-            e.target.value = '';
-          }
-        }}
-        className="form-control shadow-none"
-        disabled={!isActive}
-      />
-        <button
-          onClick={() => handleSendClick(inputRef)}
-          className="btn btn-send"
-          disabled={!isActive}
-        >
-          <i className="bi bi-send"></i>
-        </button>
+        <div className="mt-auto">
+          <div className="input-container">
+            <textarea
+              ref={inputRef}
+              placeholder={isActive ? "Type a message..." : "Please upload or select a file."}
+              onKeyDown={(e) => {
+                if (isActive && e.key === 'Enter' && e.target.value.trim() !== '') {
+                  sendMessage(e.target.value);
+                  e.preventDefault()
+                  e.target.value = '';
+                }
+              }}
+              className="chat-input"
+            />
+            <button
+              onClick={() => handleSendClick(inputRef)}
+              className="btn-send"
+            >
+              <i className="bi bi-send"></i>
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   );

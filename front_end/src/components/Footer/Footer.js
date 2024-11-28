@@ -4,9 +4,7 @@ import './styles.css';
 
 const Footer = () => {
   return (
-    <footer>
-      <p>Made with passion 💌 TermScout 2024.</p>
-    </footer>
+    <p>Made by <a href="https://instagram.com/prc_pham__" target="_blank">@prc_pham__</a> and <a href="https://instagram.com/tyler" target="_blank">@tyler</a> 💌 TermScout 2024.</p>
   );
 };
 

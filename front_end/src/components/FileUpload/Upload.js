@@ -1,9 +1,9 @@
 import React, { useState, useContext } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './style.css';
-import FileContext from '../Context/FileContext';
-import ChatContext from '../Context/ChatContext';
-import ErrorContext from '../Context/ErrorContext';
+import FileContext from '../context/FileContext';
+import ChatContext from '../context/ChatContext';
+import ErrorContext from '../context/ErrorContext';
 import config from '../../config';
 
 const FileUploader = () => {
