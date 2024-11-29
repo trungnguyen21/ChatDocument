@@ -9,13 +9,12 @@ const Message = ({ message }) => {
 
   return (
     <div className={`message ${isUser ? 'user' : 'chatbot'}`}>
-      {!isUser && <div className="avatar" />}
       <div className="message-content">
         <div className="message-text"> 
           <Markdown remarkPlugins={[remarkGfm]}>{text}</Markdown>
         </div>
       </div>
-      {isUser && <div className="avatar" />}
+
     </div>
   );
 };

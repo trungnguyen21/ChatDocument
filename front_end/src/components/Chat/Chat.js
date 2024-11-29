@@ -7,7 +7,13 @@ import './style.css';
 import config from '../../config';
 
 const Chat = () => {
-  const [messages, setMessages] = useState([]);
+  // const [messages, setMessages] = useState([]);
+  const [messages, setMessages] = useState([
+    { text: '4235223', sender: 'chatbot' },
+    { text: 'wqewqewqrerqwrweqr', sender: 'user' },
+    { text: 'wqeqwewqeqeqwewqeqeqwewqeqeqwewqeqeqwewqeqeqwewqeqeqwewqeqeqwewqeqeqwewqeqeqwewqeqeqwewqeqw', sender: 'chatbot' },
+    { text: 'eeeeewqwqeqwewewqeqwewqeqeqwewqeqeqwewqeqeqwewqeqeqwewqeqeqwewqeqeqwewqeqeqwewqeqeqwewqeqeqwewqeqeqwewqeqw.', sender: 'user' },
+  ]);
   const [isActive, setActive] = useState(false);
   const messagesEndRef = useRef(null);
   const { state } = useContext(ChatContext);
@@ -34,7 +40,6 @@ const Chat = () => {
           const response = await axios.get(baseURL + '/chat_history', { params: { session_id: state.sessionId } });
           const chatHistory = response.data.message;
           if (chatHistory.length === 0) {
-            // clear all previous messages
             setMessages([]);
             setMessages((prevMessages) => [
               ...prevMessages,
@@ -58,7 +63,6 @@ const Chat = () => {
     };
 
     fetchChatHistory();
-    // eslint-disable-next-line
   }, [state.sessionId]);
 
   useEffect(() => {
@@ -85,8 +89,8 @@ const Chat = () => {
       const reader = response.body.getReader();
       const decoder = new TextDecoder();
       let chatbotMessage = { text: '', sender: 'chatbot' };
-      let loadingMessageIndex = messages.length + 1;  // Index of the loading message in the state
-
+      let loadingMessageIndex = messages.length + 1;
+      
       while (true) {
         const { value, done } = await reader.read();
         if (done) break;
@@ -130,10 +134,12 @@ const Chat = () => {
   return (
     <div className="chat-wrapper">
       <div className="messages-container d-flex flex-column">
+        
         {messages.map((message, index) => (
           <Message key={index} message={message} />
         ))}
         <div ref={messagesEndRef} />
+        
         <div className="mt-auto">
           <div className="input-container">
             <textarea
@@ -156,6 +162,7 @@ const Chat = () => {
             </button>
           </div>
         </div>
+        
       </div>
     </div>
   );
