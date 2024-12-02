@@ -50,7 +50,7 @@ const CustomNavbar = ({ darkMode, toggleDarkMode, footer, fileUploader, sectionS
       <Container className="d-flex justify-content-between align-items-center">
         <Navbar.Brand className="d-flex align-items-center">
           <img src={logo} width={24} height={24} alt='website logo' className="mx-2" />
-          <div>Chat Document</div>
+          <div>ChatDocument</div>
         </Navbar.Brand>
 
         <Nav className="d-flex align-items-center d-none d-md-flex">

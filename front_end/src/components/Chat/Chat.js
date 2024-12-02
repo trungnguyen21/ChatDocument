@@ -7,13 +7,7 @@ import './style.css';
 import config from '../../config';
 
 const Chat = () => {
-  // const [messages, setMessages] = useState([]);
-  const [messages, setMessages] = useState([
-    { text: '4235223', sender: 'chatbot' },
-    { text: 'wqewqewqrerqwrweqr', sender: 'user' },
-    { text: 'wqeqwewqeqeqwewqeqeqwewqeqeqwewqeqeqwewqeqeqwewqeqeqwewqeqeqwewqeqeqwewqeqeqwewqeqeqwewqeqw', sender: 'chatbot' },
-    { text: 'eeeeewqwqeqwewewqeqwewqeqeqwewqeqeqwewqeqeqwewqeqeqwewqeqeqwewqeqeqwewqeqeqwewqeqeqwewqeqeqwewqeqeqwewqeqw.eeeeewqwqeqwewewqeqwewqeqeqwewqeqeqwewqeqeqwewqeqeqwewqeqeqwewqeqeqwewqeqeqwewqeqeqwewqeqeqwewqeqeqwewqeqweeeeewqwqeqwewewqeqwewqeqeqwewqeqeqwewqeqeqwewqeqeqwewqeqeqwewqeqeqwewqeqeqwewqeqeqwewqeqeqwewqeqeqwewqeqweeeeewqwqeqwewewqeqwewqeqeqwewqeqeqwewqeqeqwewqeqeqwewqeqeqwewqeqeqwewqeqeqwewqeqeqwewqeqeqwewqeqeqwewqeqweeeeewqwqeqwewewqeqwewqeqeqwewqeqeqwewqeqeqwewqeqeqwewqeqeqwewqeqeqwewqeqeqwewqeqeqwewqeqeqwewqeqeqwewqeqweeeeewqwqeqwewewqeqwewqeqeqwewqeqeqwewqeqeqwewqeqeqwewqeqeqwewqeqeqwewqeqeqwewqeqeqwewqeqeqwewqeqeqwewqeqweeeeewqwqeqwewewqeqwewqeqeqwewqeqeqwewqeqeqwewqeqeqwewqeqeqwewqeqeqwewqeqeqwewqeqeqwewqeqeqwewqeqeqwewqeqweeeeewqwqeqwewewqeqwewqeqeqwewqeqeqwewqeqeqwewqeqeqwewqeqeqwewqeqeqwewqeqeqwewqeqeqwewqeqeqwewqeqeqwewqeqweeeeewqwqeqwewewqeqwewqeqeqwewqeqeqwewqeqeqwewqeqeqwewqeqeqwewqeqeqwewqeqeqwewqeqeqwewqeqeqwewqeqeqwewqeqweeeeewqwqeqwewewqeqwewqeqeqwewqeqeqwewqeqeqwewqeqeqwewqeqeqwewqeqeqwewqeqeqwewqeqeqwewqeqeqwewqeqeqwewqeqw', sender: 'user' },
-  ]);
+  const [messages, setMessages] = useState([]);
   const [isActive, setActive] = useState(false);
   const messagesEndRef = useRef(null);
   const inputRef = useRef(null);
