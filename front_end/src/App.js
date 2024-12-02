@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { ChatProvider } from './components/Context/ChatContext.js';
-import { FileProvider } from './components/Context/FileContext.js';
-import ErrorContext from './components/Context/ErrorContext.js';
+import { ChatProvider } from './components/context/ChatContext.js';
+import { FileProvider } from './components/context/FileContext.js';
+import ErrorContext from './components/context/ErrorContext.js';
 import Chat from './components/Chat/Chat';
 import FileUploader from './components/FileUpload/Upload';
 import SectionSwitchBar from './components/Section/Section';
@@ -54,7 +54,7 @@ function App() {
                 </div>
               </div>
 
-              <div className="col-md-8 col-sm-12">
+              <div className="col-md-8 col-sm-12 ">
                 <div className="bg-1">
                   <Chat />
                 </div>

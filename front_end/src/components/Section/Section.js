@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useContext } from 'react';
-import ChatContext from '../Context/ChatContext';
-import FileContext from '../Context/FileContext';
-import ErrorContext from '../Context/ErrorContext';
+import ChatContext from '../context/ChatContext';
+import FileContext from '../context/FileContext';
+import ErrorContext from '../context/ErrorContext';
 import axios from 'axios';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './style.css';
@@ -71,7 +71,7 @@ const SectionSwitchBar = ({ darkMode }) => {
       <div className='card'>
         <div className='card-body'>
           <h1 className='card-title'>Files</h1>
-          {isEmpty && <p className='text-center'>No TOS to review yet 🤔.</p>}
+          {isEmpty && <p className='text-center'>No file to review yet.</p>}
           <div className='contained'>
             <div className="d-flex flex-column gap-2 mx-auto w-100">
               {files.map(({ fileName, fileId }) => (

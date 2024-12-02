@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import ErrorContext from '../Context/ErrorContext';
+import ErrorContext from '../context/ErrorContext';
 import './styles.css';
 
 const ErrorPopup = ({ message, showReloadButton }) => {
