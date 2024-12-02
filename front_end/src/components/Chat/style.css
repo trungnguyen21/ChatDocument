@@ -29,12 +29,13 @@
   right: 0;
   width: calc(100% - 2.5rem);
   margin: 0 auto;
-  padding: 1rem;
+  padding: 0.5rem 1rem;
 
   background-color: #2E2E2E !important;
   border-radius: 2rem;
   z-index: 10;
   box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.1);
+  transition: height 0.2s ease-in-out; /* Smooth height adjustment */
 }
 
 
@@ -92,36 +93,41 @@ p {
 .chat-input {
   flex: 1;
   resize: none;
-  height: 2.5rem;
-  max-height: 15vh;
+  height: auto;
+  min-height: 2rem;
+  max-height: 6rem;
   background-color: #2E2E2E;
   color: #ccc;
   border: none;
   outline: none;
-  padding: 0.8rem 1rem;
+  padding: 0.5rem 0.8rem;
   border-radius: 1.5rem;
-  margin-right: 0.5rem;
   overflow-y: auto;
+  overflow-x: hidden;
+  line-height: 1.5;
+  font-size: 0.85rem;
+  margin-right: 0.5rem;
+  box-sizing: border-box;
 }
 
 /* Send Button Styles */
 .btn-send {
-  width: 2.8rem;
-  height: 2.8rem;
-  border-radius: 50%;
-
-  background-color: #ff4848;
-  cursor: pointer;
-  color: white !important;
-  border: none !important;
-  font-size: 1.2rem;
-  
   display: flex;
   align-items: center;
   justify-content: center;
-  
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 50%;
+  background-color: #ff4848;
+  color: white !important;
+  border: none;
+  cursor: pointer;
   transition: background-color 0.3s ease;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  align-self: flex-end;
+  flex-shrink: 0;
+  position: relative;
+  margin-bottom: 0.5rem;
 }
 
 .btn-send:hover {
