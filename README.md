@@ -16,7 +16,7 @@ This is a simple Retrieval Augmented Generation app (RAG) with a full-fledged us
 ## 📦 Installation
 1. Clone the repository
 2. Make sure you are on the branch `main`
-3. cd into it
+3. cd into `main`
 4. Add GOOGLE_API_KEY and REDIS_URL as variables in the `back_end/.env`
   - Google Gemini: https://ai.google.dev/gemini-api
   - Redis: https://redis.io/
@@ -31,14 +31,8 @@ This is a simple Retrieval Augmented Generation app (RAG) with a full-fledged us
    - [x] RAG chain with context and chat history
    - [x] REST api endpoints
    - [x] React app client
-   - [ ] Better PDF parser
-   - [ ] Scale vectorstore
-   - [ ] Agents with self-evaluating mechanism instead of current chain
-   - [ ] Improve processing time + Add support for larger file
 - [ ] ~~Deploy on Vercel~~ File too large
 - [x] Deploy on a VPS with `nginx` and `pm2`
-- [ ] Use `WebSocket` for faster conversation response rate
-- [ ] Site reliability engineering (eta soon)
 
 ## 👥 Contributors
 - Phong Pham
