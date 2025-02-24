@@ -102,33 +102,6 @@ async def upload(file: UploadFile):
 
     return {"Result": "OK", "file_id": file_id}
 
-def nmodel_activation(session_id: str):
-    """
-    Initialize the model with async
-    """
-
-    # Retrieve the file path using the provided file_id
-    file_id = session_id
-    print(file_id)
-    file_path = file_map.get(file_id)
-    print("Looking at file path: " + str(file_path))
-
-    if not file_path or not os.path.exists(file_path):
-        raise 
-
-    print("Initializing retriever and rag_chain...")
-    try:
-        if retrievers.get(file_id) is None:
-            retrievers[file_id] = model.vector_document(file_path)
-
-        if rag_chains.get(file_id) is None:
-            rag_chains[file_id] = model.init_chain_with_history(retrievers[file_id])
-    except Exception as e:
-        print(f"Error in initializing model: {e}")
-        raise HTTPException(status_code=500, detail="Error in initializing model.")
-
-    return {"message": "Retriever and rag_chain initialized successfully."}
-
 @app.post("/api/model_activation")
 async def model_activation(session_body: SectionIDBody):
     """
@@ -177,13 +150,7 @@ async def chat_completion(session_id: str, question: str):
         async def generate():
             async for token in model.output_generation(question, file_id, rag_chain):
                 yield str(token) + " "
-        return StreamingResponse(generate(), media_type="text/event-stream")
-
-    # Use the file path to answer the question
-    # response = model.output_generation(body.question, file_id, rag_chain)
-    # return {"message": response}
-
-    
+        return StreamingResponse(generate(), media_type="text/event-stream")    
 
 @app.get("/api/chat/")
 async def chat(question: str):
