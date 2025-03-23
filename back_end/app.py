@@ -1,15 +1,32 @@
 from fastapi import FastAPI, UploadFile, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import StreamingResponse
+from fastapi.responses import StreamingResponse, JSONResponse
+
+from . import worker
+from celery.result import AsyncResult
+
 from pydantic import BaseModel
 from typing import Dict
 
+from .modules import rag_chat, preprocessing, utils
 import aiofiles, uuid, json
+import logging
 import os
 import redis
-import model_chain as model
+# import modules.rag_chat as model
+
+REDIS_URL = os.environ.get("REDIS_URL")
+
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s - %(levelname)s - %(message)s",
+)
 
 app = FastAPI()
+
+model = rag_chat.RagChat()
+helpers = utils.Utils()
+task_service = worker.ProcessingTask()
 
 # Create ./data/files and ./data/vectorstore directories if they don't exist
 if not os.path.exists("data"):
@@ -21,7 +38,7 @@ data_path = "data/files"
 file_map_path = "data/file_map.json"
 
 #delete all keys in redis
-REDIS_URL = os.environ.get("REDIS_URL")
+
 redis_client = redis.from_url(REDIS_URL)
 
 retrievers = {}
@@ -67,7 +84,7 @@ async def db_health():
     try:
         redis_client.ping()
     except Exception as e:
-        print(f"Error in pinging redis: {e}")
+        print(f"Error in pinging redis @ {REDIS_URL}: {e}")
         raise HTTPException(status_code=500, detail="Database is not correctly configured.")
     return {"message": f"Database is healthy"}
 
@@ -81,9 +98,13 @@ def files(file_id: str):
     return {"message": file_map.get(file_id)}
 
 @app.post("/api/upload/")
-async def upload(file: UploadFile):
+async def upload(file: UploadFile) -> JSONResponse:
     """
     File upload
+    Args:
+        file: file to upload
+    Returns:
+        file_id: the id of the file
     """
     # Generate a unique ID for the file
     file_id = str(uuid.uuid4())
@@ -98,46 +119,22 @@ async def upload(file: UploadFile):
     # Store the mapping from unique_id to file path
     file_map[file_id] = file_path
     save_file_map(file_map)
-    nmodel_activation(file_id)
 
-    return {"Result": "OK", "file_id": file_id}
-
-def nmodel_activation(session_id: str):
-    """
-    Initialize the model with async
-    """
-
-    # Retrieve the file path using the provided file_id
-    file_id = session_id
-    print(file_id)
-    file_path = file_map.get(file_id)
-    print("Looking at file path: " + str(file_path))
-
-    if not file_path or not os.path.exists(file_path):
-        raise 
-
-    print("Initializing retriever and rag_chain...")
-    try:
-        if retrievers.get(file_id) is None:
-            retrievers[file_id] = model.vector_document(file_path)
-
-        if rag_chains.get(file_id) is None:
-            rag_chains[file_id] = model.init_chain_with_history(retrievers[file_id])
-    except Exception as e:
-        print(f"Error in initializing model: {e}")
-        raise HTTPException(status_code=500, detail="Error in initializing model.")
-
-    return {"message": "Retriever and rag_chain initialized successfully."}
+    return JSONResponse(content={"file_id": file_id})
 
 @app.post("/api/model_activation")
 async def model_activation(session_body: SectionIDBody):
     """
-    Initialize the model without async
+    Initialize the model
+    Args:
+        file_id: the id of the file
+    Returns:
+        task_id: the id of the task
     """
 
     # Retrieve the file path using the provided file_id
     file_id = session_body.session_id
-    print(file_id)
+    print(f"File id: {file_id}")
     file_path = file_map.get(file_id)
     print("Looking at file path: " + str(file_path))
 
@@ -146,19 +143,31 @@ async def model_activation(session_body: SectionIDBody):
 
     print("Initializing retriever and rag_chain...")
     try:
-        if retrievers.get(file_id) is None:
-            retrievers[file_id] = model.vector_document(file_path)
-
-        if rag_chains.get(file_id) is None:
-            rag_chains[file_id] = model.init_chain_with_history(retrievers[file_id])
+        task = task_service.process_document.delay(
+            retrievers=retrievers,
+            chains=rag_chains,
+            file_path=file_path,
+            file_id=file_id
+        )
+        return JSONResponse(content={"task_id": task.id})
     except Exception as e:
         print(f"Error in initializing model: {e}")
         raise HTTPException(status_code=500, detail="Error in initializing model.")
 
-    return {"message": "Retriever and rag_chain initialized successfully."}
+@app.get("/api/preprocessing_status")
+def get_processing_status(task_id: str):
+    """
+    Get the status of the model
+    """
+    task_result = AsyncResult(task_id)
+    result = {
+        "task_id": task_id,
+        "task_status": task_result.status,
+    }
+    return JSONResponse(content=result)
 
 
-@app.get("/api/chat_completion/")
+@app.post("/api/chat_completion/")
 async def chat_completion(session_id: str, question: str):
     """
     Get response from model, use LLM if the model is not initialized
@@ -168,7 +177,7 @@ async def chat_completion(session_id: str, question: str):
     rag_chain = rag_chains.get(file_id)
     # If retriever and rag_chain are not initialized, initialize them
     if retriever is None or rag_chain is None:
-        # raise HTTPException(status_code=500, detail="Retriever and rag_chain are not initialized. Call /initialize_model first.")
+        # Normal LLM call without context
         async def generate():
             async for token in model.chat_completion(question):
                 yield token.content + " "
@@ -179,13 +188,8 @@ async def chat_completion(session_id: str, question: str):
                 yield str(token) + " "
         return StreamingResponse(generate(), media_type="text/event-stream")
 
-    # Use the file path to answer the question
-    # response = model.output_generation(body.question, file_id, rag_chain)
-    # return {"message": response}
 
-    
-
-@app.get("/api/chat/")
+@app.post("/api/chat/")
 async def chat(question: str):
     async def generate():
         async for token in model.chat_completion(question):
@@ -198,8 +202,29 @@ async def chat_history(session_id: str):
     """
     Get chat history
     """
-    chat_history = model.get_session_history(session_id).messages
+    chat_history = helpers.get_session_history(session_id).messages
     return {"message": chat_history}
+
+@app.delete("/api/delete")
+async def delete(file_id: str):
+    """
+    Delete a file
+    """
+    file_path = file_map.get(file_id)
+    if file_path:
+        try:
+            os.remove(file_path)
+            del file_map[file_id]
+            save_file_map(file_map)
+        except Exception as e:
+            print(f"Error in deleting file: {e}")
+            raise HTTPException(status_code=500, detail="Error in deleting file.")
+
+    retrievers.pop(file_id)
+    rag_chains.pop(file_id)
+    redis_client.delete(f"doc:{file_id}:*")
+    redis_client.delete(f"message_store:{file_id}:*")
+    return {"message": "File deleted successfully."}
 
 @app.delete("/api/flush")
 async def flush():
@@ -223,26 +248,3 @@ async def flush():
         save_file_map(file_map)
 
     return {"message": "Data flushed successfully."}
-
-@app.delete("/api/delete")
-async def delete(file_id: str):
-    """
-    Delete a file
-    """
-    file_path = file_map.get(file_id)
-    if file_path:
-        try:
-            os.remove(file_path)
-            del file_map[file_id]
-            save_file_map(file_map)
-        except Exception as e:
-            print(f"Error in deleting file: {e}")
-            raise HTTPException(status_code=500, detail="Error in deleting file.")
-
-    retrievers.pop(file_id)
-    rag_chains.pop(file_id)
-    
-    redis_client.delete(f"doc:{file_id}:*")
-    redis_client.delete(f"message_store:{file_id}:*")
-    
-    return {"message": "File deleted successfully."}

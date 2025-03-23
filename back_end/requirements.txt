@@ -5,5 +5,8 @@ langchain_google_genai
 redis
 aiofiles
 langchain_experimental
-pypdf
 gunicorn
+dotenv
+python-multipart
+celery
+pymupdf
