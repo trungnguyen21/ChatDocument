@@ -18,7 +18,7 @@ services:
     depends_on:
       redis:
         condition: service_healthy
-    
+
   server:
     build:
       context: ./
@@ -31,7 +31,7 @@ services:
         condition: service_healthy
     networks:
       - app-network
-    
+
 networks:
   app-network:
     driver: bridge

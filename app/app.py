@@ -2,13 +2,14 @@ from fastapi import FastAPI, UploadFile, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import StreamingResponse, JSONResponse
 
-from . import worker
 from celery.result import AsyncResult
 
 from pydantic import BaseModel
 from typing import Dict
 
-from .modules import rag_chat, preprocessing, utils
+from app import worker
+from app.modules import rag_chat, utils
+
 import aiofiles, uuid, json
 import logging
 import os
@@ -26,7 +27,7 @@ app = FastAPI()
 
 model = rag_chat.RagChat()
 helpers = utils.Utils()
-task_service = worker.ProcessingTask()
+task_service = worker.TaskService()
 
 # Create ./data/files and ./data/vectorstore directories if they don't exist
 if not os.path.exists("data"):

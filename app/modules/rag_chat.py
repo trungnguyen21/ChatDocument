@@ -6,9 +6,9 @@ from langchain_core.runnables import Runnable
 import redis
 import logging
 
-from .prompts import *
-from .utils import Utils
-from back_end.config.config import Config
+from app.modules.prompts import *
+from app.modules.utils import Utils
+from app.config.config import Config
 
 config = Config()
 helpers = Utils()

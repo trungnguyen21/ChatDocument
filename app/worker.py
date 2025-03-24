@@ -1,8 +1,8 @@
 import logging
 
 from celery import Celery
-from back_end.config.config import Config
-from .modules import preprocessing, rag_chat
+from app.config.config import Config
+from app.modules import preprocessing, rag_chat
 
 model = rag_chat.RagChat()
 
@@ -15,7 +15,7 @@ celery = Celery(
     backend=redis_url
 )
 
-class ProcessingTask:
+class TaskService:
     def __init__(self):
         pass
 

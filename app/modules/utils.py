@@ -2,7 +2,7 @@ import time
 
 from langchain_community.chat_message_histories import RedisChatMessageHistory
 
-import back_end.config.config as config
+import app.config.config as config
 
 redis_url = config.Config().REDIS_URL
 

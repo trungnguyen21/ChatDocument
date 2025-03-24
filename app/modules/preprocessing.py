@@ -6,7 +6,7 @@ import pymupdf4llm
 from langchain_community.vectorstores.redis import Redis
 from langchain_experimental.text_splitter import SemanticChunker
 
-from back_end.config.config import Config
+from app.config.config import Config
 
 
 config = Config()
