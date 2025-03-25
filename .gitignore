@@ -18,3 +18,5 @@ app/.DS_Store
 
 app/draft/
 .vscode/
+
+*.env*
