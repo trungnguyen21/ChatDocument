@@ -13,8 +13,8 @@ config.py
 test.py
 sample_chain.py
 
-back_end/.env
-back_end/.DS_Store
+app/.env
+app/.DS_Store
 
-back_end/draft/
+app/draft/
 .vscode/
