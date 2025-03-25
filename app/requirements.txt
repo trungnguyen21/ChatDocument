@@ -1,12 +1,13 @@
-langchain == 0.1.19
-fastapi
-uvicorn
-langchain_google_genai
-redis
 aiofiles
-langchain_experimental
-gunicorn
-dotenv
-python-multipart
 celery
-pymupdf
+dotenv
+fastapi
+gunicorn
+langchain == 0.3.21
+langchain_experimental
+langchain_community
+langchain_google_genai
+langchain_pymupdf4llm
+python-multipart
+redis
+uvicorn

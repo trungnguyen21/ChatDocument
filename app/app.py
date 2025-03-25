@@ -7,7 +7,7 @@ from celery.result import AsyncResult
 from pydantic import BaseModel
 from typing import Dict
 
-from app import worker
+from app.services.tasks.process_document_task import process_document, fetch_task_result
 from app.modules import rag_chat, utils
 
 import aiofiles, uuid, json
@@ -27,7 +27,6 @@ app = FastAPI()
 
 model = rag_chat.RagChat()
 helpers = utils.Utils()
-task_service = worker.TaskService()
 
 # Create ./data/files and ./data/vectorstore directories if they don't exist
 if not os.path.exists("data"):
@@ -37,8 +36,6 @@ if not os.path.exists("data/files"):
 
 data_path = "data/files"
 file_map_path = "data/file_map.json"
-
-#delete all keys in redis
 
 redis_client = redis.from_url(REDIS_URL)
 
@@ -144,7 +141,7 @@ async def model_activation(session_body: SectionIDBody):
 
     print("Initializing retriever and rag_chain...")
     try:
-        task = task_service.process_document.delay(
+        task = process_document.delay(
             retrievers=retrievers,
             chains=rag_chains,
             file_path=file_path,
@@ -160,11 +157,11 @@ def get_processing_status(task_id: str):
     """
     Get the status of the model
     """
-    task_result = AsyncResult(task_id)
-    result = {
-        "task_id": task_id,
-        "task_status": task_result.status,
-    }
+    try:
+        result = fetch_task_result(task_id)
+    except Exception as e:
+        print(f"Error in getting processing status: {e}")
+        raise HTTPException(status_code=404, detail="Cannot find the specified task.")
     return JSONResponse(content=result)
 
 

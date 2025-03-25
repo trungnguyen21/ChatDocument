@@ -2,32 +2,29 @@ import os
 import redis
 import logging
 
-import pymupdf4llm
+from langchain_pymupdf4llm import PyMuPDF4LLMLoader
 from langchain_community.vectorstores.redis import Redis
 from langchain_experimental.text_splitter import SemanticChunker
 
 from app.config.config import Config
 
-
-config = Config()
-redis_url = config.REDIS_URL
-
 class DocumentProcessor:
     def __init__(self, file_path: str):
-        self.file_path = file_path
+        config = Config()
+        self.redis_url = config.REDIS_URL
         self.redis_client = redis.from_url(self.redis_url)
+        self.file_path = file_path
         self.embeddings = config.EMBED_MODEL
-
         self.file_name = os.path.basename(self.file_path) # Format: file_<uuid>.pdf
         self.file_id = self.file_name.split("_")[0]
     
-    def vector_document(self, file_path: str):
+    def vector_document(self):
         """
         Create and return a retriever for the document.
         """
         try:
-            redis_vector = self.load_document(file_path)
-            retriever = redis_vector.as_retriever(search_kwargs={"k": 2})
+            redis_vector = self.load_document()
+            retriever = redis_vector.as_retriever(search_kwargs={"k": 3})
             logging.info("Step 3. Successfully created a retriever")
 
             return retriever
@@ -80,15 +77,16 @@ class DocumentProcessor:
                     schema="data/schema.yaml",
                     key_prefix="doc")
             else:
-                docs = pymupdf4llm.to_markdown(self.file_path)
+                loader = PyMuPDF4LLMLoader(self.file_path)
+                docs = loader.load()
                 logging.info("Step 1. Successfully loaded the document.")
 
                 text_splitter = SemanticChunker(self.embeddings)
                 documents = text_splitter.split_documents(docs)
-                logging.info("Step 2. Splitted the document into chunks")
+                logging.info("Step 1.1. Splitted the document into chunks")
 
-                redis_vector = self.ingest_document(documents, self.file_id)
-                logging.info("Step 3. Ingested document into vector store")
+                redis_vector = self.ingest_document(documents)
+                logging.info("Step 1.2. Ingested document into vector store")
 
                 return redis_vector
         except Exception as e:

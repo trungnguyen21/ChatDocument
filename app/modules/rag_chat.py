@@ -24,7 +24,7 @@ class RagChat:
     def __init__(self) -> None:
         pass
 
-    def init_chain_with_history(retriever):
+    def init_chain_with_history(self, retriever):
         """
         Create history chain.
         """
@@ -43,7 +43,7 @@ class RagChat:
             logging.error(f"Error in init_chain_with_history: {e}")
             raise
 
-    async def output_generation(question: str, session_id: str, chain: Runnable):
+    async def output_generation(self, question: str, session_id: str, chain: Runnable):
         """
         Answer the given question.
         """
@@ -65,7 +65,7 @@ class RagChat:
         finally:
             helpers.log_chat_history(session_id, question, "".join(answer))
 
-    async def chat_completion(question: str):
+    async def chat_completion(self, question: str):
         """
         Get response.
         """
