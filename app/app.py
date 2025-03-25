@@ -2,45 +2,33 @@ from fastapi import FastAPI, UploadFile, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import StreamingResponse, JSONResponse
 
-from celery.result import AsyncResult
-
 from pydantic import BaseModel
-from typing import Dict
 
 from app.services.tasks.process_document_task import process_document, fetch_task_result
-from app.modules import rag_chat, utils
+from app.modules import rag_chat, utils, cache
+from app.config import config
 
-import aiofiles, uuid, json
+import aiofiles, uuid
 import logging
 import os
 import redis
-# import modules.rag_chat as model
-
-REDIS_URL = os.environ.get("REDIS_URL")
 
 logging.basicConfig(
-    level=logging.INFO,
     format="%(asctime)s - %(levelname)s - %(message)s",
 )
+logger = logging.getLogger(__name__)
 
+# Initialize app
 app = FastAPI()
 
+# Initialize modules
 model = rag_chat.RagChat()
 helpers = utils.Utils()
+mem = cache.Cache()
+keys = config.Config()
 
-# Create ./data/files and ./data/vectorstore directories if they don't exist
-if not os.path.exists("data"):
-    os.mkdir("data")
-if not os.path.exists("data/files"):
-    os.mkdir("data/files")
-
-data_path = "data/files"
-file_map_path = "data/file_map.json"
-
-redis_client = redis.from_url(REDIS_URL)
-
-retrievers = {}
-rag_chains = {}
+# Initialize redis client
+redis_client = redis.from_url(keys.REDIS_URL)
 
 # Set all CORS enabled origins
 app.add_middleware(
@@ -52,26 +40,12 @@ app.add_middleware(
     expose_headers=["*"],
 )
 
-# Function to load the file map from the JSON file
-def load_file_map() -> Dict[str, str]:
-    if os.path.exists(file_map_path):
-        with open(file_map_path, "r") as f:
-            return json.load(f)
-    return {} 
-
-# Function to save the file map to the JSON file
-def save_file_map(file_map: Dict[str, str]):
-    with open(file_map_path, "w") as f:
-        json.dump(file_map, f)
-
-file_map: Dict[str, str] = load_file_map()
-
 class RequestBody(BaseModel):
     question: str
-    session_id: str
+    file_id: str
 
 class SectionIDBody(BaseModel):
-    session_id: str
+    file_id: str
 
 @app.get("/api")
 async def root():
@@ -82,7 +56,7 @@ async def db_health():
     try:
         redis_client.ping()
     except Exception as e:
-        print(f"Error in pinging redis @ {REDIS_URL}: {e}")
+        logger.error(f"Error in pinging redis @ {keys.REDIS_URL}: {e}")
         raise HTTPException(status_code=500, detail="Database is not correctly configured.")
     return {"message": f"Database is healthy"}
 
@@ -93,7 +67,7 @@ def files(file_id: str):
     Get the list of files
     """
     # TODO: implement with external db
-    return {"message": file_map.get(file_id)}
+    return {"message": mem.get_file_by_id(file_id)}
 
 @app.post("/api/upload/")
 async def upload(file: UploadFile) -> JSONResponse:
@@ -107,18 +81,20 @@ async def upload(file: UploadFile) -> JSONResponse:
     # Generate a unique ID for the file
     file_id = str(uuid.uuid4())
     file_name = file.filename
-    file_path = os.path.join(data_path, file_id + "_" + file_name)
+    file_path = os.path.join(mem.get_data_path(), file_id + "_" + file_name)
 
     # Save the file to disk with the unique ID as part of the filename
     async with aiofiles.open(file_path, "wb") as out_file:
         content = await file.read()
         await out_file.write(content)
     
-    # Store the mapping from unique_id to file path
-    file_map[file_id] = file_path
-    save_file_map(file_map)
-
-    return JSONResponse(content={"file_id": file_id})
+    try: 
+        # Store the mapping from unique_id to file path
+        mem.save_file(file_id, file_path)
+        return JSONResponse(content={"file_id": file_id})
+    except Exception as e:
+        logger.error(f"Error in saving uploaded file: {e}")
+        raise HTTPException(status_code=500, detail="Error in saving uploaded file.")
 
 @app.post("/api/model_activation")
 async def model_activation(session_body: SectionIDBody):
@@ -131,25 +107,25 @@ async def model_activation(session_body: SectionIDBody):
     """
 
     # Retrieve the file path using the provided file_id
-    file_id = session_body.session_id
-    print(f"File id: {file_id}")
-    file_path = file_map.get(file_id)
-    print("Looking at file path: " + str(file_path))
+    file_id = session_body.file_id
+    logger.info(f"File id: {file_id}")
+    file_path = mem.get_file_by_id(file_id)
+    logger.info("Looking at file path: " + str(file_path))
 
     if not file_path or not os.path.exists(file_path):
         raise HTTPException(status_code=404, detail="File not found or invalid file_id" + file_path)
 
-    print("Initializing retriever and rag_chain...")
+    logger.info("Initializing retriever and rag_chain...")
     try:
         task = process_document.delay(
-            retrievers=retrievers,
-            chains=rag_chains,
+            retrievers=mem.get_retrievers(),
+            chains=mem.get_rag_chains(),
             file_path=file_path,
             file_id=file_id
         )
         return JSONResponse(content={"task_id": task.id})
     except Exception as e:
-        print(f"Error in initializing model: {e}")
+        logger.error(f"Error in initializing model: {e}")
         raise HTTPException(status_code=500, detail="Error in initializing model.")
 
 @app.get("/api/preprocessing_status")
@@ -160,19 +136,18 @@ def get_processing_status(task_id: str):
     try:
         result = fetch_task_result(task_id)
     except Exception as e:
-        print(f"Error in getting processing status: {e}")
+        logger.error(f"Error in getting processing status: {e}")
         raise HTTPException(status_code=404, detail="Cannot find the specified task.")
     return JSONResponse(content=result)
 
 
 @app.post("/api/chat_completion/")
-async def chat_completion(session_id: str, question: str):
+async def chat_completion(file_id: str, question: str):
     """
     Get response from model, use LLM if the model is not initialized
     """
-    file_id = session_id
-    retriever = retrievers.get(file_id)
-    rag_chain = rag_chains.get(file_id)
+    file_id = file_id
+    retriever, rag_chain = mem.get_cached_file(file_id)
     # If retriever and rag_chain are not initialized, initialize them
     if retriever is None or rag_chain is None:
         # Normal LLM call without context
@@ -198,7 +173,7 @@ async def chat(question: str):
 @app.get("/api/chat_history")
 async def chat_history(session_id: str):
     """
-    Get chat history
+    Get chat history, uses file_id as session_id
     """
     chat_history = helpers.get_session_history(session_id).messages
     return {"message": chat_history}
@@ -208,21 +183,14 @@ async def delete(file_id: str):
     """
     Delete a file
     """
-    file_path = file_map.get(file_id)
-    if file_path:
-        try:
-            os.remove(file_path)
-            del file_map[file_id]
-            save_file_map(file_map)
-        except Exception as e:
-            print(f"Error in deleting file: {e}")
-            raise HTTPException(status_code=500, detail="Error in deleting file.")
-
-    retrievers.pop(file_id)
-    rag_chains.pop(file_id)
-    redis_client.delete(f"doc:{file_id}:*")
-    redis_client.delete(f"message_store:{file_id}:*")
-    return {"message": "File deleted successfully."}
+    try:
+        mem.delete_file(file_id)
+        redis_client.delete(f"doc:{file_id}:*")
+        redis_client.delete(f"message_store:{file_id}:*")
+        return {"message": "File deleted successfully."}
+    except Exception as e:
+        logger.error(f"Error in deleting file: {e}")
+        raise HTTPException(status_code=500, detail="Error in deleting file.")
 
 @app.delete("/api/flush")
 async def flush():
@@ -231,18 +199,9 @@ async def flush():
     """
     try:
         redis_client.flushall()
+        mem.clear_cache()
     except Exception as e:
-        print(f"Error in flushing data: {e}")
+        logger.error(f"Error in flushing data: {e}")
         raise HTTPException(status_code=500, detail="Error in flushing data.")
-    
-    retrievers.clear()
-    rag_chains.clear()
-    
-    #delete all files in data/files
-    file_names = os.listdir(data_path)
-    for file in file_names:
-        os.remove(os.path.join(data_path, file))
-        file_map.clear()
-        save_file_map(file_map)
 
     return {"message": "Data flushed successfully."}
