@@ -1,15 +1,55 @@
 services:
-  front_end:
-    build:
-      context: ./front_end
-    volumes:
-      - ./front_end:/client
+  redis:
+    image: redis/redis-stack-server:latest
+    container_name: redis_broker
     ports:
-      - 3000:3000
+      - 6379:6379
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+    networks:
+      - app-network
+
+  worker:
+    container_name: celery_worker
+    build: 
+      context: ./app
+      dockerfile: ./Dockerfile
+    command: celery -A app.services.worker worker --loglevel=info
+    depends_on:
+      redis:
+        condition: service_healthy
+
   back_end:
+    container_name: server
     build:
-      context: ./back_end
+      context: ./app
+      dockerfile: ./Dockerfile
     volumes:
-      - ./back_end:/app
+      - ./app:/usr/src/app
     ports:
       - 8000:8000
+    depends_on:
+      redis:
+        condition: service_healthy
+    networks:
+      - app-network
+
+  # front_end:
+  #   container_name: client
+  #   build:
+  #     context: ./front_end
+  #   volumes:
+  #     - ./front_end:/client
+  #   ports:
+  #     - 3000:3000
+  #   depends_on:
+  #     - back_end
+  #   networks:
+  #     - app-network
+
+networks:
+  app-network:
+    driver: bridge
