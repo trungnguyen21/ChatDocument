@@ -2,22 +2,23 @@
 
 This is a simple Retrieval Augmented Generation app (RAG) with a full-fledged user interface!
 
-## 📄 Features
+## 📄 Features (new updates!)
 
 - **Document Upload**: Users can upload PDF files up to 3145728B (~3MB) containing information for analysis.
 - **Google Gemini Pro**: Leveraging Google's latest LLM with 2 million token contexts to craft responses and embeddings.
 - **State-of-the-art UI**: Can't go wrong with React + Bootstrap
-- **HTTPS**: Deployed on a VPS with a valid SSL certificate 
+- **HTTPS**: Deployed on a VPS with a valid SSL certificate
+- (new) **Celery task queue**: paired with Redis to improve application responsiveness + enhanced scalability
 
 ## 🔧 Tech stack
-- Server: Langchain, FastAPI, Redis
+- Server: Langchain, FastAPI, Redis, Celery
 - Client: React, Bootstrap
 
 ## 📦 Installation
 1. Clone the repository
 2. Make sure you are on the branch `main`
 3. cd into `main`
-4. Add GOOGLE_API_KEY and REDIS_URL as variables in the `back_end/.env`
+4. Add GOOGLE_API_KEY and REDIS_URL as variables in the `app/.env`
   - Google Gemini: https://ai.google.dev/gemini-api
   - Redis: https://redis.io/
 5. `docker compose up` 
