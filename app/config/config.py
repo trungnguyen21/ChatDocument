@@ -14,11 +14,22 @@ class Config:
         
         # Models
         self.LLM_MODEL = ChatGoogleGenerativeAI(
-            model="gemini-1.5-flash", 
+            model="gemini-2.5-flash", 
             streaming=True, 
             callbacks=[FinalStreamingStdOutCallbackHandler(answer_prefix_tokens=["answer", ":"])]
         )
         self.EMBED_MODEL = GoogleGenerativeAIEmbeddings(model="models/embedding-001")
         
         # Paths
-        self.VECTORSTORE = os.path.dirname(__file__) + "/data/vectorstore/"
+        # Create ./data/files and ./data/vectorstore directories if they don't exist
+        base_dir = os.path.dirname(os.path.dirname(__file__))
+        data_dir = os.path.join(base_dir, "data")
+        files_dir = os.path.join(data_dir, "files")
+        vectorstore_dir = os.path.join(data_dir, "vectorstore")
+
+        os.makedirs(files_dir, exist_ok=True)
+        os.makedirs(vectorstore_dir, exist_ok=True)
+
+        self.DATADIR = data_dir
+        self.VECTORSTORE = vectorstore_dir + os.sep
+        self.DATAFILES = files_dir + os.sep
