@@ -21,6 +21,8 @@ services:
     depends_on:
       redis:
         condition: service_healthy
+    networks:
+      - app-network
 
   back_end:
     container_name: server
@@ -37,18 +39,18 @@ services:
     networks:
       - app-network
 
-  # front_end:
-  #   container_name: client
-  #   build:
-  #     context: ./front_end
-  #   volumes:
-  #     - ./front_end:/client
-  #   ports:
-  #     - 3000:3000
-  #   depends_on:
-  #     - back_end
-  #   networks:
-  #     - app-network
+  front_end:
+    container_name: client
+    build:
+      context: ./front_end
+    volumes:
+      - ./front_end:/client
+    ports:
+      - 3000:3000
+    depends_on:
+      - back_end
+    networks:
+      - app-network
 
 networks:
   app-network:
