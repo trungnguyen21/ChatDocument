@@ -21,6 +21,8 @@ services:
     depends_on:
       redis:
         condition: service_healthy
+    volumes:
+      - ./app/data/files:/app/app/data/files
     networks:
       - app-network
 
