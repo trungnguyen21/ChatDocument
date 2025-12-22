@@ -1,7 +1,7 @@
 from celery import Celery
 import logging
 
-from app.config.config import Config
+from app.config import Config
 
 config = Config()
 redis_url = config.REDIS_URL

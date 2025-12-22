@@ -15,18 +15,20 @@ services:
   worker:
     container_name: celery_worker
     build: 
-      context: ./app
-      dockerfile: ./Dockerfile
+      context: .
+      dockerfile: ./app/Dockerfile
     command: celery -A app.services.worker worker --loglevel=info
     depends_on:
       redis:
         condition: service_healthy
+    networks:
+      - app-network
 
   back_end:
     container_name: server
     build:
-      context: ./app
-      dockerfile: ./Dockerfile
+      context: .
+      dockerfile: ./app/Dockerfile
     volumes:
       - ./app:/usr/src/app
     ports:
