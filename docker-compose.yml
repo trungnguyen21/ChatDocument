@@ -17,8 +17,12 @@ services:
     build:
       context: .
       dockerfile: ./app/Dockerfile
+    env_file:
+      - ./app/.env.docker
+    environment:
+      - APP_ENV=PROD
     volumes:
-      - ./app:/app
+      - ./app/data:/app/data
     networks:
       - app-network
 
@@ -30,12 +34,13 @@ services:
       - ./app/.env.docker
     environment:
       - APP_ENV=PROD
-    command: celery -A services.worker worker --loglevel=info  --concurrency=1 --prefetch-multiplier=1
+      - PYTHONPATH=/app
+    command: celery -A app.services.worker worker --loglevel=info  --concurrency=1 --prefetch-multiplier=1
     depends_on:
       redis:
         condition: service_healthy
     volumes:
-      - ./app:/app
+      - ./app/data:/app/data
     networks:
       - app-network
 
@@ -46,8 +51,9 @@ services:
       - ./app/.env.docker
     environment:
       - APP_ENV=PROD
+      - PYTHONPATH=/app
     volumes:
-      - ./app:/app
+      - ./app/data:/app/data
     ports:
       - 8000:8000
     depends_on:

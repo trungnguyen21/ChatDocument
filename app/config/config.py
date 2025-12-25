@@ -25,10 +25,15 @@ class Config:
         
         # Paths
         # Create ./data/files and ./data/vectorstore directories if they don't exist
-        base_dir = os.path.dirname(os.path.dirname(__file__))
+        base_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "../.."))
         data_dir = os.path.join(base_dir, "data")
         files_dir = os.path.join(data_dir, "files")
         vectorstore_dir = os.path.join(data_dir, "vectorstore")
+
+        print(f"[Config] base_dir: {base_dir}")
+        print(f"[Config] data_dir: {data_dir}")
+        print(f"[Config] files_dir: {files_dir}")
+        print(f"[Config] __file__: {__file__}")
 
         os.makedirs(files_dir, exist_ok=True)
         os.makedirs(vectorstore_dir, exist_ok=True)
