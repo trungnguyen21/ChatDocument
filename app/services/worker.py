@@ -1,6 +1,8 @@
 from app.services.tasks.process_document_task import process_document
 from app.services.celery_app import celery_app, logger
 
+app = celery_app
+
 def register_task():
     try:
         logger.info("Registering tasks")

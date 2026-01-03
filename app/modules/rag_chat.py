@@ -3,7 +3,6 @@ from langchain.chains.history_aware_retriever import create_history_aware_retrie
 from langchain.chains.combine_documents import create_stuff_documents_chain
 from langchain_core.runnables import Runnable
 
-import redis
 import logging
 
 from app.modules.prompts import *
@@ -13,12 +12,7 @@ from app.config.config import Config
 config = Config()
 helpers = Utils()
 
-REDIS_URL = config.REDIS_URL
-embeddings = config.EMBED_MODEL
 llm = config.LLM_MODEL
-
-# Create a redis client
-redis_client = redis.from_url(REDIS_URL)
 
 class RagChat:
     def __init__(self) -> None:
@@ -36,7 +30,7 @@ class RagChat:
             )
             question_answer_chain = create_stuff_documents_chain(llm, prompt)
             rag_chain = create_retrieval_chain(history_aware_retriever, question_answer_chain)
-            logging.info("Step 4. Created chain success")
+            logging.info("Step 3. Created chain success")
 
             return rag_chain
         except Exception as e:

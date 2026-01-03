@@ -1,10 +1,10 @@
 from celery import Celery
 import logging
 
-from app.config.config import Config
+from app.config import Config
 
 config = Config()
-redis_url = config.REDIS_URL
+redis_url = "redis://redis:6379/"
 
 celery_app = Celery(
     __name__,

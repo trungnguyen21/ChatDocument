@@ -56,7 +56,7 @@ function App() {
 
               <div className="col-md-8 col-sm-12 ">
                 <div className="bg-1">
-                  <Chat />
+                  <Chat darkMode={darkMode} />
                 </div>
               </div>
             </div>

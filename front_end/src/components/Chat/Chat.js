@@ -6,7 +6,7 @@ import ErrorContext from '../context/ErrorContext.js';
 import './style.css';
 import config from '../../config';
 
-const Chat = () => {
+const Chat = ({ darkMode }) => {
   const [messages, setMessages] = useState([]);
   const [isActive, setActive] = useState(false);
   const messagesEndRef = useRef(null);
@@ -118,8 +118,9 @@ const Chat = () => {
   const handleInput = () => {
     const input = inputRef.current;
     if (input) {
-      input.style.height = 'auto'; // Reset height to calculate new height
+      input.style.height = `30px`; // Reset height to calculate new height
       input.style.height = `${Math.min(input.scrollHeight, 96)}px`; // Max height for 4 lines
+    } else {
     }
   };
 
@@ -132,27 +133,28 @@ const Chat = () => {
   };
 
   return (
-    <div className="chat-wrapper">
+    <div className={`chat-wrapper ${darkMode ? 'dark-mode' : 'light-mode'}`}>
       <div className="messages-container d-flex flex-column">
         {messages.map((message, index) => (
-          <Message key={index} message={message} />
+          <Message key={index} message={message} darkMode={darkMode} />
         ))}
         <div ref={messagesEndRef} />
       </div>
       <div className="input-container">
         <textarea
+          id="chat-input"
           ref={inputRef}
-          className="chat-input"
+          className={`chat-input ${darkMode ? 'dark-mode' : 'light-mode'}`}
           placeholder={isActive ? 'Type a message...' : 'Please upload or select a file.'}
-          onInput={handleInput} // Adjust height dynamically
+          onInput={handleInput}
           onKeyDown={(e) => {
             if (isActive && e.key === 'Enter' && e.target.value.trim() !== '') {
-              e.preventDefault(); // Prevent new line
+              e.preventDefault();
               handleSendClick();
             }
           }}
         />
-        <button onClick={handleSendClick} className="btn-send">
+        <button onClick={handleSendClick} className={`btn-send ${darkMode ? 'dark-mode' : 'light-mode'}`}>
           <i className="bi bi-send"></i>
         </button>
       </div>

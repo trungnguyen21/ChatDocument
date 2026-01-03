@@ -9,7 +9,6 @@ data/
 __pycache__/
 
 # Ignore specific files
-config.py
 test.py
 sample_chain.py
 

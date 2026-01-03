@@ -2,3 +2,11 @@ sample_chain.py
 test.py
 model.py
 __pycache__/
+*.pyc
+*.pyo
+*.pyd
+test/
+tests/
+.git
+.env
+*.md

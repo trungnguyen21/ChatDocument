@@ -113,7 +113,7 @@ async def model_activation(session_body: SectionIDBody):
     logger.info("Looking at file path: " + str(file_path))
 
     if not file_path or not os.path.exists(file_path):
-        raise HTTPException(status_code=404, detail="File not found or invalid file_id" + file_path)
+        raise HTTPException(status_code=404, detail="File not found or invalid file_id" + str(file_path))
 
     logger.info("Initializing retriever and rag_chain...")
     try:

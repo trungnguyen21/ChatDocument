@@ -1,20 +1,17 @@
 import os
 import json
 from typing import Dict
+from app.config.config import Config
 
 class Cache:
     def __init__(self):
         """A class to manage caching of files and associated retrievers and RAG chains.
         The cache is implemented using on-disk storage and maintains a file map in JSON format.
         """
-        # Create ./data/files and ./data/vectorstore directories if they don't exist
-        if not os.path.exists("data"):
-            os.mkdir("data")
-        if not os.path.exists("data/files"):
-            os.mkdir("data/files")
+        config = Config()
+        self.data_path = config.DATAFILES
 
-        self.data_path = "data/files"
-        self.file_map_path = "data/file_map.json"
+        self.file_map_path = config.DATADIR + "/file_map.json"
 
         self.retrievers = {}
         self.rag_chains = {}
@@ -53,7 +50,7 @@ class Cache:
     
     def save_file(self, file_id: str, file_path: str):
         self.file_map[file_id] = file_path
-        self.save_file_map(self.file_map)
+        self.save_file_map()
     
     def delete_file(self, file_id: str):
         file_path = self.file_map.get(file_id)
@@ -80,7 +77,7 @@ class Cache:
             for file in file_names:
                 os.remove(os.path.join(self.data_path, file))
                 self.file_map.clear()
-                self.save_file_map(self.file_map)
+                self.save_file_map()
             return True
         except Exception as e:
             print(f"Error in clearing cache: {e}")
