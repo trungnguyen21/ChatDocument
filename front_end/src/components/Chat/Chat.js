@@ -60,7 +60,7 @@ const Chat = ({ darkMode }) => {
     };
 
     fetchChatHistory();
-  }, [state.sessionId]);
+  }, [state.sessionId, baseURL, notify]);
 
   useEffect(() => {
     scrollToBottom();

@@ -21,7 +21,7 @@ class Config:
             streaming=True, 
             callbacks=[FinalStreamingStdOutCallbackHandler(answer_prefix_tokens=["answer", ":"])]
         )
-        self.EMBED_MODEL = GoogleGenerativeAIEmbeddings(model="models/embedding-001")
+        self.EMBED_MODEL = GoogleGenerativeAIEmbeddings(model="models/gemini-embedding-001")
         
         # Paths
         # Create ./data/files and ./data/vectorstore directories if they don't exist
