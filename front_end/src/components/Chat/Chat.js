@@ -77,7 +77,7 @@ const Chat = ({ darkMode }) => {
       const response = await fetch(
         `${baseURL}/chat_completion/?session_id=${session_id}&question=${text}`,
         {
-          method: 'GET',
+          method: 'POST',
           headers: {
             'Content-Type': 'application/json',
           },
