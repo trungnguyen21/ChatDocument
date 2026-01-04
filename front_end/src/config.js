@@ -1,3 +1,3 @@
-const baseURL = process.env.NODE_ENV === "development" ? "http://localhost:8000/api" : "https://theforevercanvas.com/api"
+const baseURL = process.env.PUBLIC_API_URL ? process.env.PUBLIC_API_URL : "http://localhost:8000"
 
 module.exports = { baseURL }
