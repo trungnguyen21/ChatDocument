@@ -60,7 +60,7 @@ const Chat = ({ darkMode }) => {
     };
 
     fetchChatHistory();
-  }, [state.sessionId]);
+  }, [state.sessionId, baseURL, notify]);
 
   useEffect(() => {
     scrollToBottom();
@@ -77,29 +77,30 @@ const Chat = ({ darkMode }) => {
       const response = await fetch(
         `${baseURL}/chat_completion/?session_id=${session_id}&question=${text}`,
         {
-          method: 'GET',
+          method: 'POST',
           headers: {
             'Content-Type': 'application/json',
           },
         }
       );
 
-      const reader = response.body.getReader();
-      const decoder = new TextDecoder();
-      let chatbotMessage = { text: '', sender: 'chatbot' };
+      // const reader = response.body.getReader();
+      // const decoder = new TextDecoder();
+      // let chatbotMessage = { text: '', sender: 'chatbot' };
 
-      while (true) {
-        const { value, done } = await reader.read();
-        if (done) break;
-        chatbotMessage.text += decoder.decode(value, { stream: true });
-        setMessages((prevMessages) => {
-          const updatedMessages = [...prevMessages];
-          updatedMessages[prevMessages.length - 1] = { ...chatbotMessage };
-          return updatedMessages;
-        });
-      }
+      // while (true) {
+      //   const { value, done } = await reader.read();
+      //   if (done) break;
+      //   chatbotMessage.text += decoder.decode(value, { stream: true });
+      //   setMessages((prevMessages) => {
+      //     const updatedMessages = [...prevMessages];
+      //     updatedMessages[prevMessages.length - 1] = { ...chatbotMessage };
+      //     return updatedMessages;
+      //   });
+      // }
 
-      setMessages((prevMessages) => [...prevMessages, chatbotMessage]);
+      // setMessages((prevMessages) => [...prevMessages, chatbotMessage]);
+      
     } catch (error) {
       console.error('Error getting response:', error);
       const errorMessage = {

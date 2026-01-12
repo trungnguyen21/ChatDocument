@@ -12,25 +12,49 @@ services:
     networks:
       - app-network
 
-  worker:
-    container_name: celery_worker
-    build: 
+  app-base:
+    image: app-base
+    build:
       context: .
       dockerfile: ./app/Dockerfile
-    command: celery -A app.services.worker worker --loglevel=info
+    env_file:
+      - ./app/.env.docker
+    environment:
+      - APP_ENV=PROD
+    volumes:
+      - ./app/data:/app/data
+    networks:
+      - app-network
+
+  worker:
+    container_name: celery_worker
+    image: app-base
+    working_dir: /app
+    env_file:
+      - ./app/.env.docker
+    environment:
+      - APP_ENV=PROD
+      - PYTHONPATH=/app
+    command: celery -A app.services.worker worker --loglevel=info  --concurrency=1 --prefetch-multiplier=1
     depends_on:
       redis:
         condition: service_healthy
+    volumes:
+      - ./app/data:/app/data
     networks:
       - app-network
 
   back_end:
     container_name: server
-    build:
-      context: .
-      dockerfile: ./app/Dockerfile
+    image: app-base
+    env_file:
+      - ./app/.env.docker
+    environment:
+      - APP_ENV=PROD
+      - PYTHONPATH=/app
+    command: uvicorn app.server:app --host 0.0.0.0 --port 8000
     volumes:
-      - ./app:/usr/src/app
+      - ./app/data:/app/data
     ports:
       - 8000:8000
     depends_on:
@@ -39,18 +63,16 @@ services:
     networks:
       - app-network
 
-  # front_end:
-  #   container_name: client
-  #   build:
-  #     context: ./front_end
-  #   volumes:
-  #     - ./front_end:/client
-  #   ports:
-  #     - 3000:3000
-  #   depends_on:
-  #     - back_end
-  #   networks:
-  #     - app-network
+  front_end:
+    container_name: client
+    build:
+      context: ./front_end
+    ports:
+      - 3000:3000
+    depends_on:
+      - back_end
+    networks:
+      - app-network
 
 networks:
   app-network:

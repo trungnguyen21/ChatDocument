@@ -24,7 +24,7 @@ const SectionSwitchBar = ({ darkMode }) => {
     try {
       changeSession(fileId);
       console.log('Change section to: ', fileId);
-      await axios.post(`${baseURL}/model_activation`, { session_id: fileId });
+      await axios.post(`${baseURL}/model_activation`, { file_id: fileId });
       console.log('Finish: ', fileId);
     } catch (error) {
       console.error('Error changing section:', error);

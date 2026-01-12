@@ -11,14 +11,13 @@ def test_session_without_files():
     s = requests.Session()
     session = "123"
 
-    with s.get(
+    with s.post(
         f'{url}/chat_completion/',
-        stream=True,
-        params={"session_id": session, "question": "What is the capital of France? Answer with the name only."},
+        params={"file_id": session, "question": "What is the capital of France? Answer with the name only."},
     ) as response:
         assert response.status_code == 200
-        assert response.headers['Transfer-Encoding'] == 'chunked'
         assert response.headers['Content-Type'] == 'text/event-stream; charset=utf-8'
+        assert "Paris" in response.text
 
 def test_session_with_files():
     s = requests.Session()
