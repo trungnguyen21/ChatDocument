@@ -2,7 +2,7 @@ import React, { useState, useContext } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './style.css';
 import FileContext from '../context/FileContext';
-// import ChatContext from '../context/ChatContext';
+import ChatContext from '../context/ChatContext';
 import ErrorContext from '../context/ErrorContext';
 import config from '../../config';
 
@@ -13,7 +13,7 @@ const FileUploader = () => {
   const [loading, setLoading] = useState(false);
   const [done, setDone] = useState(false);
   const { notifyFileUploaded } = useContext(FileContext);
-  // const { dispatch } = useContext(ChatContext);
+  const { dispatch } = useContext(ChatContext);
   const { notify } = useContext(ErrorContext);
   const baseURL = config.baseURL;
 
@@ -22,9 +22,9 @@ const FileUploader = () => {
     setDone(false);
   };
 
-  // const changeSession = (sessionID) => {
-  //   dispatch({ type: 'UPDATE_SESSION_ID', payload: sessionID });
-  // }
+  const changeSession = (sessionID) => {
+    dispatch({ type: 'UPDATE_SESSION_ID', payload: sessionID });
+  }
 
   const handleUpload = async () => {
     if (selectedFile.size > MAX_FILE_SIZE) {
@@ -51,7 +51,7 @@ const FileUploader = () => {
       localStorage.setItem('fileMap', JSON.stringify(fileMap));
 
       notifyFileUploaded();
-      // changeSession(data.file_id);
+      changeSession(data.file_id);
       setDone(true);
     } catch (error) {
       console.error('Error uploading file:', error);

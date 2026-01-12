@@ -83,23 +83,6 @@ const Chat = ({ darkMode }) => {
           },
         }
       );
-
-      // const reader = response.body.getReader();
-      // const decoder = new TextDecoder();
-      // let chatbotMessage = { text: '', sender: 'chatbot' };
-
-      // while (true) {
-      //   const { value, done } = await reader.read();
-      //   if (done) break;
-      //   chatbotMessage.text += decoder.decode(value, { stream: true });
-      //   setMessages((prevMessages) => {
-      //     const updatedMessages = [...prevMessages];
-      //     updatedMessages[prevMessages.length - 1] = { ...chatbotMessage };
-      //     return updatedMessages;
-      //   });
-      // }
-
-      // setMessages((prevMessages) => [...prevMessages, chatbotMessage]);
       
     } catch (error) {
       console.error('Error getting response:', error);

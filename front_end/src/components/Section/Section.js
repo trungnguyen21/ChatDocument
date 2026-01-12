@@ -24,13 +24,33 @@ const SectionSwitchBar = ({ darkMode }) => {
     try {
       changeSession(fileId);
       console.log('Change section to: ', fileId);
+
       await axios.post(`${baseURL}/model_activation`, { file_id: fileId });
-      console.log('Finish: ', fileId);
+
+      const result = await checkingFileStatus(fileId);
+      
+      if (result === "SUCESS") {
+        console.log("Finish", fileId);
+      } else if (result === "FAIL") {
+        console.log("Failed", fileId);
+      }
+
     } catch (error) {
       console.error('Error changing section:', error);
-
     }
   };
+
+  const checkingFileStatus = async (fileId) => {
+    while (1) {
+      const ressponse = await axios.get(`${baseURL}/api/preprocessing_status`, { task_id: fileId });
+
+      if (ressponse === "SUCESS") return "SUCESS";
+      if (ressponse === "FAIL") return "FAIL";
+
+      // Check in 1.5s
+      await new Promise((r) => setTimeout(r, 1500));
+    }
+  }
 
   const fetchFiles = () => {
     const fileMap = JSON.parse(localStorage.getItem('fileMap')) || {};

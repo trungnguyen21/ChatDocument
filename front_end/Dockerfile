@@ -1,6 +1,6 @@
 FROM node:20
 
-WORKDIR /client
+WORKDIR /front_end
 
 COPY package*.json ./
 
@@ -10,4 +10,4 @@ COPY . .
 
 EXPOSE 3000
 
-CMD [ "npm", "run", "start"]
+CMD [ "npm", "start"]
