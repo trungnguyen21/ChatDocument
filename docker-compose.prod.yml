@@ -1,0 +1,25 @@
+services:
+  redis:
+    image: redis/redis-stack-server:latest
+
+  worker:
+    image: chatdoc.azurecr.io/app-base:latest
+    command: celery -A app.services.worker worker --loglevel=info --concurrency=1
+    environment:
+      APP_ENV: PROD
+      REDIS_URL: redis://redis:6379
+
+  backend:
+    image: chatdoc.azurecr.io/app-base:latest
+    command: uvicorn app.server:app --host 0.0.0.0 --port 8000
+    environment:
+      APP_ENV: PROD
+      REDIS_URL: redis://redis:6379
+
+  frontend:
+    image: chatdoc.azurecr.io/front_end:latest
+    environment:
+      PUBLIC_API_URL: http://backend:8000
+    ports:
+      - "3000:3000"
+
